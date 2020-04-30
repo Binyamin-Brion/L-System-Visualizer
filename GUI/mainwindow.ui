@@ -16,25 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QSplitter" name="splitter_3">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QTextEdit" name="textEdit"/>
-       <widget class="QOpenGLWidget" name="openGLWidget"/>
-      </widget>
-      <widget class="QSplitter" name="splitter_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QTextEdit" name="textEdit_2"/>
-       <widget class="QOpenGLWidget" name="openGLWidget_2"/>
-      </widget>
-     </widget>
+     <widget class="GUI::OpenGL::GLWidget" name="openGLWidget"/>
     </item>
    </layout>
   </widget>
@@ -50,6 +32,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GUI::OpenGL::GLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>GUI/OpenGL/GLWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

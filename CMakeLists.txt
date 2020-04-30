@@ -26,6 +26,12 @@ find_package(Qt5Test REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDES})
 
-add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h)
+set(GLM_FOLDER /home/binybrion/ProjectSourceDependencies/glm-0.9.9.3/glm)
+include_directories(${GLM_FOLDER})
 
-target_link_libraries(Voxel_L_System ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES})
+add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/GridSystem/AxisVAO.cpp
+        Render/GridSystem/AxisVAO.h Render/CommandCentre.cpp Render/CommandCentre.h Render/Shaders/ShaderManager.cpp
+        Render/Shaders/ShaderManager.h GUI/OpenGL/GLWidget.cpp GUI/OpenGL/GLWidget.h Render/GridSystem/GridVAO.cpp
+        Render/GridSystem/GridVAO.h Render/Camera/CameraMovement.h Render/Camera/CameraObject.cpp Render/Camera/CameraObject.h)
+
+target_link_libraries(Voxel_L_System ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)
