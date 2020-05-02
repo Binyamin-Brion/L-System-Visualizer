@@ -5,7 +5,7 @@
 #ifndef VOXEL_L_SYSTEM_VBOWAPPER_H
 #define VOXEL_L_SYSTEM_VBOWAPPER_H
 
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions_4_4_Core>
 
 namespace Render
 {
@@ -22,7 +22,7 @@ namespace Render
          */
 
         template<GLenum bufferTarget, GLenum bufferUsage, typename T>
-        class VBOWrapper : public QOpenGLFunctions_3_3_Core
+        class VBOWrapper : public QOpenGLFunctions_4_4_Core
         {
             public:
 
@@ -45,6 +45,11 @@ namespace Render
                     }
 
                     glGenBuffers(1, &vbo);
+                }
+
+                const std::vector<T>& getHeldData() const
+                {
+                    return heldData;
                 }
 
                 /**

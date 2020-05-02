@@ -26,12 +26,18 @@ find_package(Qt5Test REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDES})
 
-set(GLM_FOLDER /home/binybrion/ProjectSourceDependencies/glm-0.9.9.3/glm)
+set(GLM_FOLDER /home/binybrion/ProjectSourceDependencies/glm-0.9.9.8/glm)
 include_directories(${GLM_FOLDER})
 
-add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/GridSystem/AxisVAO.cpp
-        Render/GridSystem/AxisVAO.h Render/CommandCentre.cpp Render/CommandCentre.h Render/Shaders/ShaderManager.cpp
-        Render/Shaders/ShaderManager.h GUI/OpenGL/GLWidget.cpp GUI/OpenGL/GLWidget.h Render/GridSystem/GridVAO.cpp
-        Render/GridSystem/GridVAO.h Render/Camera/CameraMovement.h Render/Camera/CameraObject.cpp Render/Camera/CameraObject.h)
+find_package(ASSIMP REQUIRED)
 
-target_link_libraries(Voxel_L_System ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)
+include_directories(${ASSIMP_INCLUDE_DIR})
+
+add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/VAO/GridSystem/AxisVAO.cpp
+        Render/VAO/GridSystem/AxisVAO.h Render/CommandCentre.cpp Render/CommandCentre.h Render/Shaders/ShaderManager.cpp
+        Render/Shaders/ShaderManager.h GUI/OpenGL/GLWidget.cpp GUI/OpenGL/GLWidget.h Render/VAO/GridSystem/GridVAO.cpp
+        Render/VAO/GridSystem/GridVAO.h Render/Camera/CameraMovement.h Render/Camera/CameraObject.cpp Render/Camera/CameraObject.h
+        ModelLoading/Mesh.cpp ModelLoading/Mesh.h ModelLoading/Model.cpp
+        ModelLoading/Model.h ModelLoading/Face.h Render/VAO/UserModels/ModelVAO.cpp Render/VAO/UserModels/ModelVAO.h ModelLoading/Face.cpp Render/DataStructures/RecursionTree.cpp Render/DataStructures/RecursionTree.h Render/DataStructures/RecursionModelRange.cpp Render/DataStructures/RecursionModelRange.h Render/DataStructures/StoredModels.cpp Render/DataStructures/StoredModels.h Render/DataStructures/ModelRange.h Render/DataStructures/ModelRange.cpp Render/DataStructures/RemoveModelRecursionResult.h)
+
+target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

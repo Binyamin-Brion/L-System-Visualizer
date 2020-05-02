@@ -5,8 +5,9 @@
 #ifndef VOXEL_L_SYSTEM_COMMANDCENTRE_H
 #define VOXEL_L_SYSTEM_COMMANDCENTRE_H
 
-#include <Render/GridSystem/GridVAO.h>
-#include "GridSystem/AxisVAO.h"
+#include <Render/VAO/UserModels/ModelVAO.h>
+#include "Render/VAO/GridSystem/GridVAO.h"
+#include "VAO/GridSystem/AxisVAO.h"
 #include "Shaders//ShaderManager.h"
 #include "Camera/CameraObject.h"
 
@@ -20,6 +21,16 @@ namespace Render
     class CommandCentre
     {
         public:
+
+            /**
+             * Checks for an intersection with the users cursor with an instance of model.
+             *
+             * @param screenWidth width of the OpenGL widget
+             * @param screenHeight height of the OpenGL widget
+             * @param mouseX x-position of the cursor relative to the OpenGL widget
+             * @param mouseY y-position of the cursor relative to the OpenGL widget
+             */
+            void checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY);
 
             /**
              * Get the reference to the camera used for rending.
@@ -37,6 +48,11 @@ namespace Render
              * Renders the scene with the grid system and the mesh(es).
              */
             void render();
+
+            /**
+             * Resets the the intersection colours for all instances of all models.
+             */
+            void resetIntersectionColours();
 
         private:
 
@@ -59,6 +75,7 @@ namespace Render
             Camera::CameraObject cameraObject;
             GridSystem::AxisVAO axisVao;
             GridSystem::GridVAO gridVao;
+            VAO::ModelVAO modelVao;
             Shader::ShaderManager shaderManager;
 
             glm::vec3 backgroundColour;

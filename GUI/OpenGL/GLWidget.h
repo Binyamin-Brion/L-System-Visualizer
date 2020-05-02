@@ -6,7 +6,10 @@
 #define VOXEL_L_SYSTEM_GLWIDGET_H
 
 #include <QtWidgets/QOpenGLWidget>
+#include <QtGui/QOpenGLDebugMessage>
 #include "../../Render/CommandCentre.h"
+
+class QOpenGLDebugLogger;
 
 namespace GUI
 {
@@ -20,6 +23,8 @@ namespace GUI
 
         class GLWidget : public QOpenGLWidget
         {
+                Q_OBJECT
+
             public:
 
                 /**
@@ -35,6 +40,13 @@ namespace GUI
                  * @param event containing information about they key press
                  */
                 void keyPressEvent(QKeyEvent *event) override;
+
+                /**
+                 * Handles key release events when this widget is in focus.
+                 *
+                 * @param event containing information about they key release
+                 */
+                void keyReleaseEvent(QKeyEvent *event) override;
 
                 /**
                  * Sets up the appropriate OpenGL state for rendering and initializing any required OpenGL structures
@@ -76,9 +88,37 @@ namespace GUI
                  */
                 void resizeGL(int width, int height) override;
 
+            private slots:
+
+                /**
+                 * Prints messages created by the OpenGL implementation.
+                 *
+                 * @param message to be printed to the console
+                 */
+                void debugMessageGenerated(QOpenGLDebugMessage message) const;
+
             private:
+
+                /**
+                 * Checks if the movement keys are pressed, and if they are move the camera in the respective direction.
+                 */
+                void checkMovementKeyPressed();
+
                 ::Render::CommandCentre commandCentre;
+                QOpenGLDebugLogger *debugLogger = nullptr;
+
                 bool middleButtonDown = false;
+
+                bool keyW_Pressed = false;
+                bool keyA_Pressed = false;
+                bool keyS_Pressed = false;
+                bool keyD_Pressed = false;
+                bool keyShift_Pressed = false;
+
+                // Keep track of the mouse coordinates so that when the shift key is pressed, a check for intersection
+                // with the rendered objects can be performed immediately, without waiting for an initial mouse movement.
+                int mouseX = 0;
+                int mouseY = 0;
         };
     }
 }

@@ -12,7 +12,7 @@ namespace Render
     {
         CameraObject::CameraObject()
         {
-            position = glm::vec3{0.f, 0.f, 5.f};
+            position = glm::vec3{0.f, 1.f, 5.f};
 
             front = glm::normalize(glm::vec3{0.f, 0.f, -1.f});
 
@@ -23,7 +23,7 @@ namespace Render
             yaw = -90.0f;
             pitch = 0.0f;
             mouseSensitivity = 0.1f;
-            movementSpeed = 1.50;
+            movementSpeed = 1.0f;
 
             firstRotation = true;
 

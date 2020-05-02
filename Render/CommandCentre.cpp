@@ -2,10 +2,21 @@
 // Created by binybrion on 4/30/20.
 //
 
+#include <ModelLoading/Model.h>
+#include <ext/matrix_transform.hpp>
 #include "CommandCentre.h"
 
 namespace Render
 {
+    void CommandCentre::checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY)
+    {
+        glm::vec3 worldCoordinates = cameraObject.getWorldCoordinates(screenWidth, screenHeight, mouseX, mouseY);
+
+        glm::vec3 rayDirection = worldCoordinates - cameraObject.getPosition();
+
+        modelVao.checkRayIntersection(cameraObject.getPosition(), rayDirection);
+    }
+
     Camera::CameraObject &CommandCentre::getCamera()
     {
         return cameraObject;
@@ -21,8 +32,58 @@ namespace Render
                                     "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/GridSystem/vertexShader.txt",
                                     "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/GridSystem/fragmentShader.txt");
 
+        shaderManager.addShaderProgram("UserModels",
+                                       "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/UserModels/vertexShader.txt",
+                                       "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/UserModels/fragmentShader.txt");
+
         axisVao.initialize();
         gridVao.initialize();
+        modelVao.initialize();
+
+        // TODO: This is just some sample data.
+        // TODO: Remove it later for more polished versions of the program.
+
+        ::ModelLoading::Model model{"/home/binybrion/cube.obj"};
+        ::ModelLoading::Model model2{"/home/binybrion/sphere.obj"};
+
+        modelVao.addModel(model);
+        modelVao.addModel(model2);
+
+        glm::mat4x4 transform = glm::mat4x4{1.0};
+
+        std::vector<glm::mat4x4> test{transform};
+
+        transform = glm::translate(transform, glm::vec3{-8.0f, 0.f, 0.f});
+
+        test.push_back(transform);
+
+        transform = glm::translate(transform, glm::vec3{-8.0f, 0.f, 0.f});
+
+        test.push_back(transform);
+
+         transform = glm::mat4x4{1.0};
+
+        std::vector<glm::mat4x4> otherTests;
+
+        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
+
+        otherTests.push_back(transform);
+
+        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
+
+        otherTests.push_back(transform);
+
+        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
+
+        otherTests.push_back(transform);
+
+        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
+
+        otherTests.push_back(transform);
+
+        modelVao.addModelInstances("/home/binybrion/cube.obj", 3, test);
+        modelVao.addModelInstances("/home/binybrion/sphere.obj", 3, otherTests);
+        modelVao.addModelInstances("/home/binybrion/cube.obj", 1, test);
     }
 
     void CommandCentre::render()
@@ -32,13 +93,23 @@ namespace Render
 
         shaderManager.getShaderProgram("GridSystem").bind();
 
-
         shaderManager.getShaderProgram("GridSystem").setUniformValue("viewMatrix", convertQMatrix(cameraObject.getViewMatrix()));
         shaderManager.getShaderProgram("GridSystem").setUniformValue("projectionMatrix", convertQMatrix(cameraObject.getProjectionMatrix()));
 
         axisVao.render();
         gridVao.render();
 
+        shaderManager.getShaderProgram("UserModels").bind();
+
+        shaderManager.getShaderProgram("UserModels").setUniformValue("viewMatrix", convertQMatrix(cameraObject.getViewMatrix()));
+        shaderManager.getShaderProgram("UserModels").setUniformValue("projectionMatrix", convertQMatrix(cameraObject.getProjectionMatrix()));
+
+        modelVao.render();
+    }
+
+    void CommandCentre::resetIntersectionColours()
+    {
+        modelVao.resetIntersectionColours();
     }
 
     QMatrix4x4 CommandCentre::convertQMatrix(const glm::mat4 &matrix) const

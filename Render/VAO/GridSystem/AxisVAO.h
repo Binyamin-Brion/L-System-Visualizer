@@ -5,7 +5,7 @@
 #ifndef VOXEL_L_SYSTEM_AXISVAO_H
 #define VOXEL_L_SYSTEM_AXISVAO_H
 
-#include "../VBO/VBOWapper.h"
+#include "Render/VBO/VBOWapper.h"
 #include <vec3.hpp>
 
 namespace Render
@@ -16,7 +16,7 @@ namespace Render
          *  Handles storing the required data for the axis in the scene as well as rendering those axis.
          */
 
-        class AxisVAO : public QOpenGLFunctions_3_3_Core
+        class AxisVAO : public QOpenGLFunctions_4_4_Core
         {
             public:
 

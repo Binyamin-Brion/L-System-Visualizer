@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QOpenGLDebugLogger>
 
 namespace GUI
 {
@@ -27,6 +28,15 @@ namespace GUI
             connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 
             timer->start();
+
+            // A debug surface is required in order to generate debug OpenGL messages.
+            QSurfaceFormat surfaceFormat;
+            surfaceFormat.setMajorVersion(4);
+            surfaceFormat.setMinorVersion(4);
+            surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+            surfaceFormat.setOption(QSurfaceFormat::DebugContext);
+
+            setFormat(surfaceFormat);
         }
 
         void GLWidget::keyPressEvent(QKeyEvent *event)
@@ -34,25 +44,61 @@ namespace GUI
            switch (event->key())
            {
                case Qt::Key_W:
-                   commandCentre.getCamera().move(::Render::Camera::CameraMovement::Forwards);
+                   keyW_Pressed = true;
                    break;
 
                case Qt::Key_A:
-                   commandCentre.getCamera().move(::Render::Camera::CameraMovement::Left);
+                   keyA_Pressed = true;
                    break;
 
                case Qt::Key_S:
-                   commandCentre.getCamera().move(::Render::Camera::CameraMovement::Backwards);
+                   keyS_Pressed = true;
                    break;
 
                case Qt::Key_D:
-                   commandCentre.getCamera().move(::Render::Camera::CameraMovement::Right);
+                   keyD_Pressed = true;
+                   break;
+
+               case Qt::Key_Shift:
+                   keyShift_Pressed = true;
+
+                   // Check right now for an intersection, rather than waiting for an initial mouse movement.
+                   commandCentre.checkRayIntersection(width(), height(), mouseX, mouseY);
                    break;
 
                case Qt::Key_Escape:
                    QApplication::quit();
-                   break;
            }
+        }
+
+        void GLWidget::keyReleaseEvent(QKeyEvent *event)
+        {
+            switch(event->key())
+            {
+                case Qt::Key_W:
+                    keyW_Pressed = false;
+                    break;
+
+                case Qt::Key_A:
+                    keyA_Pressed = false;
+                    break;
+
+                case Qt::Key_S:
+                    keyS_Pressed = false;
+                    break;
+
+                case Qt::Key_D:
+                    keyD_Pressed = false;
+                    break;
+
+                case Qt::Key_Shift:
+                    keyShift_Pressed = false;
+
+                    // As soon as the shift key is released, the program is not in a state to display and check for
+                    // intersections. As such, stop showing an intersections immediately.
+                    commandCentre.resetIntersectionColours();
+                    break;
+            }
         }
 
         void GLWidget::initializeGL()
@@ -60,6 +106,18 @@ namespace GUI
             QOpenGLWidget::initializeGL();
 
             commandCentre.initialize();
+
+            debugLogger = new QOpenGLDebugLogger{this};
+
+            connect(debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(debugMessageGenerated(QOpenGLDebugMessage)), Qt::DirectConnection);
+
+            if(!debugLogger->initialize())
+            {
+                throw std::runtime_error{"Unable to initialize the OpenGL Debug Logger!"};
+            }
+
+            debugLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging);
+            debugLogger->enableMessages();
 
             glEnable(GL_DEPTH_TEST);
         }
@@ -78,6 +136,14 @@ namespace GUI
             {
                 commandCentre.getCamera().rotate(event->x(), event->y());
             }
+            else if(keyShift_Pressed)
+            {
+                commandCentre.checkRayIntersection(width(), height(), event->x(), event->y());
+            }
+
+            // Keep track of most recent mouse position for when the shift key is pressed.
+            mouseX = event->x();
+            mouseY = event->y();
         }
 
         void GLWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -95,6 +161,10 @@ namespace GUI
         {
             QOpenGLWidget::paintGL();
 
+            // Checking if a movement key is pressed every frame is removes any initial movement lag than if the camera
+            // were updated as soon as the keyPressEvent function is called.
+            checkMovementKeyPressed();
+
             commandCentre.render();
         }
 
@@ -105,6 +175,43 @@ namespace GUI
             glViewport(0, 0, width, height);
 
             commandCentre.getCamera().updateScreenSize(width, height);
+        }
+
+        void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message) const
+        {
+            qDebug() << message;
+        }
+
+        void GLWidget::checkMovementKeyPressed()
+        {
+            // Makes sense to check for intersection if the user is not moving.
+            // Also reduces any noticeable lag as a result of rendering not being fast enough, as a low FPS is not
+            // very noticeable if nothing is moving.
+            if(keyShift_Pressed)
+            {
+                return;
+            }
+
+            // Move camera in appropriate direction.
+            if(keyW_Pressed)
+            {
+                commandCentre.getCamera().move(::Render::Camera::CameraMovement::Forwards);
+            }
+
+            if(keyA_Pressed)
+            {
+                commandCentre.getCamera().move(::Render::Camera::CameraMovement::Left);
+            }
+
+            if(keyS_Pressed)
+            {
+                commandCentre.getCamera().move(::Render::Camera::CameraMovement::Backwards);
+            }
+
+            if(keyD_Pressed)
+            {
+                commandCentre.getCamera().move(::Render::Camera::CameraMovement::Right);
+            }
         }
     }
 }

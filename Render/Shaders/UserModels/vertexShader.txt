@@ -1,0 +1,17 @@
+#version 330 core
+
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in mat4 transformationMatrix;
+layout (location = 5) in vec3 inInstanceColour;
+
+out vec3 instanceColour;
+
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+
+void main()
+{
+    instanceColour = inInstanceColour;
+
+    gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(aPos, 1.0);
+}
