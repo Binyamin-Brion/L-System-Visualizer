@@ -51,7 +51,7 @@ namespace GUI
                 void addVariable(const std::vector<QString> &variableNames);
 
                 /**
-                 * Removes the specified variables from the combox box that allows user to select an intial axiom from the
+                 * Removes the specified variables from the combox box that allows user to select an initial axiom from the
                  * existing valid variables.
                  *
                  * @param variableNames list of variables that be used for an axiom. Variable names have been added to this

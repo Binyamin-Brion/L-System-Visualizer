@@ -33,6 +33,13 @@ namespace GUI
                  */
                 explicit ConstantTabContent(QWidget *parent = nullptr);
 
+                /**
+                 * Get the names of all of the entries that are valid.
+                 *
+                 * @return list of all valid entry names.
+                 */
+                std::vector<QString> getConstantNames() const;
+
             private:
 
                 /**

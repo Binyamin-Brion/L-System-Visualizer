@@ -48,6 +48,10 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         GUI/L_System/Constants/ConstantTabContent.h GUI/L_System/Constants/ConstantsWidget.cpp GUI/L_System/Constants/ConstantsWidget.h
         GUI/L_System/Constants/ConstantEntryInformation.cpp GUI/L_System/Constants/ConstantEntryInformation.h
         GUI/L_System/Constants/ConstantEntryDeclaration.cpp GUI/L_System/Constants/ConstantEntryDeclaration.h
-        GUI/L_System/Axiom/AxiomTabContent.cpp GUI/L_System/Axiom/AxiomTabContent.h)
+        GUI/L_System/Axiom/AxiomTabContent.cpp GUI/L_System/Axiom/AxiomTabContent.h L_System/DataStructures/Variable.h
+        L_System/DataStructures/Axiom.h L_System/DataStructures/Constant.h L_System/DataStructures/StackOperation.h
+        L_System/DataStructures/Rotation.h L_System/DataStructures/Translation.h L_System/LexerParser/Lexer.cpp
+        L_System/LexerParser/Lexer.h L_System/LexerParser/Token.h GUI/L_System/Rules/RuleTabContent.cpp
+        GUI/L_System/Rules/RuleTabContent.h  GUI/L_System/Rules/RuleWidget.cpp GUI/L_System/Rules/RuleWidget.h GUI/L_System/Rules/RuleEntry.cpp GUI/L_System/Rules/RuleEntry.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

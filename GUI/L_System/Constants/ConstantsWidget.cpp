@@ -19,6 +19,23 @@ namespace GUI
             setLayout(layout);
         }
 
+        std::vector<QString> ConstantsWidget::getConstantNames() const
+        {
+            // Only collect the names that are valid; if they are valid they are NOT returned.
+
+            std::vector<QString> names;
+
+            for(const auto &i : constantNames)
+            {
+                if(i.validName)
+                {
+                    names.push_back(i.name);
+                }
+            }
+
+            return names;
+        }
+
         void ConstantsWidget::addConstantEntry()
         {
             ConstantEntryDeclaration *constantEntry = new ConstantEntryDeclaration{this};
@@ -69,11 +86,14 @@ namespace GUI
                  return entryNames.entryDeclaration == entry;
             });
 
+            bool nameValid = newConstantNameUnique(newName);
+
             // Visually update the look of the line edit holding the entry name depending on if the entry name is valid.
-            entry->nameValid(newConstantNameUnique(newName));
+            entry->nameValid(nameValid);
 
             // Keep track of the new name of the new entry.
             entryLocation->name = newName;
+            entryLocation->validName = nameValid;
         }
 
         void ConstantsWidget::handleConstantEntrySelected(ConstantEntryDeclaration *constantEntry, int newState)

@@ -70,6 +70,7 @@ namespace GUI
             ui->rotationStackComboBox->setCurrentIndex(disabledOperationIndex);
 
             ui->rotationStackComboBox->setEnabled(false);
+            ui->angleLineEdit->setEnabled(false);
             ui->rotationLineEditX->setEnabled(false);
             ui->rotationLineEditY->setEnabled(false);
             ui->rotationLineEditZ->setEnabled(false);
@@ -95,6 +96,7 @@ namespace GUI
             ui->rotationStackComboBox->setCurrentIndex(firstActionIndex);
 
             ui->rotationStackComboBox->setEnabled(true);
+            ui->angleLineEdit->setEnabled(true);
             ui->rotationLineEditX->setEnabled(true);
             ui->rotationLineEditY->setEnabled(true);
             ui->rotationLineEditZ->setEnabled(true);

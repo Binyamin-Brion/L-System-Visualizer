@@ -21,6 +21,11 @@ namespace GUI
             setupConnections();
         }
 
+        std::vector<QString> ConstantTabContent::getConstantNames() const
+        {
+            return ui->scrollAreaWidgetContents->getConstantNames();
+        }
+
         void ConstantTabContent::setupConnections()
         {
             connect(ui->addConstantButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(addConstantEntry()));

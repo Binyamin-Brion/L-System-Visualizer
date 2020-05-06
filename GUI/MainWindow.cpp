@@ -16,9 +16,17 @@ namespace GUI
 
         ui->setupUi(this);
 
-        ui->spinBox->setMinimum(1);
-
-        //ui->splitter_6->setStretchFactor(ui->splitter->sizes().size() - 1, 1);
+//        ui->spinBox->setMinimum(1);
+//
+//        ui->splitter_2->setStretchFactor(ui->splitter_2->sizes().size() - 1, 1);
+//
+//        ui->splitter_3->setStretchFactor(ui->splitter_3->sizes().size() - 1, 1);
+//
+//        ui->splitter_4->setStretchFactor(ui->splitter_4->sizes().size() - 1, 1);
+//
+//        ui->splitter_5->setStretchFactor(ui->splitter_5->sizes().size() - 1, 1);
+//
+//        ui->splitter_6->setStretchFactor(ui->splitter_6->sizes().size() - 1, 1);
 
         createConnections();
     }

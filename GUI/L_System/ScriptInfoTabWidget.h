@@ -18,6 +18,7 @@ namespace GUI
     {
         class AxiomTabContent;
         class ConstantTabContent;
+        class RuleTabContent;
         class VariableTabContent;
 
         /**
@@ -56,6 +57,7 @@ namespace GUI
 
                 AxiomTabContent *axiomTabContent = nullptr;
                 ConstantTabContent *constantTabContent = nullptr;
+                RuleTabContent *ruleTabContent = nullptr;
                 VariableTabContent *variableTabContent = nullptr;
         };
     }

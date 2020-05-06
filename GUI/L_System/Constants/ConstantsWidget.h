@@ -32,11 +32,18 @@ namespace GUI
                  */
                 explicit ConstantsWidget(QWidget *parent = nullptr);
 
+                /**
+                 * Get the names of all of the entries that are valid.
+                 *
+                 * @return list of all valid entry names.
+                 */
+                std::vector<QString> getConstantNames() const;
+
             public slots:
 
                 /**
                  * Called when a new entry needs to be created. This is done by clicking the appropriate button in the
-                 * ConstantsWidget object.
+                 * this object.
                  */
                 void addConstantEntry();
 
@@ -85,6 +92,7 @@ namespace GUI
                 {
                     const ConstantEntryDeclaration* entryDeclaration;
                     QString name;
+                    bool validName = false;
                 };
 
                 std::vector<EntryNames> constantNames;
