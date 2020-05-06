@@ -15,21 +15,7 @@ namespace Render
 
             storedModels.addModel(model);
 
-            for(const auto &mesh : model.getMeshes())
-            {
-                std::vector<unsigned int> adjustedIndices = mesh.getIndices();
-
-                // The indices have to have an offset added to deal with the fact that there are other vertices in the
-                // vertices VBO, in order to reference vertices of its associated model.
-                for(unsigned int &indice : adjustedIndices)
-                {
-                    indice += verticesVBO.getHeldData().size();
-                }
-
-                verticesVBO.uploadDataAppend(mesh.getVertices());
-
-                indices.uploadDataAppend(adjustedIndices);
-            }
+            modelsToUpload.push_back(model);
         }
 
         void ModelVAO::addModelInstances(const QString &modelFileName, unsigned int recursionDepth, const std::vector<glm::mat4x4> &transformationMatrices)
@@ -167,6 +153,8 @@ namespace Render
         {
             glBindVertexArray(vao);
 
+            uploadModel();
+
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
@@ -193,6 +181,30 @@ namespace Render
             instanceColours.uploadData(instanceColourVector);
 
             intersectionIndexes.clear();
+        }
+
+        void ModelVAO::uploadModel()
+        {
+            for(const auto &model : modelsToUpload)
+            {
+                for(const auto &mesh : model.getMeshes())
+                {
+                    std::vector<unsigned int> adjustedIndices = mesh.getIndices();
+
+                    // The indices have to have an offset added to deal with the fact that there are other vertices in the
+                    // vertices VBO, in order to reference vertices of its associated model.
+                    for(unsigned int &indice : adjustedIndices)
+                    {
+                        indice += verticesVBO.getHeldData().size();
+                    }
+
+                    verticesVBO.uploadDataAppend(mesh.getVertices());
+
+                    indices.uploadDataAppend(adjustedIndices);
+                }
+            }
+
+            modelsToUpload.clear();
         }
     }
 }

@@ -11,6 +11,11 @@
 
 class QOpenGLDebugLogger;
 
+namespace ModelLoading
+{
+    class Model;
+}
+
 namespace GUI
 {
     namespace OpenGL
@@ -87,6 +92,9 @@ namespace GUI
                  * @param height of the widget after changing size
                  */
                 void resizeGL(int width, int height) override;
+
+            public slots:
+                void uploadModelGPU(const ::ModelLoading::Model &model);
 
             private slots:
 

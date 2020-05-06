@@ -11,6 +11,11 @@
 #include "Shaders//ShaderManager.h"
 #include "Camera/CameraObject.h"
 
+namespace ModelLoading
+{
+    class Model;
+}
+
 namespace Render
 {
     /**
@@ -21,6 +26,8 @@ namespace Render
     class CommandCentre
     {
         public:
+
+            void addModel(const ::ModelLoading::Model &model);
 
             /**
              * Checks for an intersection with the users cursor with an instance of model.

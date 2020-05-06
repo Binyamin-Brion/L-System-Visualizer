@@ -8,6 +8,16 @@
 
 namespace Render
 {
+    void CommandCentre::addModel(const ::ModelLoading::Model &model)
+    {
+        modelVao.addModel(model);
+
+        glm::mat4x4 transform = glm::mat4x4{1.0};
+
+
+        modelVao.addModelInstances(model.getModelFileName(), 3, {transform});
+    }
+
     void CommandCentre::checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY)
     {
         glm::vec3 worldCoordinates = cameraObject.getWorldCoordinates(screenWidth, screenHeight, mouseX, mouseY);
@@ -23,7 +33,7 @@ namespace Render
     }
 
     void CommandCentre::initialize()
-    {
+    {printf("initialize model vao \n");
         float backgroundColourComponents = 0.15f;
 
         backgroundColour = glm::vec3{backgroundColourComponents, backgroundColourComponents, backgroundColourComponents};
@@ -39,51 +49,6 @@ namespace Render
         axisVao.initialize();
         gridVao.initialize();
         modelVao.initialize();
-
-        // TODO: This is just some sample data.
-        // TODO: Remove it later for more polished versions of the program.
-
-        ::ModelLoading::Model model{"/home/binybrion/cube.obj"};
-        ::ModelLoading::Model model2{"/home/binybrion/sphere.obj"};
-
-        modelVao.addModel(model);
-        modelVao.addModel(model2);
-
-        glm::mat4x4 transform = glm::mat4x4{1.0};
-
-        std::vector<glm::mat4x4> test{transform};
-
-        transform = glm::translate(transform, glm::vec3{-8.0f, 0.f, 0.f});
-
-        test.push_back(transform);
-
-        transform = glm::translate(transform, glm::vec3{-8.0f, 0.f, 0.f});
-
-        test.push_back(transform);
-
-         transform = glm::mat4x4{1.0};
-
-        std::vector<glm::mat4x4> otherTests;
-
-        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
-
-        otherTests.push_back(transform);
-
-        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
-
-        otherTests.push_back(transform);
-
-        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
-
-        otherTests.push_back(transform);
-
-        transform = glm::translate(transform, glm::vec3{3.0f, 0.f, 0.f});
-
-        otherTests.push_back(transform);
-
-        modelVao.addModelInstances("/home/binybrion/cube.obj", 3, test);
-        modelVao.addModelInstances("/home/binybrion/sphere.obj", 3, otherTests);
-        modelVao.addModelInstances("/home/binybrion/cube.obj", 1, test);
     }
 
     void CommandCentre::render()

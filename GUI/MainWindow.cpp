@@ -15,6 +15,12 @@ namespace GUI
         setMinimumSize(1280, 720);
 
         ui->setupUi(this);
+
+        ui->spinBox->setMinimum(1);
+
+        //ui->splitter_6->setStretchFactor(ui->splitter->sizes().size() - 1, 1);
+
+        createConnections();
     }
 
     void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -25,5 +31,10 @@ namespace GUI
                 QApplication::quit();
                 break;
         }
+    }
+
+    void MainWindow::createConnections()
+    {
+        connect(ui->tabWidget, SIGNAL(modelLoaded(const ::ModelLoading::Model&)), ui->openGLWidget, SLOT(uploadModelGPU(const ::ModelLoading::Model&)));
     }
 }

@@ -159,6 +159,17 @@ namespace GUI
 
         void GLWidget::paintGL()
         {
+
+
+            static int i = 0;
+
+            if(i++ == 150)
+            {
+                ::ModelLoading::Model model{"/home/binybrion/cube.obj"};
+
+           //     commandCentre.addModel(model);
+            }
+
             QOpenGLWidget::paintGL();
 
             // Checking if a movement key is pressed every frame is removes any initial movement lag than if the camera
@@ -177,10 +188,21 @@ namespace GUI
             commandCentre.getCamera().updateScreenSize(width, height);
         }
 
+        // Beginning of public slots
+
+        void GLWidget::uploadModelGPU(const ::ModelLoading::Model &model)
+        {
+            commandCentre.addModel(model);
+        }
+
+        // Beginning of private slots
+
         void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message) const
         {
             qDebug() << message;
         }
+
+        // Beginning of private functions
 
         void GLWidget::checkMovementKeyPressed()
         {

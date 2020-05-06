@@ -78,6 +78,8 @@ namespace Render
                 void resetIntersectionColours();
 
             private:
+                void uploadModel();
+
                 unsigned int vao;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec3> verticesVBO;
                 VBO::VBOWrapper<GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, unsigned int> indices;
@@ -88,6 +90,8 @@ namespace Render
                 DataStructures::StoredModels storedModels;
 
                 std::vector<unsigned int> intersectionIndexes;
+
+                std::vector<::ModelLoading::Model> modelsToUpload;
         };
     }
 }

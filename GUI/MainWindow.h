@@ -35,6 +35,8 @@ namespace GUI
 
         private:
 
+            void createConnections();
+
             Ui::MainWindow *ui = nullptr;
     };
 }
