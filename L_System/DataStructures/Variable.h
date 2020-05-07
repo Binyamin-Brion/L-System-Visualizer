@@ -5,16 +5,33 @@
 #ifndef VOXEL_L_SYSTEM_VARIABLE_H
 #define VOXEL_L_SYSTEM_VARIABLE_H
 
-#include <QtCore/QString>
+#include <QString>
 
 namespace L_System
 {
+    namespace Execution
+    {
+        class Token;
+    }
+
     namespace DataStructures
     {
-        struct Variable
+        class Variable
         {
-            QString variableName;
-            QString associatedModel;
+            public:
+
+                Variable() = default;
+                Variable(QString variableName, QString associatedModel);
+
+                const QString &getAssociatedModelName() const;
+                const QString &getVariableName() const;
+
+                bool operator==(const Variable &other) const;
+
+            private:
+
+                QString variableName;
+                QString associatedModel;
         };
     }
 }
