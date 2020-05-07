@@ -9,6 +9,11 @@ namespace L_System
 {
     namespace DataStructures
     {
+        /**
+         * Represents the possible stack operations that constant can perform on a L-Script's
+         * rotation or transformation stack.
+         */
+
         enum class StackOperation
         {
             NoAction,

@@ -8,9 +8,9 @@ namespace L_System
 {
     namespace DataStructures
     {
-        Rule::Rule(Variable variable, std::vector<Execution::Token> successorTokens)
+        Rule::Rule(Variable predecessor, std::vector<Execution::Token> successorTokens)
                 :
-                    predecessor{std::move(variable)},
+                    predecessor{std::move(predecessor)},
                     successorTokens{std::move(successorTokens)}
         {
 

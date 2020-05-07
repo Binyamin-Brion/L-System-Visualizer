@@ -24,7 +24,7 @@ namespace L_System
 
         }
 
-        bool Rotation::getAngle() const
+        float Rotation::getAngle() const
         {
             return angle;
         }

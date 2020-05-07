@@ -159,17 +159,6 @@ namespace GUI
 
         void GLWidget::paintGL()
         {
-
-
-            static int i = 0;
-
-            if(i++ == 150)
-            {
-                ::ModelLoading::Model model{"/home/binybrion/cube.obj"};
-
-           //     commandCentre.addModel(model);
-            }
-
             QOpenGLWidget::paintGL();
 
             // Checking if a movement key is pressed every frame is removes any initial movement lag than if the camera

@@ -9,68 +9,64 @@ namespace L_System
 {
     namespace Execution
     {
+        Token Executor::startingVariable{DataStructures::Variable{}};
+        std::vector<DataStructures::Rule> Executor::executionRules;
+        std::vector<std::vector<Token>> Executor::recursionResult;
+
         void Executor::execute(unsigned int recursionDepth)
         {
-            executeRecursively(recursionDepth);
+            recursionResult.clear();
+
+            recursionResult.push_back({startingVariable});
+
+            for(unsigned int i = 0; i < recursionDepth; ++i)
+            {
+                std::vector<Token> currentRecursiveResult;
+
+                for(const auto &token : recursionResult[i])
+                {
+                    for(const auto &rule : executionRules)
+                    {
+                        bool matchingRule = rule.getPredecessor() == token.getVariable();
+
+                        if(token.isVariable() && matchingRule)
+                        {
+                            currentRecursiveResult.insert(currentRecursiveResult.end(), rule.getSuccessorTokens().begin(), rule.getSuccessorTokens().end());
+
+                            goto nextLoop;
+                        }
+                        else if(token.isConstant())
+                        {
+                            currentRecursiveResult.push_back(token);
+
+                            goto nextLoop;
+                        }
+                    }
+
+                    assert(false);
+
+                    nextLoop:;
+                  }
+
+                recursionResult.push_back(currentRecursiveResult);
+            }
         }
 
-        const std::vector<std::vector<Token>>& Executor::getRecursionResult() const
+        const std::vector<std::vector<Token>>& Executor::getRecursionResult()
         {
             return recursionResult;
         }
 
         void Executor::setAxiom(const DataStructures::Variable &axiom)
         {
+            startingVariable = Token{axiom};
+
             recursionResult.push_back({Token{axiom}});
         }
 
         void Executor::setRules(const std::vector<DataStructures::Rule> &rules)
         {
-            this->rules = rules;
-        }
-
-        void Executor::executeRecursively(unsigned int timesToExecute)
-        {
-            if(numberTimesExecuted == timesToExecute)
-            {
-                return;
-            }
-
-            std::vector<Token> currentRecursiveResult;
-
-            for(const auto &token : recursionResult[numberTimesExecuted])
-            {
-                for(const auto &rule : rules)
-                {
-                    auto tokenName = token.getVariable().getVariableName().toStdString();
-                    auto predecessorName = rule.getPredecessor().getVariableName().toStdString();
-
-                    bool matchingRule = rule.getPredecessor() == token.getVariable();
-
-                    if(token.isVariable() && matchingRule)
-                    {
-                        currentRecursiveResult.insert(currentRecursiveResult.end(), rule.getSuccessorTokens().begin(), rule.getSuccessorTokens().end());
-
-                        goto nextLoop;
-                    }
-                    else if(token.isConstant())
-                    {
-                        currentRecursiveResult.push_back(token);
-
-                        goto nextLoop;
-                    }
-                }
-
-                assert(false);
-
-                nextLoop:;
-            }
-
-            recursionResult.push_back(currentRecursiveResult);
-
-            numberTimesExecuted += 1;
-
-            executeRecursively(timesToExecute);
+            executionRules = rules;
         }
     }
 }
