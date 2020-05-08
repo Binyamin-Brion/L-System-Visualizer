@@ -35,7 +35,7 @@ namespace L_System
                  * @param angle the angle in degrees of the rotation
                  * @param rotation the axis along which the rotation should occur
                  */
-                Rotation(StackOperation stackOperation, float angle, glm::vec3 rotation);
+                Rotation(float angle, glm::vec3 rotation);
 
                 /**
                  * Get the angle of the rotation.
@@ -52,13 +52,6 @@ namespace L_System
                 glm::vec3 getRotation() const;
 
                 /**
-                 * Get the stack operation of the rotation.
-                 *
-                 * @return rotation's stack operation
-                 */
-                StackOperation getStackOperation() const;
-
-                /**
                  * Get whether the Rotation is active, as in it affects the script's rotation transformation.
                  *
                  * If the Rotation is default constructed, the returned value is false; otherwise true.
@@ -69,10 +62,9 @@ namespace L_System
 
             private:
 
-                bool enabled;
-                StackOperation stackOperation;
                 float angle;
                 glm::vec3 rotation;
+                bool enabled = false;
         };
     }
 }

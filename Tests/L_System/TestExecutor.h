@@ -46,19 +46,19 @@ namespace Tests
 
                 /**
                  * Tests that the executor generates the same result as what is given on the
-                 * Algae examples on the above mentioned Wikipedia page.
+                 * Algae example on the above mentioned Wikipedia page.
                  */
                 void testAlgae();
 
                 /**
                  * Tests that the executor generates the same result as what is given on the
-                 * Algae examples on the above mentioned  Wikipedia page.
+                 * FractalTree example on the above mentioned Wikipedia page.
                  */
                 void testFractalBinaryTree();
 
                 /**
                  * Tests that the executor generates the same result as what is given on the
-                 * Algae examples on the above mentioned  Wikipedia page.
+                 * KochCurve example on the above mentioned Wikipedia page.
                  */
                 void testKochCurve();
 

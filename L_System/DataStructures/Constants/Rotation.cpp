@@ -15,11 +15,11 @@ namespace L_System
 
         }
 
-        Rotation::Rotation(StackOperation stackOperation, float angle, glm::vec3 rotation)
+        Rotation::Rotation(float angle, glm::vec3 rotation)
                     :
-                        stackOperation{stackOperation},
                         angle{angle},
-                        rotation{rotation}
+                        rotation{rotation},
+                        enabled{true}
         {
 
         }
@@ -32,11 +32,6 @@ namespace L_System
         glm::vec3 Rotation::getRotation() const
         {
             return rotation;
-        }
-
-        StackOperation Rotation::getStackOperation() const
-        {
-            return stackOperation;
         }
 
         bool Rotation::isEnabled() const

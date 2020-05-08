@@ -15,26 +15,19 @@ namespace L_System
 
         }
 
-        Constant::Constant(QString constantName, Translation translation)
+        Constant::Constant(QString constantName, StackOperation stackOperation, Translation translation)
                     :
                         constantName{std::move(constantName)},
+                        stackOperation{stackOperation},
                         translation{translation}
         {
 
         }
 
-        Constant::Constant(QString constantName, Rotation rotation)
+        Constant::Constant(QString constantName, StackOperation stackOperation, Rotation rotation)
                     :
                         constantName{std::move(constantName)},
-                        rotation{rotation}
-        {
-
-        }
-
-        Constant::Constant(QString constantName, Translation translation, Rotation rotation)
-                    :
-                        constantName{std::move(constantName)},
-                        translation{translation},
+                        stackOperation{stackOperation},
                         rotation{rotation}
         {
 
@@ -48,6 +41,11 @@ namespace L_System
         const Rotation& Constant::getRotation() const
         {
             return rotation;
+        }
+
+        StackOperation Constant::getStackOperation() const
+        {
+            return stackOperation;
         }
 
         const Translation &Constant::getTranslation() const

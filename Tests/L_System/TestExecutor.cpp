@@ -2,7 +2,7 @@
 // Created by binybrion on 5/6/20.
 //
 
-#include <L_System/DataStructures/Rules/Rule.h>
+#include "../../L_System/DataStructures/Rules/Rule.h"
 #include <QtTest/qtestcase.h>
 #include "TestExecutor.h"
 #include "../../L_System/Execution/Executor.h"
@@ -81,7 +81,7 @@ namespace Tests
 
             Executor::execute(3);
 
-            // Test resut.
+            // Test result.
             const std::vector<QString> expectedResult
                     {
                         "0",

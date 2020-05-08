@@ -35,26 +35,6 @@ namespace GUI
                  */
                 explicit ConstantEntryInformation(QWidget *parent = nullptr);
 
-            private slots:
-
-                /**
-                 * Handles whether to make the rotation related fields accessible, based off of whether the constant
-                 * is supposed to manipulate the rotation of the script.
-                 *
-                 * @param state of the checkbox
-                 */
-                void handleRotationCheckBox(int state);
-
-                /**
-                 * Handles whether to make the translation related fields accessible, based off of whether the constant
-                 * is supposed to manipulate the translation of the script.
-                 *
-                 * @param state of the checkbox
-                 */
-                void handleTranslationCheckBox(int state);
-
-            private:
-
                 /**
                  * Disables the rotation-related fields. Until they are enabled, no modifications can be made.
                  * Disabled if the constant does not modify the rotation of the script.
@@ -79,21 +59,12 @@ namespace GUI
                  */
                 void enableTranslation();
 
-                /**
-                 * Sets up the connections used by this object's widgets.
-                 */
-                void setupConnections();
+            private:
 
                 Ui::ConstantEntryInformation *ui = nullptr;
 
                 // Stores the index of the default stack operation after re-enabling a part of the constant,
                 const int firstActionIndex = 0;
-
-                // Holds the text to display in the stack operation when a part of the script is disabled,
-                const QString disabledOperation = "Activate by clicking checkbox.";
-
-                // Holds the index of the item to show in the stack operation combo box when a part of the script is disabled.
-                const int disabledOperationIndex = 3;
         };
     }
 }

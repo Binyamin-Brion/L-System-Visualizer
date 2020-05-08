@@ -47,7 +47,7 @@ namespace L_System
                  * @param constantName name of the the constant
                  * @param translation how the script's translation transformation should change when encountering this constant
                  */
-                Constant(QString constantName, Translation translation);
+                Constant(QString constantName, StackOperation stackOperation, Translation translation);
 
                 /**
                  * Constant that has the ability to modify the script's rotation transformation.
@@ -55,16 +55,7 @@ namespace L_System
                  * @param constantName name of the the constant
                  * @param rotation how the script's rotation transformation should change when encountering this constant
                  */
-                Constant(QString constantName, Rotation rotation);
-
-                /**
-                 * Constant that has the ability to modify the script's translation and rotation transformation.
-                 *
-                 * @param constantName name of the the constant
-                 * @param translation how the script's translation transformation should change when encountering this constant
-                 * @param rotation how the script's rotation transformation should change when encountering this constant
-                 */
-                Constant(QString constantName, Translation translation, Rotation rotation);
+                Constant(QString constantName, StackOperation stackOperation, Rotation rotation);
 
                 /**
                  * Get the name of the constant used to initialize this constant.
@@ -80,6 +71,8 @@ namespace L_System
                  */
                 const Rotation& getRotation() const;
 
+                StackOperation getStackOperation() const;
+
                 /**
                  * Get the translation that is used to modify a script's translation transformation.
                  *
@@ -90,6 +83,7 @@ namespace L_System
             private:
 
                 QString constantName;
+                StackOperation stackOperation;
                 Translation translation;
                 Rotation rotation;
         };

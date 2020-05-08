@@ -16,7 +16,6 @@ namespace L_System
 
         enum class StackOperation
         {
-            NoAction,
             Pop,
             Push
         };

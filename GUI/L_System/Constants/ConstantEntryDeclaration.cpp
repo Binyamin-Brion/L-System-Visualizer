@@ -33,6 +33,8 @@ namespace GUI
         {
             ui->setupUi(this);
 
+            ui->transformationRadioButton->setChecked(true);
+
             // By default, the associated entry information is visible, and the background color of the line edit
             // where the entry name is given is highlighted red as the default name is not valid.
             ui->visibleCheckBox->setChecked(true);
@@ -77,6 +79,10 @@ namespace GUI
             connect(ui->nameLineEdit, &QLineEdit::textChanged, [this](const QString &newName) { emit nameChanged(this, newName); });
 
             connect(ui->selectCheckBox, &QCheckBox::stateChanged, [this](int state) { emit constantEntrySelected(this, state); });
+
+            connect(ui->rotationRadioButton, &QRadioButton::toggled, [this](bool checked) { checked ? ui->entryInformation->enableRotation() : ui->entryInformation->disableRotation(); });
+
+            connect(ui->transformationRadioButton, &QRadioButton::toggled, [this](bool checked) { checked ? ui->entryInformation->enableTranslation() : ui->entryInformation->disableTranslation(); });
         }
     }
 }

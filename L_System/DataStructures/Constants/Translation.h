@@ -34,14 +34,7 @@ namespace L_System
                  * @param stackOperation how this translation should affect the translation stack of the script
                  * @param translation the amount to translate the script's translation transformation
                  */
-                Translation(StackOperation stackOperation, glm::vec3 translation);
-
-                /**
-                 * Get the stack operation of the rotation.
-                 *
-                 * @return rotation's stack operation
-                 */
-                StackOperation getStackOperation() const;
+                explicit Translation(glm::vec3 translation);
 
                 /**
                  * Get the translation that this Translation was initialized with.
@@ -61,9 +54,8 @@ namespace L_System
 
             private:
 
-                bool enabled;
-                StackOperation stackOperation;
                 glm::vec3 translation;
+                bool enabled = false;
         };
     }
 }

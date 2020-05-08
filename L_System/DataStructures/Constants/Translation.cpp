@@ -15,17 +15,12 @@ namespace L_System
 
         }
 
-        Translation::Translation(StackOperation stackOperation, glm::vec3 translation)
+        Translation::Translation(glm::vec3 translation)
                         :
-                            stackOperation{stackOperation},
-                            translation{translation}
+                            translation{translation},
+                            enabled{true}
         {
 
-        }
-
-        StackOperation Translation::getStackOperation() const
-        {
-            return stackOperation;
         }
 
         const glm::vec3 &Translation::getTranslation() const
