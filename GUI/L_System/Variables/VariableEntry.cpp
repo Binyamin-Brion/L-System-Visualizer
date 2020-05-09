@@ -48,6 +48,20 @@ namespace GUI
             ui->modelEntriesComboBox->setStyleSheet(styleSheet());
         }
 
+        QString VariableEntry::getAssociatedModelName() const
+        {
+            return ui->modelEntriesComboBox->currentText();
+        }
+
+        ::L_System::DataStructures::Variable VariableEntry::getVariableToken() const
+        {
+            return ::L_System::DataStructures::Variable
+                    {
+                        ui->variableNameLineEdit->text(),
+                        ui->modelEntriesComboBox->currentText()
+                    };
+        }
+
         void VariableEntry::nameValid(bool valid)
         {
             if(valid)
@@ -60,10 +74,13 @@ namespace GUI
             }
         }
 
+        // Beginning of private functions
+
         void VariableEntry::setupConnections()
         {
             connect(ui->variableSelectedCheckBox, &QCheckBox::stateChanged, [this](int state) { emit variableSelected(this, state); });
 
+            // This will check if the new name is valid.
             connect(ui->variableNameLineEdit, &QLineEdit::textChanged, [this](const QString &newName) { emit nameChanged(this, newName); });
         }
     }

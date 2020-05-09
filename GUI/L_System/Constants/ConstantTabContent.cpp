@@ -21,16 +21,20 @@ namespace GUI
             setupConnections();
         }
 
-        std::vector<QString> ConstantTabContent::getConstantNames() const
+        std::vector<::L_System::DataStructures::Constant> ConstantTabContent::getConstantsTokens() const
         {
-            return ui->scrollAreaWidgetContents->getConstantNames();
+            return ui->scrollAreaWidgetContents->getConstantsTokens();
         }
+
+        // Begininng of private functions
 
         void ConstantTabContent::setupConnections()
         {
             connect(ui->addConstantButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(addConstantEntry()));
 
             connect(ui->deleteConstantButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(handleDeleteButtonPushed()));
+
+            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::entryNamesChanged, [this](std::vector<QString> variableNames) { emit entryNamesChanged(variableNames); });
         }
     }
 }

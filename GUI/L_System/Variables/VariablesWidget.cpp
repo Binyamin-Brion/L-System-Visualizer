@@ -6,6 +6,7 @@
 #include <QtWidgets/QPushButton>
 #include "VariablesWidget.h"
 #include "VariableEntry.h"
+#include <cassert>
 
 namespace GUI
 {
@@ -21,7 +22,7 @@ namespace GUI
 
         void VariablesWidget::addModelEntry(const QString &modelName)
         {
-            // If the model entry was already added to a combox box, then it should not appear again.
+            // If the model entry was already added to a combo box, then it should not appear again.
             if(std::find(modelEntries.begin(), modelEntries.end(), modelName) != modelEntries.end())
             {
                 return;
@@ -35,6 +36,8 @@ namespace GUI
 
             modelEntries.push_back(modelName);
         }
+
+        // Beginning of public slots
 
         void VariablesWidget::addVariableEntry()
         {
@@ -58,6 +61,19 @@ namespace GUI
             variableNames.push_back(EntryNames{variableEntry, "Enter a name..."});
         }
 
+        QString VariablesWidget::getAssociatedModelName(const QString &variableName) const
+        {
+            for(const auto &i : variableNames)
+            {
+                if(i.name == variableName)
+                {
+                    return i.entry->getAssociatedModelName();
+                }
+            }
+
+            assert(false);
+        }
+
         std::vector<QString> VariablesWidget::getEntryNames() const
         {
             // Only collect the names that are valid; if they are valid they are NOT returned.
@@ -75,6 +91,21 @@ namespace GUI
             return names;
         }
 
+        std::vector<::L_System::DataStructures::Variable> VariablesWidget::getVariablesTokens() const
+        {
+            std::vector<::L_System::DataStructures::Variable> variablesTokens;
+
+            for(auto &i : variableNames)
+            {
+                if(i.nameValid)
+                {
+                    variablesTokens.push_back(i.entry->getVariableToken());
+                }
+            }
+
+            return variablesTokens;
+        }
+
         void VariablesWidget::handleDeleteButtonPushed()
         {
             // For all of the selected entries, remove them visually, then remove them from the program.
@@ -82,7 +113,7 @@ namespace GUI
             {
                 layout->removeWidget(i);
 
-                // Call delete BEFORE erasing he variable from the variables vector.
+                // Call delete BEFORE erasing the variable from the variables vector (at which point the pointer to object is lost)
                 delete i;
 
                 auto variableLocation = std::find(variables.begin(), variables.end(), i);
@@ -98,6 +129,9 @@ namespace GUI
             }
 
             selectedVariables.clear();
+
+            // Automatically update the list of variables available for use in a rule.
+            emit entryNamesChanged(getEntryNames());
         }
 
         void VariablesWidget::handleVariableEntrySelected(VariableEntry *variableEntry, int newState)
@@ -114,6 +148,8 @@ namespace GUI
             }
         }
 
+        // Beginning of private slots
+
         void VariablesWidget::handleNewVariableName(VariableEntry *entry, const QString &newName)
         {
             auto entryLocation = std::find_if(variableNames.begin(), variableNames.end(), [entry](const EntryNames &entryNames)
@@ -126,7 +162,12 @@ namespace GUI
             entry->nameValid(nameValid);
             entryLocation->name = newName;
             entryLocation->nameValid = nameValid;
+
+            // Automatically update the list of variables available for use in a rule.
+            emit entryNamesChanged(getEntryNames());
         }
+
+        // Beginning of private functions
 
         bool VariablesWidget::newVariableNameUnique(const QString &newName) const
         {

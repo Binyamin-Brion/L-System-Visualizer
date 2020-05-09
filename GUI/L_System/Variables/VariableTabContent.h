@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_VARIABLETABCONTENT_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Variable/Variable.h"
 
 namespace ModelLoading
 {
@@ -34,6 +35,11 @@ namespace GUI
             signals:
 
                 /**
+                 * Emitted when an entry name changes, and the list of variables that can be used in a rule has to be updated.
+                 */
+                void entryNamesChanged(std::vector<QString>);
+
+                /**
                  * Emitted when a model selected by the user from the file disk was successfully loaded.
                  *
                  * @param model the model object that was loaded
@@ -50,6 +56,13 @@ namespace GUI
                 explicit VariableTabContent(QWidget *parent = nullptr);
 
                 /**
+                 * Get the Variable data structure equivalent of the variable chosen to be the axiom for the script.
+                 *
+                 * @return Variable data structure equivalent for the axiom
+                 */
+                ::L_System::DataStructures::Variable getAxiom() const;
+
+                /**
                  * Get the valid variable names. This forwards the result of calling the appropriate function in
                  * VariableWidget object.
                  *
@@ -57,7 +70,21 @@ namespace GUI
                  */
                 std::vector<QString> getVariableNames() const;
 
+                /**
+                 * Get the list of equivalent Variable data structures for the script execution for all of the variable entries.
+                 *
+                 * @return list of equivalent Variable data structures
+                 */
+                std::vector<::L_System::DataStructures::Variable> getVariablesTokens() const;
+
             private slots:
+
+                /**
+                 * Updates the list of variables that can be chosen an axiom.
+                 *
+                 * @param optionList list of variable names that can be used as an axiom
+                 */
+                void refreshAxiomList(std::vector<QString> optionList);
 
                 /**
                  * Prompts the user to select a file that contains a model to load, and attempts to load it.
@@ -65,7 +92,10 @@ namespace GUI
                 void loadNewModel();
 
             private:
+                void setupConnections();
+
                 Ui::VariableTabContent *ui = nullptr;
+                QString invaliAxiomString = "No variables declared.";
         };
     }
 }

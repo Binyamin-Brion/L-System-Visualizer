@@ -44,6 +44,30 @@ namespace GUI
             setUpConnections();
         }
 
+        ::L_System::DataStructures::Constant ConstantEntryDeclaration::getConstantToken() const
+        {
+            // A constant is either a Rotation or Translation, and depending on which one the constant is specified to be,
+            // an appropriate type of constant is returned.
+            if(ui->rotationRadioButton->isChecked())
+            {
+                return ::L_System::DataStructures::Constant
+                            {
+                                ui->nameLineEdit->text(),
+                                ui->entryInformation->getStackOperation(),
+                                ui->entryInformation->getRotation()
+                            };
+            }
+            else
+            {
+                return ::L_System::DataStructures::Constant
+                        {
+                            ui->nameLineEdit->text(),
+                            ui->entryInformation->getStackOperation(),
+                            ui->entryInformation->getTranslation()
+                        };
+            }
+        }
+
         void ConstantEntryDeclaration::nameValid(bool valid)
         {
             if(valid)
@@ -57,6 +81,8 @@ namespace GUI
             }
         }
 
+        // Beginning of private slots
+
         void ConstantEntryDeclaration::handleEntryVisibility(int state)
         {
             // If the checkbox is checked, show the associated information, otherwise hide it.
@@ -69,6 +95,8 @@ namespace GUI
                 ui->entryInformation->hide();
             }
         }
+
+        // Beginning of private functions
 
         void ConstantEntryDeclaration::setUpConnections()
         {

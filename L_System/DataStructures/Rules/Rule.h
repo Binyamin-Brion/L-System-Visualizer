@@ -6,7 +6,7 @@
 #define VOXEL_L_SYSTEM_RULE_H
 
 #include <vector>
-#include "../Variable.h"
+#include "L_System/DataStructures/Variable/Variable.h"
 #include "../../Execution/Token.h"
 
 namespace L_System

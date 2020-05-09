@@ -6,7 +6,7 @@
 #define VOXEL_L_SYSTEM_TOKEN_H
 
 #include "L_System/DataStructures/Constants/Constant.h"
-#include "L_System/DataStructures/Variable.h"
+#include "L_System/DataStructures/Variable/Variable.h"
 
 namespace L_System
 {

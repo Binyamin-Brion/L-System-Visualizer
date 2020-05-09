@@ -4,24 +4,29 @@
 
 #include <L_System/DataStructures/Rules/Rule.h>
 #include "Executor.h"
+#include "../ScriptInput.h"
 
 namespace L_System
 {
     namespace Execution
     {
-        Token Executor::startingVariable{DataStructures::Variable{}};
         std::vector<DataStructures::Rule> Executor::executionRules;
         std::vector<std::vector<Token>> Executor::recursionResult;
+        std::vector<NoMatchError> Executor::noMatchErrors;
 
         void Executor::execute(unsigned int recursionDepth)
         {
-            recursionResult.clear();
+            clearPreviousResult();
 
-            recursionResult.push_back({startingVariable});
+            executionRules = ScriptInput::getRules();
+
+            recursionResult.push_back({Token{ScriptInput::getAxiom()}});
 
             for(unsigned int i = 0; i < recursionDepth; ++i)
             {
                 std::vector<Token> currentRecursiveResult;
+
+                bool foundMatch = false;
 
                 for(const auto &token : recursionResult[i])
                 {
@@ -33,23 +38,33 @@ namespace L_System
                         {
                             currentRecursiveResult.insert(currentRecursiveResult.end(), rule.getSuccessorTokens().begin(), rule.getSuccessorTokens().end());
 
-                            goto nextLoop;
+                            foundMatch = true;
+
+                            break;
                         }
                         else if(token.isConstant())
                         {
                             currentRecursiveResult.push_back(token);
 
-                            goto nextLoop;
+                            foundMatch = true;
+
+                            break;
                         }
                     }
 
-                    assert(false);
-
-                    nextLoop:;
-                  }
+                    if(!foundMatch)
+                    {
+                        noMatchErrors.push_back(NoMatchError{token, i});
+                    }
+                }
 
                 recursionResult.push_back(currentRecursiveResult);
             }
+        }
+
+        const std::vector<NoMatchError> &Executor::getNoMatchErrors()
+        {
+            return noMatchErrors;
         }
 
         const std::vector<std::vector<Token>>& Executor::getRecursionResult()
@@ -57,16 +72,16 @@ namespace L_System
             return recursionResult;
         }
 
-        void Executor::setAxiom(const DataStructures::Variable &axiom)
-        {
-            startingVariable = Token{axiom};
+        // Beginning of private functions
 
-            recursionResult.push_back({Token{axiom}});
-        }
-
-        void Executor::setRules(const std::vector<DataStructures::Rule> &rules)
+        void Executor::clearPreviousResult()
         {
-            executionRules = rules;
+            executionRules.clear();
+
+            noMatchErrors.clear();
+
+            recursionResult.clear();
+
         }
     }
 }

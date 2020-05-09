@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_RULEWIDGET_H
 
 #include <QtWidgets/QWidget>
+#include "RuleInformation.h"
 
 class QVBoxLayout;
 
@@ -33,12 +34,25 @@ namespace GUI
                 explicit RuleWidget(QWidget *parent = nullptr);
 
                 /**
+                 * Get the information required to create Rule data structure for script execution for all of the rule entries.
+                 *
+                 * @return list of information required to create Rule data structures
+                 */
+                std::vector<RuleInformation> getRuleInformations() const;
+
+                /**
                  * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
                  *
-                 * @param variableNames list of valid variable names
                  * @param constantNames list of valid constants
                  */
-                void updateAvailableRuleEntries(const std::vector<QString> &variableNames, const std::vector<QString> &constantNames);
+                void updateAvailableConstants(std::vector<QString> constantNames);
+
+                /**
+                 * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
+                 *
+                 * @param constantNames list of valid constants
+                 */
+                void updateAvailableVariables(std::vector<QString> variableNames);
 
             public slots:
 

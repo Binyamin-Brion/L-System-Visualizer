@@ -19,16 +19,45 @@ namespace GUI
         {
             ui->setupUi(this);
 
-            connect(ui->loadModelButton, SIGNAL(clicked()), this, SLOT(loadNewModel()));
+            // By default there are no variables that can be chosen as an axiom.
+            ui->axiomComboBox->addItem(invaliAxiomString);
 
-            connect(ui->addVariableButton, SIGNAL(clicked()), ui->declaredVariables, SLOT(addVariableEntry()));
+           setupConnections();
+        }
 
-            connect(ui->deleteVariableButtons, SIGNAL(clicked()), ui->declaredVariables, SLOT(handleDeleteButtonPushed()));
+        ::L_System::DataStructures::Variable VariableTabContent::getAxiom() const
+        {
+            return ::L_System::DataStructures::Variable{ui->axiomComboBox->currentText(), ui->declaredVariables->getAssociatedModelName(ui->axiomComboBox->currentText())};
         }
 
         std::vector<QString> VariableTabContent::getVariableNames() const
         {
             return ui->declaredVariables->getEntryNames();
+        }
+
+        std::vector<::L_System::DataStructures::Variable> VariableTabContent::getVariablesTokens() const
+        {
+            return ui->declaredVariables->getVariablesTokens();
+        }
+
+        // Beginning of private slots
+
+        void VariableTabContent::refreshAxiomList(std::vector<QString> optionList)
+        {
+            // To prevent the previous set of variable names from being shown, all of the previous set is removed.
+            ui->axiomComboBox->clear();
+
+            // Add all of the updated valid variable names to the combo box.
+            for(const auto &i : optionList)
+            {
+                ui->axiomComboBox->addItem(i);
+            }
+
+            // No valid variable names to choose as an axiom.
+            if(optionList.empty())
+            {
+                ui->axiomComboBox->addItem(invaliAxiomString);
+            }
         }
 
         void VariableTabContent::loadNewModel()
@@ -69,6 +98,21 @@ namespace GUI
                QMessageBox::critical(this, "Load Model", "Unable to load the requested model.\n\n" +
                                                          QString{e.what()}, QMessageBox::Ok);
            }
+        }
+
+        // Beginning of private functions
+
+        void VariableTabContent::setupConnections()
+        {
+            connect(ui->loadModelButton, SIGNAL(clicked()), this, SLOT(loadNewModel()));
+
+            connect(ui->addVariableButton, SIGNAL(clicked()), ui->declaredVariables, SLOT(addVariableEntry()));
+
+            connect(ui->deleteVariableButtons, SIGNAL(clicked()), ui->declaredVariables, SLOT(handleDeleteButtonPushed()));
+
+            connect(ui->declaredVariables, SIGNAL(entryNamesChanged(std::vector<QString>)), this, SLOT(refreshAxiomList(std::vector<QString>)));
+
+            connect(ui->declaredVariables, &VariablesWidget::entryNamesChanged, [this](std::vector<QString> variableNames) { emit entryNamesChanged(variableNames); });
         }
     }
 }

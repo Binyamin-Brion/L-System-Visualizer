@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_RULETABCONTENT_H
 
 #include <QtWidgets/QWidget>
+#include "RuleInformation.h"
 
 namespace Ui
 {
@@ -26,13 +27,6 @@ namespace GUI
         {
                 Q_OBJECT
 
-            signals:
-
-                /**
-                 *  Emitted when the the button an updated list of variable names need to be shown in this widget.
-                 */
-                void refreshButtonClicked();
-
             public:
 
                 /**
@@ -43,12 +37,27 @@ namespace GUI
                 explicit RuleTabContent(QWidget *parent = nullptr);
 
                 /**
+                 * Get the list of information required to create a Rule data structure for all of the rule entries.
+                 *
+                 * @return list of RuleInformations for all Rule entries
+                 */
+                std::vector<RuleInformation> getRuleInformations() const;
+
+            public slots:
+
+                /**
                  * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
                  *
-                 * @param variableNames list of valid variable names
                  * @param constantNames list of valid constants
                  */
-                void updateAvailableRuleEntries(const std::vector<QString> &variableNames, const std::vector<QString> &constantNames);
+                void updateAvailableConstantEntries(std::vector<QString> constantNames);
+
+                /**
+                 * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
+                 *
+                 * @param constantNames list of valid constants
+                 */
+                void updateAvailableVariableEntries(std::vector<QString> variableNames);
 
             private:
 

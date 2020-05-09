@@ -3,7 +3,12 @@
 //
 
 #include "MainWindow.h"
+#include "ui_mainwindow.h"
 #include <QKeyEvent>
+#include <QtWidgets/QMessageBox>
+#include "../L_System/ScriptInput.h"
+#include "../L_System/Execution/Executor.h"
+#include "../L_System/Interpretation/Interpreter.h"
 
 namespace GUI
 {
@@ -28,7 +33,7 @@ namespace GUI
 //
 //        ui->splitter_6->setStretchFactor(ui->splitter_6->sizes().size() - 1, 1);
 
-        createConnections();
+        setupConnections();
     }
 
     void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -41,8 +46,34 @@ namespace GUI
         }
     }
 
-    void MainWindow::createConnections()
+    // Beginning of private slots
+
+    void MainWindow::runScript()
+    {
+        ui->tabWidget->setScriptInput();
+
+        // There must be rules to run the script. This implicitly also checks that there are valid variables and (maybe) constants
+        // defined as these must exist in order for a rule to be created. *Constants are not required to create a rule.
+        if(::L_System::ScriptInput::getRules().empty())
+        {
+            QMessageBox::critical(this, "Error running script", "No rules were specified. The script will not be executed.", QMessageBox::Ok);
+
+            return;
+        }
+
+        ::L_System::Execution::Executor::execute(ui->runDepthSpinBox->value());
+
+        ::L_System::Interpretation::Interpreter::interpret();
+
+        ui->scrollAreaWidgetContents->showScriptOutput();
+    }
+
+    // Beginning of private functions
+
+    void MainWindow::setupConnections()
     {
         connect(ui->tabWidget, SIGNAL(modelLoaded(const ::ModelLoading::Model&)), ui->openGLWidget, SLOT(uploadModelGPU(const ::ModelLoading::Model&)));
+
+        connect(ui->runScriptButton, SIGNAL(clicked()), this, SLOT(runScript()));
     }
 }

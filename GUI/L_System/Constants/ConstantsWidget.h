@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_CONSTANTSWIDGET_H
 
 #include <QWidget>
+#include "../../../L_System/DataStructures/Constants/Constant.h"
 
 class QVBoxLayout;
 
@@ -23,6 +24,13 @@ namespace GUI
         {
                 Q_OBJECT
 
+            signals:
+
+                /**
+                 * Emitted when an entry name changes, and the list of constants that can be used in a rule has to be updated.
+                 */
+                void entryNamesChanged(std::vector<QString>);
+
             public:
 
                 /**
@@ -38,6 +46,13 @@ namespace GUI
                  * @return list of all valid entry names.
                  */
                 std::vector<QString> getConstantNames() const;
+
+                /**
+                 * Get the list of Constant equivalent tokens of all of the constant entries.
+                 *
+                 * @return list of equivalent Constant tokens
+                 */
+                std::vector<::L_System::DataStructures::Constant> getConstantsTokens() const;
 
             public slots:
 

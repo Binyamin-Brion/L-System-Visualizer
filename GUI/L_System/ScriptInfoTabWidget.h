@@ -16,7 +16,6 @@ namespace GUI
 {
     namespace L_System
     {
-        class AxiomTabContent;
         class ConstantTabContent;
         class RuleTabContent;
         class VariableTabContent;
@@ -48,6 +47,12 @@ namespace GUI
                  */
                 explicit ScriptInfoTabWidget(QWidget *parent = nullptr);
 
+                /**
+                 * Uploads the information stored in the various tabs that hold parameters for the script into the
+                 * static ScriptInput data structure.
+                 */
+                void setScriptInput() const;
+
             private:
 
                 /**
@@ -55,7 +60,6 @@ namespace GUI
                  */
                 void setupConnections();
 
-                AxiomTabContent *axiomTabContent = nullptr;
                 ConstantTabContent *constantTabContent = nullptr;
                 RuleTabContent *ruleTabContent = nullptr;
                 VariableTabContent *variableTabContent = nullptr;

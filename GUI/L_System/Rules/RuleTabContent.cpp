@@ -19,18 +19,30 @@ namespace GUI
             setupConnections();
         }
 
-        void RuleTabContent::updateAvailableRuleEntries(const std::vector<QString> &variableNames, const std::vector<QString> &constantNames)
+        std::vector<RuleInformation> RuleTabContent::getRuleInformations() const
         {
-            ui->scrollAreaWidgetContents->updateAvailableRuleEntries(variableNames, constantNames);
+           return ui->scrollAreaWidgetContents->getRuleInformations();
         }
+
+        // Beginning of public slots
+
+        void RuleTabContent::updateAvailableConstantEntries(std::vector<QString> constantNames)
+        {
+            ui->scrollAreaWidgetContents->updateAvailableConstants(constantNames);
+        }
+
+        void RuleTabContent::updateAvailableVariableEntries(std::vector<QString> variableNames)
+        {
+            ui->scrollAreaWidgetContents->updateAvailableVariables(variableNames);
+        }
+
+        // Beginning of private functions
 
         void RuleTabContent::setupConnections()
         {
             connect(ui->addRuleButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(addRuleEntry()));
 
             connect(ui->deleteRuleButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(handleDeleteButtonPushed()));
-
-            connect(ui->refreshButton, &QPushButton::clicked, [this]() { emit refreshButtonClicked(); });
         }
     }
 }

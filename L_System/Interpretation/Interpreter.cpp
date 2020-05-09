@@ -4,33 +4,42 @@
 
 #include <ext.hpp>
 #include "Interpreter.h"
+#include "../Execution/Executor.h"
 
 namespace L_System
 {
     namespace Interpretation
     {
-        const std::vector<std::vector<ModelInstancePlacement>> &Interpreter::getResult() const
+        std::vector<std::vector<ModelInstancePlacement>> Interpreter::modelInstances;
+        std::vector<Execution::Token> Interpreter::tokenStack;
+
+        glm::mat4 Interpreter::transformationMatrix;
+
+        std::vector<unsigned int> Interpreter::unbalancedErrors;
+        std::vector<unsigned int> Interpreter::underflowErrors;
+
+        const std::vector<std::vector<ModelInstancePlacement>> &Interpreter::getResult()
         {
             return modelInstances;
         }
 
-        const std::vector<unsigned int> &Interpreter::getUnBalancedErrors() const
+        const std::vector<unsigned int> &Interpreter::getUnBalancedErrors()
         {
             return unbalancedErrors;
         }
 
-        const std::vector<unsigned int> &Interpreter::getUnderFlowErrors() const
+        const std::vector<unsigned int> &Interpreter::getUnderFlowErrors()
         {
             return underflowErrors;
         }
 
-        void Interpreter::interpret(const std::vector<std::vector<Execution::Token>> &resultTokens)
+        void Interpreter::interpret()
         {
             clearPreviousResult();
 
             unsigned int currentDepthLevel = 0;
 
-            for(const auto &depthResult : resultTokens)
+            for(const auto &depthResult : Execution::Executor::getRecursionResult())
             {
                 // Add a list of instance matrices for this current depth level
                 modelInstances.emplace_back();
@@ -51,7 +60,7 @@ namespace L_System
                     {
                         // Add the associated model with the most transformation matrix, which represents all of the transformations
                         // preceding th variable.
-                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getAssociatedModelName(), transformationMatrix});
+                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getVariableName(), token.getVariable().getAssociatedModelName(), transformationMatrix});
                     }
                     else
                     {

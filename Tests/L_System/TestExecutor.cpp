@@ -6,9 +6,11 @@
 #include <QtTest/qtestcase.h>
 #include "TestExecutor.h"
 #include "../../L_System/Execution/Executor.h"
+#include "../../../L_System/ScriptInput.h"
 
 static Tests::L_System::TestExecutor testExecutor{"Test_L-System_Executor"};
 
+using namespace L_System;
 using namespace L_System::DataStructures;
 using namespace L_System::Execution;
 
@@ -36,9 +38,10 @@ namespace Tests
 
             Rule secondRule{variableB, {Token{variableA}}};
 
+            ScriptInput::setAxiom(variableA);
+            ScriptInput::setRules({firstRule, secondRule});
+
             // Executor the script.
-            Executor::setAxiom(variableA);
-            Executor::setRules({firstRule, secondRule});
 
             Executor::execute(7);
 
@@ -75,10 +78,10 @@ namespace Tests
 
             Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
 
-            // Execute script.
-            Executor::setRules(std::vector<Rule>{rule, secondRule});
-            Executor::setAxiom(Variable{"0", ""});
+            ScriptInput::setAxiom(firstVariable);
+            ScriptInput::setRules({rule, secondRule});
 
+            // Execute script.
             Executor::execute(3);
 
             // Test result.
@@ -114,9 +117,8 @@ namespace Tests
                                   Token{plusConstant},
                                   Token{variable}}};
 
-            // Execute script.
-            Executor::setAxiom(variable);
-            Executor::setRules({rule});
+            ScriptInput::setAxiom(variable);
+            ScriptInput::setRules({rule});
 
             Executor::execute(3);
 

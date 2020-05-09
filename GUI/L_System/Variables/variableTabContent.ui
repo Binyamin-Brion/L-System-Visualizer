@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>834</width>
+    <height>295</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>380</width>
-        <height>248</height>
+        <width>814</width>
+        <height>243</height>
        </rect>
       </property>
      </widget>
@@ -33,6 +33,16 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="axiomLabel">
+       <property name="text">
+        <string>Axiom:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="axiomComboBox"/>
+     </item>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">

@@ -8,9 +8,11 @@
 #include "../../L_System/DataStructures/Rules/Rule.h"
 #include "../../L_System/Execution/Executor.h"
 #include "../../L_System/Interpretation/Interpreter.h"
+#include "../../L_System/ScriptInput.h"
 
 static Tests::L_System::TestInterpreter testInterpreter{"Test_L-System-Interpreter"};
 
+using namespace L_System;
 using namespace L_System::DataStructures;
 using namespace L_System::Execution;
 using namespace L_System::Interpretation;
@@ -42,17 +44,16 @@ namespace Tests
 
             Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
 
-            // Execute script.
-            Executor::setRules(std::vector<Rule>{rule, secondRule});
-            Executor::setAxiom(Variable{"0", "0"});
+
+            ScriptInput::setAxiom(firstVariable);
+            ScriptInput::setRules({rule, secondRule});
 
             // Due to readability concerns, only the next two depth is tested.
             Executor::execute(2);
 
-            Interpreter interpreter;
-            interpreter.interpret(Executor::getRecursionResult());
+            Interpreter::interpret();
 
-            testResult(interpreter, createExpectedFractalResult(), __PRETTY_FUNCTION__);
+            testResult(createExpectedFractalResult(), __PRETTY_FUNCTION__);
         }
 
         void TestInterpreter::testKochCurve()
@@ -76,17 +77,15 @@ namespace Tests
                                   Token{plusConstant},
                                   Token{variable}}};
 
-            // Execute script.
-            Executor::setAxiom(variable);
-            Executor::setRules({rule});
+            ScriptInput::setAxiom(variable);
+            ScriptInput::setRules({rule});
 
             // Due to readability concerns, only the next depth is tested.
             Executor::execute(1);
 
-            Interpreter interpreter;
-            interpreter.interpret(Executor::getRecursionResult());
+            Interpreter::interpret();
 
-            testResult(interpreter, createExpectedKochCurveResult(), __PRETTY_FUNCTION__);
+            testResult(createExpectedKochCurveResult(), __PRETTY_FUNCTION__);
         }
 
         std::vector<std::vector<ModelInstancePlacement>> TestInterpreter::createExpectedFractalResult()
@@ -99,47 +98,47 @@ namespace Tests
 
             // First depth - 0
             glm::mat4x4 matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             // Second depth - 1[0]0
             expectedTransformations.emplace_back();
 
             matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             matrix = glm::mat4x4{1.f};
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             // Third depth - 11[1[0]0]1[0]0
             expectedTransformations.emplace_back();
 
             matrix = glm::mat4x4{1.0};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", matrix});
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4{1.0};
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
             // Since all of the ']' were matched by a '[', no transformations have to be done.
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             return expectedTransformations;
         }
@@ -159,24 +158,24 @@ namespace Tests
             expectedTransformations.emplace_back();
 
             glm::mat4x4 matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // Second depth - F+F-F-F+F
             expectedTransformations.emplace_back();
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             transformKochCurveConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             transformKochCurveSecondConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // Note: due to how the interpreter works, the matrix needs to be reset to avoid compounding
             // imprecision in floating values. The effective sequence of transformations given to the model is the same however.
 
             matrix = glm::mat4x4{1.0f};
             transformKochCurveSecondConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // For example, stack is empty here in the interpreter. Thus this transformation will start from a "clean"
             // identity matrix, instead of a slightly off identity matrix by going from '+' -> '-' -> '-'
@@ -185,27 +184,27 @@ namespace Tests
             //                                                                              stack is still empty here.
             matrix = glm::mat4x4{1.0f};
             transformKochCurveConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             return expectedTransformations;
         }
 
-        void TestInterpreter::testResult(const Interpreter &interpreter, const std::vector<std::vector<ModelInstancePlacement>> &expectedResult, const QString &callingFunction)
+        void TestInterpreter::testResult(const std::vector<std::vector<ModelInstancePlacement>> &expectedResult, const QString &callingFunction)
         {
             // Check the interpreter interpreted the script to the correct depth.
-            QString expectedSizeErrorMessage = "Expected a recursion depth level of: " + QString::number(expectedResult.size()) + " , but got: " + QString::number(interpreter.getResult().size()) +
+            QString expectedSizeErrorMessage = "Expected a recursion depth level of: " + QString::number(expectedResult.size()) + " , but got: " + QString::number(Interpreter::getResult().size()) +
                                                ". Calling function: " + callingFunction;
 
-            QVERIFY2(interpreter.getResult().size() == expectedResult.size(), qPrintable(expectedSizeErrorMessage));
+            QVERIFY2(Interpreter::getResult().size() == expectedResult.size(), qPrintable(expectedSizeErrorMessage));
 
             // Check that the interpreter correctly interpreted the script at each depth level.
             for(unsigned int i = 0; i < expectedResult.size(); ++i)
             {
                 // Check for the correct number of transformation matrices.
                 QString elementsSizeErrorMessage = "At recursion depth: " + QString::number(i) + " expected: " + QString::number(expectedResult[i].size()) + " number of elements" +
-                        " , but got: " + QString::number(interpreter.getResult()[i].size()) + " . Calling function: " + callingFunction;
+                        " , but got: " + QString::number(Interpreter::getResult()[i].size()) + " . Calling function: " + callingFunction;
 
-                QVERIFY2(expectedResult[i].size() == interpreter.getResult()[i].size(), qPrintable(elementsSizeErrorMessage));
+                QVERIFY2(expectedResult[i].size() == Interpreter::getResult()[i].size(), qPrintable(elementsSizeErrorMessage));
 
                 // Check the actual value of the transformation matrices.
                 for(unsigned int j = 0; j < expectedResult[i].size(); ++j)
@@ -213,10 +212,10 @@ namespace Tests
                     QString errorMessage = "At recursion depth: " + QString::number(i) + ", element " + QString::number(j) +
                                            ", the expected transformation matrix did not match. Calling function: " + callingFunction;
 
-                    QVERIFY2(expectedResult[i][j].modelName == interpreter.getResult()[i][j].modelName, qPrintable(errorMessage));
+                    QVERIFY2(expectedResult[i][j].modelName == Interpreter::getResult()[i][j].modelName, qPrintable(errorMessage));
 
                     // Print a visual output of the offending matrices for easier debugging.
-                    if(!(expectedResult[i][j].transformation == interpreter.getResult()[i][j].transformation))
+                    if(!(expectedResult[i][j].transformation == Interpreter::getResult()[i][j].transformation))
                     {
                         printf("%s \n\n", expectedResult[i][j].modelName.toStdString().c_str());
 
@@ -224,10 +223,10 @@ namespace Tests
 
                         printf("\n\n");
 
-                        printMatrix(interpreter.getResult()[i][j].transformation);
+                        printMatrix(Interpreter::getResult()[i][j].transformation);
                     }
 
-                    QVERIFY2(expectedResult[i][j].transformation == interpreter.getResult()[i][j].transformation, qPrintable(errorMessage));
+                    QVERIFY2(expectedResult[i][j].transformation == Interpreter::getResult()[i][j].transformation, qPrintable(errorMessage));
                 }
             }
         }

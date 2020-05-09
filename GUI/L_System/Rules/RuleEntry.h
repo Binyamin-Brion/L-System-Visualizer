@@ -7,6 +7,7 @@
 
 #include <QtWidgets/QWidget>
 #include <stack>
+#include "RuleInformation.h"
 
 namespace Ui
 {
@@ -44,6 +45,13 @@ namespace GUI
                 explicit RuleEntry(QWidget *parent = nullptr);
 
                 /**
+                 * Get the information about this rule to construct an equivalent Rule data structure for the script execution.
+                 *
+                 * @return information to construct a Rule data structure
+                 */
+                RuleInformation getRuleInformation() const;
+
+                /**
                  * Adds the variable and constant names to the combox box that allow the user to specify the production
                  * for the rule. Only the variables are added to the combox that allow the user to select the starting
                  * production for the rule.
@@ -51,7 +59,7 @@ namespace GUI
                  * @param variableNames list of valid variable names
                  * @param constantNames list of valid constants
                  */
-                void updateAvailableRuleEntries(const std::vector<QString> &variableNames, const std::vector<QString> &constantNames);
+                 void updateAvailableRuleEntries(std::vector<QString> constantNames, std::vector<QString> variableNames);
 
             private slots:
 
@@ -86,7 +94,10 @@ namespace GUI
                 const QString defaultRule = "Click to add production";
 
                 Ui::RuleEntry *ui = nullptr;
-                std::stack<int> addedProductions;
+                std::stack<int> addedProductions; // The size of each production added. For convenience only.
+                std::vector<QString> addedProductionsText; // The actual text of the productions added.
+
+                bool ignoreChosenProductions = false;
         };
     }
 }

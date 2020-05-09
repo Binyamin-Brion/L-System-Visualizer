@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_VARIABLESWIDGET_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Variable/Variable.h"
 
 class QVBoxLayout;
 
@@ -19,10 +20,16 @@ namespace GUI
          *  Holds all of the variable entries held in the Variables Tab.
          */
 
-
         class VariablesWidget : public QWidget
         {
                 Q_OBJECT
+
+            signals:
+
+                /**
+                 * Emitted when an entry name changes, and the list of variables that can be used in a rule has to be updated.
+                 */
+                void entryNamesChanged(std::vector<QString>);
 
             public:
 
@@ -42,11 +49,26 @@ namespace GUI
                 void addModelEntry(const QString &modelName);
 
                 /**
+                 * Gets the associated model name for the variable with the passed in name.
+                 *
+                 * @param variableName that contains the required associatedModelName
+                 * @return the associatedModelName for the referred to variable
+                 */
+                QString getAssociatedModelName(const QString &variableName) const;
+
+                /**
                  * Get the names of all of the entries that are valid.
                  *
                  * @return list of all valid entry names.
                  */
                 std::vector<QString> getEntryNames() const;
+
+                /**
+                 * Get the list of equivalent Variable data structures for the script execution for all of the variable entries.
+                 *
+                 * @return list of equivalent Variable data structures
+                 */
+                std::vector<::L_System::DataStructures::Variable> getVariablesTokens() const;
 
             public slots:
 
@@ -54,7 +76,6 @@ namespace GUI
                  *  Called when the button to add a variable entry is clicked.
                  */
                 void addVariableEntry();
-
 
                 /**
                  * Called when the button to delete all of the selected variable entries is clicked.

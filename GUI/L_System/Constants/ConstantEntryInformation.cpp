@@ -17,13 +17,13 @@ namespace GUI
             ui->setupUi(this);
 
             // These are the three operations allows on the stack for the transformations.
-            ui->rotationStackComboBox->addItem("Push");
-            ui->rotationStackComboBox->addItem("Pop");
+            ui->rotationStackComboBox->addItem(pushActionString);
+            ui->rotationStackComboBox->addItem(popActionString);
 
-            ui->translationStackComboBox->addItem("Push");
-            ui->translationStackComboBox->addItem("Pop");
+            ui->translationStackComboBox->addItem(pushActionString);
+            ui->translationStackComboBox->addItem(popActionString);
 
-            // By default, no rotation transformations are done.
+            // By default, a constant is assumed to be a translation, as they are easier to reason about.
             disableRotation();
         }
 
@@ -46,8 +46,6 @@ namespace GUI
 
         void ConstantEntryInformation::enableRotation()
         {
-            ui->rotationStackComboBox->setCurrentIndex(firstActionIndex);
-
             ui->rotationStackComboBox->setEnabled(true);
             ui->angleLineEdit->setEnabled(true);
             ui->rotationLineEditX->setEnabled(true);
@@ -57,12 +55,70 @@ namespace GUI
 
         void ConstantEntryInformation::enableTranslation()
         {
-            ui->translationStackComboBox->setCurrentIndex(firstActionIndex);
-
             ui->translationStackComboBox->setEnabled(true);
             ui->translationLineEditX->setEnabled(true);
             ui->translationLineEditY->setEnabled(true);
             ui->translationLineEditZ->setEnabled(true);
+        }
+
+
+        ::L_System::DataStructures::Rotation ConstantEntryInformation::getRotation() const
+        {
+            return ::L_System::DataStructures::Rotation{getRotationAngle(), getRotationAxis()};
+        }
+
+        ::L_System::DataStructures::StackOperation ConstantEntryInformation::getStackOperation() const
+        {
+            // Since the type of constant is stored in the EntryDeclaration (not in this class), a different way of finding
+            // out if this constant information is for a Rotation or a Translation. Since it is known that the stack combo box
+            // of the type this constant is not is NOT enabled, checking whether a stack operation combo box is enabled is
+            // enough to check if this constant information pertains to a Rotation or a Translation.
+            if(ui->rotationStackComboBox->isEnabled())
+            {
+                return determineStackOperation(ui->rotationStackComboBox->currentText());
+            }
+            else
+            {
+                return determineStackOperation(ui->translationStackComboBox->currentText());
+            }
+        }
+
+        ::L_System::DataStructures::Translation ConstantEntryInformation::getTranslation() const
+        {
+            return ::L_System::DataStructures::Translation{getTranslationVector()};
+        }
+
+        // Beginning of private functions
+
+        ::L_System::DataStructures::StackOperation ConstantEntryInformation::determineStackOperation(const QString &operationString) const
+        {
+            if(operationString == pushActionString)
+            {
+                return ::L_System::DataStructures::StackOperation::Push;
+            }
+            else
+            {
+                return ::L_System::DataStructures::StackOperation::Pop;
+            }
+        }
+
+        float ConstantEntryInformation::getRotationAngle() const
+        {
+            return ui->angleLineEdit->text().toFloat();
+        }
+
+        glm::vec3 ConstantEntryInformation::getRotationAxis() const
+        {
+            return glm::vec3{ui->rotationLineEditX->text().toFloat(),
+                             ui->rotationLineEditY->text().toFloat(),
+                             ui->rotationLineEditZ->text().toFloat()};
+        }
+
+        glm::vec3 ConstantEntryInformation::getTranslationVector() const
+        {
+            return glm::vec3{ui->translationLineEditX->text().toFloat(),
+                             ui->translationLineEditY->text().toFloat(),
+                             ui->translationLineEditZ->text().toFloat()};
         }
     }
 }

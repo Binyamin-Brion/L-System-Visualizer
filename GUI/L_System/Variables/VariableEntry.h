@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_VARIABLEENTRY_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Variable/Variable.h"
 
 namespace Ui
 {
@@ -55,6 +56,20 @@ namespace GUI
                  * @param modelName file location of the model that was loaded
                  */
                 void addModelEntry(const QString &modelName);
+
+                /**
+                 * Get the stored associated model name for this variable.
+                 *
+                 * @return associated model name
+                 */
+                QString getAssociatedModelName() const;
+
+                /**
+                 * Get the equivalent Variable data structure for this variable for use in the script execution.
+                 *
+                 * @return equivalent Variable data structure
+                 */
+                ::L_System::DataStructures::Variable getVariableToken() const;
 
                 /**
                  * Update the line edit field where the entry name is given visually to reflect if the given name is

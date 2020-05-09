@@ -36,6 +36,23 @@ namespace GUI
             return names;
         }
 
+        std::vector<::L_System::DataStructures::Constant> ConstantsWidget::getConstantsTokens() const
+        {
+            std::vector<::L_System::DataStructures::Constant> constantsTokens;
+
+            for(const auto &i : constantNames)
+            {
+                if(i.validName)
+                {
+                    constantsTokens.push_back(i.entryDeclaration->getConstantToken());
+                }
+            }
+
+            return constantsTokens;
+        }
+
+        // Beginning of public slots
+
         void ConstantsWidget::addConstantEntry()
         {
             ConstantEntryDeclaration *constantEntry = new ConstantEntryDeclaration{this};
@@ -77,7 +94,12 @@ namespace GUI
             }
 
             selectedConstants.clear();
+
+            // Automatically update the list of constants available for use in a rule.
+            emit entryNamesChanged(getConstantNames());
         }
+
+        // Beginning of private slots
 
         void ConstantsWidget::handleNewConstantName(ConstantEntryDeclaration *entry, const QString &newName)
         {
@@ -94,6 +116,9 @@ namespace GUI
             // Keep track of the new name of the new entry.
             entryLocation->name = newName;
             entryLocation->validName = nameValid;
+
+            // Automatically update the list of constants available for use in a rule.
+            emit entryNamesChanged(getConstantNames());
         }
 
         void ConstantsWidget::handleConstantEntrySelected(ConstantEntryDeclaration *constantEntry, int newState)
@@ -109,6 +134,8 @@ namespace GUI
                 selectedConstants.erase(selectedVariableLocation);
             }
         }
+
+        // Begininng of private functions
 
         bool ConstantsWidget::newConstantNameUnique(const QString &newName)
         {

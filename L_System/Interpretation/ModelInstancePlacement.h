@@ -18,6 +18,7 @@ namespace L_System
 
         struct ModelInstancePlacement
         {
+            QString variableName;
             QString modelName;
             glm::mat4x4 transformation;
         };

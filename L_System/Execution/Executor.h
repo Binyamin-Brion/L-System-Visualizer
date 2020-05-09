@@ -8,9 +8,11 @@
 #include <QString>
 #include <vector>
 
-#include "L_System/DataStructures/Constants/Constant.h"
-#include "../DataStructures/Variable.h"
+#include "..//DataStructures/Constants/Constant.h"
+#include "../DataStructures/Variable/Variable.h"
+#include "../DataStructures/Rules/Rule.h"
 #include "Token.h"
+#include "NoMatchError.h"
 
 namespace L_System
 {
@@ -36,33 +38,31 @@ namespace L_System
                 static void execute(unsigned int recursionDepth);
 
                 /**
+                 * Get the errors that occurred when running the script due to no rule matching the current token.
+                 *
+                 * @return list of all no matching rule errors that occurred during the execution of the script
+                 */
+                static const std::vector<NoMatchError>& getNoMatchErrors();
+
+                /**
                  * Get the result of running the script.
                  *
                  * @return script result
                  */
                 static const std::vector<std::vector<Token>>& getRecursionResult();
 
-                /**
-                 * Set the axiom of the script. This represents level 0 (depth) of the result.
-                 *
-                 * @param axiom script's axiom
-                 */
-                static void setAxiom(const DataStructures::Variable &axiom);
-
-                /**
-                 * Sets the rules of the script. These are used to expand the script's output to the desired depth level.
-                 *
-                 * @param rules vector of Rules to expand the script's output
-                 */
-                static void setRules(const std::vector<DataStructures::Rule> &rules);
-
             private:
 
-                // This is set in setAxiom(), but a copy needs to be stored so that the execute()
-                // function can reset the object to a default state to rerun the script.
-                static Token startingVariable;
+                /**
+                 * Clears the previous result, if any, ensuring that the next execution result contains only the
+                 * result of the current execution.
+                 */
+                static void clearPreviousResult();
+
                 static std::vector<DataStructures::Rule> executionRules;
                 static std::vector<std::vector<Token>> recursionResult;
+
+                static std::vector<NoMatchError> noMatchErrors;
         };
     }
 }

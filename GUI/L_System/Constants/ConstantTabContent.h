@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_CONSTANTTABCONTENT_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Constants/Constant.h"
 
 namespace Ui
 {
@@ -24,6 +25,15 @@ namespace GUI
 
         class ConstantTabContent : public QWidget
         {
+                Q_OBJECT
+
+            signals:
+
+                /**
+                 * Emitted when an entry name changes, and the list of variables that can be used in a rule has to be updated.
+                 */
+                void entryNamesChanged(std::vector<QString>);
+
             public:
 
                 /**
@@ -34,11 +44,11 @@ namespace GUI
                 explicit ConstantTabContent(QWidget *parent = nullptr);
 
                 /**
-                 * Get the names of all of the entries that are valid.
+                 * Get the list of Constant equivalent tokens of all of the constant entries.
                  *
-                 * @return list of all valid entry names.
+                 * @return list of equivalent Constant tokens
                  */
-                std::vector<QString> getConstantNames() const;
+                std::vector<::L_System::DataStructures::Constant> getConstantsTokens() const;
 
             private:
 

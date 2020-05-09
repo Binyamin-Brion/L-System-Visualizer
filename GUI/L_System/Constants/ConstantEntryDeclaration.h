@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_CONSTANTENTRYDECLARATION_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Constants/Constant.h"
 
 namespace Ui
 {
@@ -50,6 +51,13 @@ namespace GUI
                  * @param parent that owns this object
                  */
                 explicit ConstantEntryDeclaration(QWidget *parent = nullptr);
+
+                /**
+                 * Get the equivalent constant token using the information stored in this entry.
+                 *
+                 * @return constant token for use in the execution of the L-Script
+                 */
+                ::L_System::DataStructures::Constant getConstantToken() const;
 
                 /**
                  * Update the line edit field where the entry name is given visually to reflect if the given name is

@@ -48,11 +48,16 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         GUI/L_System/Constants/ConstantTabContent.h GUI/L_System/Constants/ConstantsWidget.cpp GUI/L_System/Constants/ConstantsWidget.h
         GUI/L_System/Constants/ConstantEntryInformation.cpp GUI/L_System/Constants/ConstantEntryInformation.h
         GUI/L_System/Constants/ConstantEntryDeclaration.cpp GUI/L_System/Constants/ConstantEntryDeclaration.h
-        GUI/L_System/Axiom/AxiomTabContent.cpp GUI/L_System/Axiom/AxiomTabContent.h L_System/DataStructures/Variable.h
         L_System/DataStructures/Constants/Constant.h L_System/DataStructures/Constants/StackOperation.h
         L_System/DataStructures/Constants/Rotation.h L_System/DataStructures/Constants/Translation.h GUI/L_System/Rules/RuleTabContent.cpp
         GUI/L_System/Rules/RuleTabContent.h  GUI/L_System/Rules/RuleWidget.cpp GUI/L_System/Rules/RuleWidget.h GUI/L_System/Rules/RuleEntry.cpp
         GUI/L_System/Rules/RuleEntry.h L_System/Execution/Executor.cpp L_System/Execution/Executor.h L_System/Execution/Token.h
-        Tests/TestSuite.h Tests/TestSuite.cpp Tests/L_System/TestExecutor.cpp Tests/L_System/TestExecutor.h L_System/DataStructures/Rules/Rule.h L_System/DataStructures/Variable.cpp L_System/Execution/Token.cpp L_System/DataStructures/Constants/Rotation.cpp L_System/DataStructures/Constants/Translation.cpp L_System/DataStructures/Constants/Constant.cpp L_System/DataStructures/Rules/Rule.cpp L_System/Interpretation/Interpreter.cpp L_System/Interpretation/Interpreter.h L_System/Interpretation/ModelInstancePlacement.h Tests/L_System/TestInterpreter.cpp Tests/L_System/TestInterpreter.h)
+        Tests/TestSuite.h Tests/TestSuite.cpp Tests/L_System/TestExecutor.cpp Tests/L_System/TestExecutor.h L_System/DataStructures/Rules/Rule.h
+        L_System/DataStructures/Variable/Variable.cpp L_System/Execution/Token.cpp L_System/DataStructures/Constants/Rotation.cpp
+        L_System/DataStructures/Constants/Translation.cpp L_System/DataStructures/Constants/Constant.cpp L_System/DataStructures/Rules/Rule.cpp
+        L_System/Interpretation/Interpreter.cpp L_System/Interpretation/Interpreter.h L_System/Interpretation/ModelInstancePlacement.h
+        Tests/L_System/TestInterpreter.cpp Tests/L_System/TestInterpreter.h GUI/L_System/Rules/RuleInformation.h GUI/Output/L_System/ScriptOutputWidget.cpp
+        GUI/Output/L_System/ScriptOutputWidget.h GUI/Output/L_System/ScriptOutputEntry.cpp GUI/Output/L_System/ScriptOutputEntry.h
+        L_System/ScriptInput.cpp L_System/ScriptInput.h L_System/DataStructures/Variable/Variable.h L_System/Execution/NoMatchError.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

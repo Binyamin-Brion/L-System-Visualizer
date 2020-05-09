@@ -79,12 +79,10 @@ namespace Tests
                 /**
                  * Compares the result of the interpreter with the expected result.
                  *
-                 * @param interpreter the interpreter containing the results to compare
                  * @param expectedResult vector of transformations representing the expected result of the interpreter
                  * @param testName name of the test calling this function
                  */
-                void testResult(const ::L_System::Interpretation::Interpreter &interpreter,
-                                const std::vector<std::vector<::L_System::Interpretation::ModelInstancePlacement>> &expectedResult,
+                void testResult(const std::vector<std::vector<::L_System::Interpretation::ModelInstancePlacement>> &expectedResult,
                                 const QString &callingFunction);
 
                 /**

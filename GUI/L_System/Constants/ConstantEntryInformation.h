@@ -6,6 +6,10 @@
 #define VOXEL_L_SYSTEM_CONSTANTENTRYINFORMATION_H
 
 #include <QtWidgets/QWidget>
+#include "../../../L_System/DataStructures/Constants/StackOperation.h"
+#include "../../../L_System/DataStructures/Constants/Rotation.h"
+#include "../../../L_System/DataStructures/Constants/Translation.h"
+#include <vec3.hpp>
 
 namespace Ui
 {
@@ -24,8 +28,6 @@ namespace GUI
 
         class ConstantEntryInformation : public QWidget
         {
-                Q_OBJECT
-
             public:
 
                 /**
@@ -59,12 +61,63 @@ namespace GUI
                  */
                 void enableTranslation();
 
+                /**
+                 * Get the rotation of this constant. Has no meaning unless the constant is specified to be a Rotation.
+                 *
+                 * @return Rotation data structure using the information stored in this class
+                 */
+                ::L_System::DataStructures::Rotation getRotation() const;
+
+                /**
+                 * Get the stack operation of this constant. Depending on whether the constant is a Rotation or a Translation,
+                 * the result of this function will come from the respective combo box.
+                 *
+                 * @return stack operation of this constant
+                 */
+                ::L_System::DataStructures::StackOperation getStackOperation() const;
+
+                /**
+                 * Get the translation of this constant. Has no meaning unless the constant is specified to be a Translation.
+                 *
+                 * @return Translation data structure using the information stored in this class
+                 */
+                ::L_System::DataStructures::Translation getTranslation() const;
+
             private:
+
+                /**
+                 * Determines the stack operation to return based off of the value in a combo box representing stack operation.
+                 *
+                 * @param operationString stored in the stack operation combo box
+                 * @return the equivalent StackOperation data structure
+                 */
+                ::L_System::DataStructures::StackOperation determineStackOperation(const QString &operationString) const;
+
+                /**
+                 * Get the number equivalent angle of the rotation. Only valid if the constant is a Rotation.
+                 *
+                 * @return angle of the rotation as a number
+                 */
+                float getRotationAngle() const;
+
+                /**
+                 * Get the rotation axis of the rotation as a vector. Only valid if the constant is a Rotation.
+                 *
+                 * @return vector form of the rotation axis
+                 */
+                glm::vec3 getRotationAxis() const;
+
+                /**
+                 * Get the translation as a vector. Only valid if the constant is a Translation.
+                 *
+                 * @return vector form of the translation
+                 */
+                glm::vec3 getTranslationVector() const;
 
                 Ui::ConstantEntryInformation *ui = nullptr;
 
-                // Stores the index of the default stack operation after re-enabling a part of the constant,
-                const int firstActionIndex = 0;
+                const QString pushActionString = "Push";
+                const QString popActionString = "Pop";
         };
     }
 }
