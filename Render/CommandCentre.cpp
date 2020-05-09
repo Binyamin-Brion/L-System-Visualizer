@@ -5,17 +5,68 @@
 #include <ModelLoading/Model.h>
 #include <ext/matrix_transform.hpp>
 #include "CommandCentre.h"
+#include "../L_System/Interpretation/Interpreter.h"
+#include <QHash>
 
 namespace Render
 {
     void CommandCentre::addModel(const ::ModelLoading::Model &model)
     {
         modelVao.addModel(model);
+    }
 
-        glm::mat4x4 transform = glm::mat4x4{1.0};
+    void CommandCentre::addModelInstances()
+    {
+        clearPreviousRender();
 
+        /*
+         * The instance matrices stored in the interpreter are stored linearly, meaning they are not grouped according to
+         * the model. They are grouped in the order of the variables that appear left-to-right in the depth result.
+         * However, when uploading a model to vRam, a vector of instance matrices is taken for each model. To prevent
+         * potentially many uploads of different matrices for the same model (to vRam), the matrices are first sorted
+         * according to the model and then uploaded in several calls (one for each depth level) for each model.
+         */
 
-        modelVao.addModelInstances(model.getModelFileName(), 3, {transform});
+        for(const auto &i : ::L_System::Interpretation::Interpreter::getResult())
+        {
+            for(const auto &modelInstance : i)
+            {
+                // Ensure there is an entry for the model file name.
+                auto entryLocation = sortedInstancedMatrices.find(modelInstance.modelName);
+
+                if(!sortedInstancedMatrices.contains(modelInstance.modelName))
+                {
+                    entryLocation = sortedInstancedMatrices.insert(modelInstance.modelName, std::vector<DepthInstances>{});
+                }
+
+                // Ensure there is a vector for the matrices for the given depth level.
+                auto depthInstanceLocation = std::find_if(entryLocation->begin(), entryLocation->end(), [&](const DepthInstances &depthInstances)
+                {
+                    return depthInstances.depth == modelInstance.depthLevel;
+                });
+
+                if(depthInstanceLocation == entryLocation->end())
+                {
+                    depthInstanceLocation = entryLocation->insert(depthInstanceLocation, DepthInstances{modelInstance.depthLevel, std::vector<glm::mat4x4>{}});
+                }
+
+                // Add the associated matrix for the current depth level.
+                depthInstanceLocation->instanceMatrices.push_back(modelInstance.transformation);
+            }
+        }
+
+        // Iterate over the associated model matrices and uploaded them to the GPU memory.
+        QHash<QString, std::vector<DepthInstances>>::const_iterator i = sortedInstancedMatrices.constBegin();
+
+        while (i != sortedInstancedMatrices.constEnd())
+        {
+            for(const auto &depthInstances : i.value())
+            {
+                modelVao.addModelInstances(i.key(), depthInstances.depth, depthInstances.instanceMatrices);
+            }
+
+            ++i;
+        }
     }
 
     void CommandCentre::checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY)
@@ -33,7 +84,7 @@ namespace Render
     }
 
     void CommandCentre::initialize()
-    {printf("initialize model vao \n");
+    {
         float backgroundColourComponents = 0.15f;
 
         backgroundColour = glm::vec3{backgroundColourComponents, backgroundColourComponents, backgroundColourComponents};
@@ -75,6 +126,25 @@ namespace Render
     void CommandCentre::resetIntersectionColours()
     {
         modelVao.resetIntersectionColours();
+    }
+
+    // Beginning of private functions
+
+    void CommandCentre::clearPreviousRender()
+    {
+        QHash<QString, std::vector<DepthInstances>>::const_iterator i = sortedInstancedMatrices.constBegin();
+
+        while (i != sortedInstancedMatrices.constEnd())
+        {
+            for(const auto &depthInstances : i.value())
+            {
+                modelVao.removeModelInstances(i.key(), depthInstances.depth);
+            }
+
+            ++i;
+        }
+
+        sortedInstancedMatrices.clear();
     }
 
     QMatrix4x4 CommandCentre::convertQMatrix(const glm::mat4 &matrix) const

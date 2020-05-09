@@ -14,15 +14,15 @@ namespace Render
             // If a recursion level is specified that is higher than any other previous level, then add the appropriate
             // amount of vectors (each represents a recursion level) until the recursion level passed in can be represented
 
-            if(recursionDepth > recursionDepthModels.size())
+            if((recursionDepth + 1) > recursionDepthModels.size())
             {
-                for(unsigned int i = recursionDepthModels.size(); i < recursionDepth; ++i)
+                for(unsigned int i = recursionDepthModels.size(); i < (recursionDepth + 1); ++i)
                 {
                     recursionDepthModels.emplace_back();
                 }
             }
 
-            recursionDepthModels[recursionDepth - 1].emplace_back(model);
+            recursionDepthModels[recursionDepth].emplace_back(model);
         }
 
         void RecursionTree::removeModel(const RecursionModelRange &model)
@@ -39,16 +39,16 @@ namespace Render
 
         RemoveModelRecursionResult RecursionTree::removeModelRecursiveResult(unsigned int recursionDepth, const QString &modelFileName)
         {
-            assert( (recursionDepth - 1) < recursionDepthModels.size());
+            assert( (recursionDepth) < recursionDepthModels.size());
 
             // Find where the model is in the recursion level. If none is found, then it is assumed a non-fatal error occured and no action is taken.
 
-            auto modelLocation = std::find_if(recursionDepthModels[recursionDepth - 1].begin(), recursionDepthModels[recursionDepth - 1].end(), [&modelFileName](const RecursionModelRange &heldModel)
+            auto modelLocation = std::find_if(recursionDepthModels[recursionDepth].begin(), recursionDepthModels[recursionDepth].end(), [&modelFileName](const RecursionModelRange &heldModel)
             {
                 return heldModel.getModelName() == modelFileName;
             });
 
-            if(modelLocation == recursionDepthModels[recursionDepth - 1].end())
+            if(modelLocation == recursionDepthModels[recursionDepth].end())
             {
                 return {false, 0, 0};
             }
@@ -56,10 +56,10 @@ namespace Render
             // Keep track of the result to return, as this won't be available after the model is removed from the recursion vector.
             std::pair<unsigned int, unsigned int> returnResult{modelLocation->getTransformationInstanceBegin(), modelLocation->getTransformationInstanceCount()};
 
-            recursionDepthModels[recursionDepth - 1].erase(modelLocation);
+            recursionDepthModels[recursionDepth].erase(modelLocation);
 
             // The indexes associated with the remaining models have to be updated to reflect the fact that the instance matrices vector,
-            // which they represnts, has changed due to a model (and its associated instanced matrices being removed).
+            // which they represents, has changed due to a model (and its associated instanced matrices being removed).
             updateIndexes();
 
             return {true, returnResult.first, returnResult.second};

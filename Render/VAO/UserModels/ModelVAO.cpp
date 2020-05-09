@@ -24,7 +24,6 @@ namespace Render
 
             recursionTree.addModelRecursiveResult(recursionDepth, model);
 
-
             // Add the transformation matrices to the required location in the instance matrices vector. This has to be done so that the
             // instance rendering will render only those instances associated with a particular model.
             auto instanceTransformationVector = transformationsVBO.getHeldData();
@@ -158,6 +157,8 @@ namespace Render
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
+              //  printf("%d, %d \n", i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
+
                 glDrawElementsInstancedBaseInstance(GL_TRIANGLES, i.getIndiceCount(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * i.getIndiceBegin()),
                                                     i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
             }

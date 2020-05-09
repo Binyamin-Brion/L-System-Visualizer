@@ -40,6 +40,11 @@ namespace GUI
                 explicit GLWidget(QWidget *parent = nullptr);
 
                 /**
+                 * Forwards the request to the CommandCentre to render the instances of the script interpretation.
+                 */
+                void addModelInstances();
+
+                /**
                  * Handles key press events when this widget is in focus.
                  *
                  * @param event containing information about they key press
@@ -94,6 +99,13 @@ namespace GUI
                 void resizeGL(int width, int height) override;
 
             public slots:
+
+                /**
+                 * Uploads a model into GPU memory, allowing instances of the model to be rendered. Request is forwarded
+                 * to the CommandCentre.
+                 *
+                 * @param model to be uploaded into vRam
+                 */
                 void uploadModelGPU(const ::ModelLoading::Model &model);
 
             private slots:

@@ -27,7 +27,20 @@ namespace Render
     {
         public:
 
+            /**
+             * Uploads a model into GPU memory, allowing instances of the model to be rendered.
+             *
+             * Request is forwarded to the ModelVAO.
+             *
+             * @param model to be uploaded into vRam
+             */
             void addModel(const ::ModelLoading::Model &model);
+
+            /**
+             *  Uploads instances of models that have been uploaded into vRam whose instances are specified in the Interpreter
+             *  into vRam. At this point, those instances will be rendered in the next render loop.
+            */
+            void addModelInstances();
 
             /**
              * Checks for an intersection with the users cursor with an instance of model.
@@ -63,6 +76,8 @@ namespace Render
 
         private:
 
+            void clearPreviousRender();
+
             /**
              * Converts a glm matrix4x4 to the equivalent Qt Matrix4x4.
              *
@@ -86,6 +101,17 @@ namespace Render
             Shader::ShaderManager shaderManager;
 
             glm::vec3 backgroundColour;
+
+            // Stores the matrices for a depth result.
+            struct DepthInstances
+            {
+                unsigned int depth;
+                std::vector<glm::mat4x4> instanceMatrices;
+            };
+
+            // Key: holds the model file name.
+            // Value: holds the associated matrices for each depth result level.
+            QHash<QString, std::vector<DepthInstances>> sortedInstancedMatrices;
     };
 }
 

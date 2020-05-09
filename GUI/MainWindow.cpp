@@ -66,6 +66,8 @@ namespace GUI
         ::L_System::Interpretation::Interpreter::interpret();
 
         ui->scrollAreaWidgetContents->showScriptOutput();
+
+        ui->openGLWidget->addModelInstances();
     }
 
     // Beginning of private functions

@@ -39,6 +39,11 @@ namespace GUI
             setFormat(surfaceFormat);
         }
 
+        void GLWidget::addModelInstances()
+        {
+            commandCentre.addModelInstances();
+        }
+
         void GLWidget::keyPressEvent(QKeyEvent *event)
         {
            switch (event->key())

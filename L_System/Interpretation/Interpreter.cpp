@@ -60,7 +60,7 @@ namespace L_System
                     {
                         // Add the associated model with the most transformation matrix, which represents all of the transformations
                         // preceding th variable.
-                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getVariableName(), token.getVariable().getAssociatedModelName(), transformationMatrix});
+                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getVariableName(), token.getVariable().getAssociatedModelName(), transformationMatrix, currentDepthLevel});
                     }
                     else
                     {
