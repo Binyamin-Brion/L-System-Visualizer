@@ -6,20 +6,26 @@
 #include "ui_mainwindow.h"
 #include <QKeyEvent>
 #include <QtWidgets/QMessageBox>
+#include <QtCore/QDir>
+#include <QtWidgets/QFileDialog>
 #include "../L_System/ScriptInput.h"
 #include "../L_System/Execution/Executor.h"
 #include "../L_System/Interpretation/Interpreter.h"
+#include "Dialogs/SaveResultNameDialog.h"
 
 namespace GUI
 {
     MainWindow::MainWindow(QWidget *parent)
                 :
                     QMainWindow{parent},
-                    ui{new Ui::MainWindow}
+                    ui{new Ui::MainWindow},
+                    saveResultNameDialog{new Dialogs::SaveResultNameDialog{this}}
     {
         setMinimumSize(1280, 720);
 
         ui->setupUi(this);
+
+        ui->discardResultButton->setEnabled(false);
 
 //        ui->spinBox->setMinimum(1);
 //
@@ -48,6 +54,39 @@ namespace GUI
 
     // Beginning of private slots
 
+    void MainWindow::bookmarkCurrentScriptExecutionResult()
+    {
+        if(saveResultNameDialog->exec() == QDialog::Accepted)
+        {
+            ui->savedResultsComboBox->addItem(saveResultNameDialog->getMostRecentName());
+
+            ui->discardResultButton->setEnabled(true);
+        }
+    }
+
+    void MainWindow::handleChangedSaveScript(int index)
+    {
+        currentSaveResultIndex = index;
+    }
+
+    void MainWindow::openProject()
+    {
+        QString modelFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
+
+        try
+        {
+            projectDetails = projectLoader.loadProject(modelFileLocation);
+
+            ui->tabWidget->loadProject(projectDetails.getScripts()[0]);
+        }
+        catch(std::runtime_error &e)
+        {
+            QMessageBox::critical(this, "Error loading project.", "Unable to load the project file. Error message: \n\n" + QString{e.what()}, QMessageBox::Ok);
+
+            return;
+        }
+    }
+
     void MainWindow::runScript()
     {
         ui->tabWidget->setScriptInput();
@@ -68,6 +107,29 @@ namespace GUI
         ui->scrollAreaWidgetContents->showScriptOutput();
 
         ui->openGLWidget->addModelInstances();
+
+        ui->discardResultButton->setEnabled(false);
+
+        saveProject();
+    }
+
+    void MainWindow::removeBookmarkedScriptExecutionResult()
+    {
+        saveResultNameDialog->removeExistingName(ui->savedResultsComboBox->currentText());
+
+        ui->savedResultsComboBox->removeItem(currentSaveResultIndex);
+
+        if(saveResultNameDialog->noExistingNames())
+        {
+            ui->discardResultButton->setEnabled(false);
+        }
+    }
+
+    void MainWindow::saveProject()
+    {
+        ui->tabWidget->saveProject(projectDetails);
+
+        projectSaver.saveProject("/home/binybrion/saveTest.txt", projectDetails);
     }
 
     // Beginning of private functions
@@ -77,5 +139,15 @@ namespace GUI
         connect(ui->tabWidget, SIGNAL(modelLoaded(const ::ModelLoading::Model&)), ui->openGLWidget, SLOT(uploadModelGPU(const ::ModelLoading::Model&)));
 
         connect(ui->runScriptButton, SIGNAL(clicked()), this, SLOT(runScript()));
+
+        connect(ui->saveResultButton, SIGNAL(clicked()), this, SLOT(bookmarkCurrentScriptExecutionResult()));
+
+        connect(ui->discardResultButton, SIGNAL(clicked()), this, SLOT(removeBookmarkedScriptExecutionResult()));
+
+        connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChangedSaveScript(int)));
+
+        connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openProject()));
+
+        connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveProject()));
     }
 }

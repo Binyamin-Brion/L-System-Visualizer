@@ -37,6 +37,47 @@ namespace GUI
             modelEntries.push_back(modelName);
         }
 
+        void VariablesWidget::clearExistingModelEntries()
+        {
+            modelEntries.clear();
+        }
+
+        void VariablesWidget::loadVariables(const std::vector<::L_System::DataStructures::Variable> &variables)
+        {
+            removeExistingEntries();
+
+            for(const auto &i : variables)
+            {
+                VariableEntry *variableEntry = new VariableEntry{i,this};
+
+                connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
+
+                connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),
+                        this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
+
+                this->variables.push_back(variableEntry);
+
+                layout->addWidget(variableEntry);
+
+                for(const auto &j : modelEntries)
+                {
+                    variableEntry->addModelEntry(j);
+                }
+
+                // Find the index of the associated model within the associated model combo box, and make that combo box
+                // should that entry. The combo box should have been filled with the model entries BEFORE doing this action.
+                auto modelEntryLocation = std::find(modelEntries.begin(), modelEntries.end(), i.getAssociatedModelName());
+
+                int modelEntryIndex = std::distance(modelEntries.begin(), modelEntryLocation);
+
+                variableEntry->setAssociatedModelIndex(modelEntryIndex);
+
+                // Associate each entry with its default name when it is created.
+                variableNames.push_back(EntryNames{variableEntry, i.getVariableName()});
+                variableNames.back().nameValid = true;
+            }
+        }
+
         // Beginning of public slots
 
         void VariablesWidget::addVariableEntry()
@@ -185,6 +226,21 @@ namespace GUI
             }
 
             return !newName.contains(QRegExp{"\\s+"});
+        }
+
+        void VariablesWidget::removeExistingEntries()
+        {
+            QLayoutItem *layoutItem = nullptr;
+
+            while((layoutItem = layout->takeAt(0)) != nullptr)
+            {
+                delete layoutItem->widget();
+                delete layoutItem;
+            }
+
+            variables.clear();
+
+            variableNames.clear();
         }
     }
 }

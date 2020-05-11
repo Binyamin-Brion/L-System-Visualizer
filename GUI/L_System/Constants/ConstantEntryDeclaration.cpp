@@ -44,6 +44,42 @@ namespace GUI
             setUpConnections();
         }
 
+        ConstantEntryDeclaration::ConstantEntryDeclaration(const ::L_System::DataStructures::Constant &constant, QWidget *parent)
+                                    :
+                                        QWidget{parent},
+                                        ui{new Ui::ConstantEntryDeclaration}
+        {
+            ui->setupUi(this);
+
+            ui->nameLineEdit->setText(constant.getConstantName());
+
+            // Enable the correct radio button based off of what type of constant entry is, and enable and disable
+            // the corresponding parts of the associated information widget.
+            if(constant.getRotation().isEnabled())
+            {
+                ui->rotationRadioButton->setChecked(true);
+
+                ui->entryInformation->enableRotation();
+
+                ui->entryInformation->disableTranslation();
+            }
+            else if(constant.getTranslation().isEnabled())
+            {
+                ui->transformationRadioButton->setChecked(true);
+
+                ui->entryInformation->enableTranslation();
+
+                ui->entryInformation->disableRotation();
+            }
+
+            // The constant holds the information for the fields of the constant declaration. Due to the fact that the
+            // UI form of this object constructs the associated instance of the information widget, a separate call
+            // to pass the constant data structure to the information widget is required (instead of overloading the widget's constructor).
+            ui->entryInformation->setInformation(constant);
+
+            setUpConnections();
+        }
+
         ::L_System::DataStructures::Constant ConstantEntryDeclaration::getConstantToken() const
         {
             // A constant is either a Rotation or Translation, and depending on which one the constant is specified to be,

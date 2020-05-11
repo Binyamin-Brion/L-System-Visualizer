@@ -88,6 +88,53 @@ namespace GUI
             return ::L_System::DataStructures::Translation{getTranslationVector()};
         }
 
+        void ConstantEntryInformation::setInformation(const ::L_System::DataStructures::Constant &constant)
+        {
+            // If the constant is Rotation, set the correct index for stack operation for the rotations stack combo box
+            // and initialize the rotation fields. Similar action is done if the constant is a Translation.
+            if(constant.getRotation().isEnabled())
+            {
+                switch(constant.getStackOperation())
+                {
+                    case ::L_System::DataStructures::StackOperation::Pop:
+                        ui->rotationStackComboBox->setCurrentIndex(0);
+                        break;
+
+                    case ::L_System::DataStructures::StackOperation::Push:
+                        ui->rotationStackComboBox->setCurrentIndex(1);
+                        break;
+                }
+
+                ui->angleLineEdit->setText(QString::number(constant.getRotation().getAngle()));
+
+                ui->rotationLineEditX->setText(QString::number(constant.getTranslation().getTranslation().x));
+                ui->rotationLineEditY->setText(QString::number(constant.getTranslation().getTranslation().y));
+                ui->rotationLineEditZ->setText(QString::number(constant.getTranslation().getTranslation().z));
+            }
+            else if(constant.getTranslation().isEnabled())
+            {
+                switch(constant.getStackOperation())
+                {
+                    case ::L_System::DataStructures::StackOperation::Pop:
+                        ui->translationStackComboBox->setCurrentIndex(0);
+                        break;
+
+                    case ::L_System::DataStructures::StackOperation::Push:
+                        ui->translationStackComboBox->setCurrentIndex(1);
+                        break;
+                }
+
+                ui->translationLineEditX->setText(QString::number(constant.getTranslation().getTranslation().x));
+                ui->translationLineEditY->setText(QString::number(constant.getTranslation().getTranslation().y));
+                ui->translationLineEditZ->setText(QString::number(constant.getTranslation().getTranslation().z));
+            }
+            else
+            {
+                // A constant can be only be a Rotation or a Translation. If it is neither, then an error occured.
+                assert(false);
+            }
+        }
+
         // Beginning of private functions
 
         ::L_System::DataStructures::StackOperation ConstantEntryInformation::determineStackOperation(const QString &operationString) const

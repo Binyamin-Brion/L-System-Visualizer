@@ -45,6 +45,8 @@ namespace L_System
                  */
                 const std::vector<Execution::Token>& getSuccessorTokens() const;
 
+                bool operator==(const Rule &other) const;
+
             private:
 
                 Variable predecessor;

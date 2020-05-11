@@ -10,6 +10,7 @@
 #include "../../../L_System/DataStructures/Constants/Rotation.h"
 #include "../../../L_System/DataStructures/Constants/Translation.h"
 #include <vec3.hpp>
+#include "L_System/DataStructures/Constants/Constant.h"
 
 namespace Ui
 {
@@ -82,6 +83,13 @@ namespace GUI
                  * @return Translation data structure using the information stored in this class
                  */
                 ::L_System::DataStructures::Translation getTranslation() const;
+
+                /**
+                 * Puts the information stored in the constant data structure in the appropriate fields of this widget.
+                 *
+                 * @param constant data structure holding the information to display in this widget
+                 */
+                void setInformation(const ::L_System::DataStructures::Constant &constant);
 
             private:
 

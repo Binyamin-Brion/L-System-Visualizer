@@ -67,6 +67,8 @@ namespace L_System
                  */
                 bool isVariable() const;
 
+                bool operator==(const Token &other) const;
+
             private:
 
                 DataStructures::Constant constant;

@@ -7,6 +7,7 @@
 
 #include <QtWidgets/QWidget>
 #include "RuleInformation.h"
+#include "L_System/DataStructures/Rules/Rule.h"
 
 namespace Ui
 {
@@ -42,6 +43,14 @@ namespace GUI
                  * @return list of RuleInformations for all Rule entries
                  */
                 std::vector<RuleInformation> getRuleInformations() const;
+
+                /**
+                 * Creates entries for each of the rule data structures held in the passed in vector.
+                 * Forwards request to RuleWidget.
+                 *
+                 * @param constants vector of rule data structure from which to create entries
+                 */
+                void loadRules(const std::vector<::L_System::DataStructures::Rule> &rules);
 
             public slots:
 

@@ -56,19 +56,16 @@ namespace GUI
                 explicit VariableTabContent(QWidget *parent = nullptr);
 
                 /**
+                 * Clears existing model entries that are currently stored. Request is forwarded to VariablesWidget.
+                 */
+                void clearExistingModelEntries();
+
+                /**
                  * Get the Variable data structure equivalent of the variable chosen to be the axiom for the script.
                  *
                  * @return Variable data structure equivalent for the axiom
                  */
                 ::L_System::DataStructures::Variable getAxiom() const;
-
-                /**
-                 * Get the valid variable names. This forwards the result of calling the appropriate function in
-                 * VariableWidget object.
-                 *
-                 * @return list of valid variable names
-                 */
-                std::vector<QString> getVariableNames() const;
 
                 /**
                  * Get the list of equivalent Variable data structures for the script execution for all of the variable entries.
@@ -77,7 +74,27 @@ namespace GUI
                  */
                 std::vector<::L_System::DataStructures::Variable> getVariablesTokens() const;
 
+                /**
+                 * Creates entries for each of the variable data structures held in the passed in vector.
+                 * Request forwarded to VariablesWidget.
+                 *
+                 * @param constants vector of variable data structure from which to create entries
+                 */
+                void loadVariables(const ::L_System::DataStructures::Variable &axiom, const std::vector<::L_System::DataStructures::Variable> &variables);
+
+                /**
+                 * Attempts to load a model located at the passed in location.
+                 *
+                 * @param modelFileLocation location of file containing the model to load
+                 */
+                void loadNewModel(const QString &modelFileLocation);
+
             private slots:
+
+                /**
+                 * Prompts the user to select a file that contains a model to load, and attempts to load it.
+                 */
+                void loadNewModel();
 
                 /**
                  * Updates the list of variables that can be chosen an axiom.
@@ -86,12 +103,19 @@ namespace GUI
                  */
                 void refreshAxiomList(std::vector<QString> optionList);
 
-                /**
-                 * Prompts the user to select a file that contains a model to load, and attempts to load it.
-                 */
-                void loadNewModel();
-
             private:
+
+                /**
+                 * Loads the model at the passed in location. This function does the actual work of loading a model;
+                 * the functions loadNewModel(const QString&) and loadNewModel() call this function.
+                 *
+                 * @param modelFileLocation location of file containing the model to load
+                 */
+                void loadModel(const QString &modelFileLocation);
+
+                /**
+                 * Sets up the connections used by this object's widgets.
+                 */
                 void setupConnections();
 
                 Ui::VariableTabContent *ui = nullptr;

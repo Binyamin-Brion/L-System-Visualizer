@@ -21,6 +21,35 @@ namespace GUI
             setupConnections();
         }
 
+        RuleEntry::RuleEntry(const ::L_System::DataStructures::Rule &rule, QWidget *parent)
+                    :
+                        QWidget{parent},
+                        ui{new Ui::RuleEntry}
+        {
+            ui->setupUi(this);
+
+            ui->ruleComboBox->addItem(defaultRule);
+
+            setupConnections();
+
+            // FOr each successor token, handle it as if the user clicked the respective entry in the ruleComboBox.
+            for(const auto &i : rule.getSuccessorTokens())
+            {
+                if(i.isConstant())
+                {
+                    handleProductionChosen(i.getConstant().getConstantName());
+                }
+                else if(i.isVariable())
+                {
+                    handleProductionChosen(i.getVariable().getVariableName());
+                }
+                else
+                {
+                    assert(false);
+                }
+            }
+        }
+
         RuleInformation RuleEntry::getRuleInformation() const
         {
           return RuleInformation{ ui->startComboBox->currentText(), addedProductionsText};
@@ -148,6 +177,11 @@ namespace GUI
 
                 addedProductionsText.pop_back();
             }
+        }
+
+        void RuleEntry::setPredecessorIndex(int index)
+        {
+            ui->startComboBox->setCurrentIndex(index);
         }
 
         // Beginning of private functions

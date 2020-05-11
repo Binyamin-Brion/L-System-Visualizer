@@ -7,6 +7,7 @@
 
 #include <QtWidgets/QWidget>
 #include "RuleInformation.h"
+#include "L_System/DataStructures/Rules/Rule.h"
 
 class QVBoxLayout;
 
@@ -39,6 +40,13 @@ namespace GUI
                  * @return list of information required to create Rule data structures
                  */
                 std::vector<RuleInformation> getRuleInformations() const;
+
+                /**
+                 * Creates entries for each of the rule data structures held in the passed in vector.
+                 *
+                 * @param constants vector of rule data structure from which to create entries
+                 */
+                void loadRules(const std::vector<::L_System::DataStructures::Rule> &rules);
 
                 /**
                  * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
@@ -78,6 +86,20 @@ namespace GUI
                 void handleRuleEntrySelected(RuleEntry *ruleEntry, int newState);
 
             private:
+
+                /**
+                 * Finds the index of the given name within the variableNames vector.
+                 *
+                 * @param variableName to find in the variableNames vector
+                 * @return the index of the given name within the variableNames vector
+                 */
+                int findPredecessorIndex(const QString &variableName) const;
+
+                /**
+                 * Removes all current entries in the layout, and deallocate them as well.
+                 */
+                void removeExistingEntries();
+
                 QVBoxLayout *layout = nullptr;
 
                 std::vector<RuleEntry*> rules;

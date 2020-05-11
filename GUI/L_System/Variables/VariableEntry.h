@@ -51,6 +51,15 @@ namespace GUI
                 explicit VariableEntry(QWidget *parent = nullptr);
 
                 /**
+                 * Initializes the widget with the parent that has ownership over this object, and initializes the field
+                 * of the widget with the information contained in the Variable data structure.
+                 *
+                 * @param variable containing information for the widget fields
+                 * @param parent that owns this object
+                 */
+                explicit VariableEntry(const ::L_System::DataStructures::Variable &variable, QWidget *parent = nullptr);
+
+                /**
                  * Called when a model was loaded, and a variable can now represent that loaded model.
                  *
                  * @param modelName file location of the model that was loaded
@@ -78,6 +87,13 @@ namespace GUI
                  * @param valid true if the name specified for the entry is valid
                  */
                 void nameValid(bool valid);
+
+                /**
+                 * Sets the index of the associated model in the appropriate combo box.
+                 *
+                 * @param index the associated model combo box should have
+                 */
+                void setAssociatedModelIndex(int index);
 
             private:
 

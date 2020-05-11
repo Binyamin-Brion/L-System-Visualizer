@@ -50,6 +50,14 @@ namespace GUI
                  */
                 std::vector<::L_System::DataStructures::Constant> getConstantsTokens() const;
 
+                /**
+                 * Creates entries for each of the constant data structures held in the passed in vector.
+                 * Forwards request to ConstantsWidget.
+                 *
+                 * @param constants vector of constant data structure from which to create entries
+                 */
+                void loadEntries(const std::vector<::L_System::DataStructures::Constant> &constants);
+
             private:
 
                 /**

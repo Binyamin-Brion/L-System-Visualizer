@@ -52,6 +52,8 @@ namespace L_System
                  */
                 bool isEnabled() const;
 
+                bool operator==(const Translation &other) const;
+
             private:
 
                 glm::vec3 translation;

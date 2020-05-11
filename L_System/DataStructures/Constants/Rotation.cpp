@@ -38,5 +38,10 @@ namespace L_System
         {
             return enabled;
         }
+
+        bool Rotation::operator==(const Rotation &other) const
+        {
+            return angle == other.angle && rotation == other.rotation;
+        }
     }
 }

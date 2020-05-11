@@ -60,6 +60,8 @@ namespace L_System
                  */
                 bool isEnabled() const;
 
+                bool operator==(const Rotation &other) const;
+
             private:
 
                 float angle;

@@ -80,6 +80,8 @@ namespace L_System
                  */
                 const Translation& getTranslation() const;
 
+                bool operator==(const Constant &other) const;
+
             private:
 
                 QString constantName;

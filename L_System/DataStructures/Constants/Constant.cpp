@@ -52,5 +52,22 @@ namespace L_System
         {
             return translation;
         }
+
+        bool Constant::operator==(const Constant &other) const
+        {
+            if(stackOperation != other.stackOperation)
+            {
+                return false;
+            }
+
+            if(translation.isEnabled())
+            {
+                return other.translation.isEnabled() && translation == other.translation;
+            }
+            else
+            {
+                return other.rotation.isEnabled() && rotation == other.rotation;
+            }
+        }
     }
 }

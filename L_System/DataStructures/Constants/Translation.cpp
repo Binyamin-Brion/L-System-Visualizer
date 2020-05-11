@@ -32,5 +32,10 @@ namespace L_System
         {
             return enabled;
         }
+
+        bool Translation::operator==(const Translation &other) const
+        {
+            return translation == other.translation;
+        }
     }
 }

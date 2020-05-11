@@ -8,6 +8,7 @@
 #include <QtWidgets/QWidget>
 #include <stack>
 #include "RuleInformation.h"
+#include "L_System/DataStructures/Rules/Rule.h"
 
 namespace Ui
 {
@@ -45,11 +46,27 @@ namespace GUI
                 explicit RuleEntry(QWidget *parent = nullptr);
 
                 /**
+                 * Initializes the widget with the parent that has ownership over this object, and initializes the field
+                 * of the widget with the information contained in the Rule data structure.
+                 *
+                 * @param rule containing information for the widget fields
+                 * @param parent that owns this object
+                 */
+                explicit RuleEntry(const ::L_System::DataStructures::Rule &rule, QWidget *parent = nullptr);
+
+                /**
                  * Get the information about this rule to construct an equivalent Rule data structure for the script execution.
                  *
                  * @return information to construct a Rule data structure
                  */
                 RuleInformation getRuleInformation() const;
+
+                /**
+                 * Sets the index of the predecessor in the appropriate combo box.
+                 *
+                 * @param index that the appropriate combo box should have
+                 */
+                void setPredecessorIndex(int index);
 
                 /**
                  * Adds the variable and constant names to the combox box that allow the user to specify the production

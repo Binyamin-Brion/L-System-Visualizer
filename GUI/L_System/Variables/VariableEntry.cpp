@@ -27,6 +27,16 @@ namespace GUI
             setupConnections();
         }
 
+        VariableEntry::VariableEntry(const ::L_System::DataStructures::Variable &variable, QWidget *parent)
+                        :
+                            QWidget{parent},
+                            ui{new Ui::VariableEntry}
+        {
+            ui->setupUi(this);
+
+            ui->variableNameLineEdit->setText(variable.getVariableName());
+        }
+
         void VariableEntry::addModelEntry(const QString &modelName)
         {
             static bool noModelItemDeleted = false;
@@ -72,6 +82,11 @@ namespace GUI
             {
                 ui->variableNameLineEdit->setStyleSheet("background-color: rgba(192, 0, 0, 0.2);");
             }
+        }
+
+        void VariableEntry::setAssociatedModelIndex(int index)
+        {
+            ui->modelEntriesComboBox->setCurrentIndex(index);
         }
 
         // Beginning of private functions

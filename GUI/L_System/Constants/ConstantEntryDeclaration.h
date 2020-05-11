@@ -53,6 +53,15 @@ namespace GUI
                 explicit ConstantEntryDeclaration(QWidget *parent = nullptr);
 
                 /**
+                 * Initializes the widget with the parent that has ownership over this object, and initializes the field
+                 * of the widget with the information contained in the constant data structure.
+                 *
+                 * @param constant containing information for the widget fields
+                 * @param parent that owns this object
+                 */
+                explicit ConstantEntryDeclaration(const ::L_System::DataStructures::Constant &constant, QWidget *parent = nullptr);
+
+                /**
                  * Get the equivalent constant token using the information stored in this entry.
                  *
                  * @return constant token for use in the execution of the L-Script

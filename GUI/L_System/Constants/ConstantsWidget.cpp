@@ -51,6 +51,30 @@ namespace GUI
             return constantsTokens;
         }
 
+        void ConstantsWidget::loadEntries(const std::vector<::L_System::DataStructures::Constant> &constants)
+        {
+            removeExistingEntries();
+
+            for(const auto &i : constants)
+            {
+                ConstantEntryDeclaration *constantEntry = new ConstantEntryDeclaration{i, this};
+
+                layout->addWidget(constantEntry);
+
+                connect(constantEntry, SIGNAL(constantEntrySelected(ConstantEntryDeclaration*, int)), this, SLOT(handleConstantEntrySelected(ConstantEntryDeclaration*, int)));
+
+
+                connect(constantEntry, SIGNAL(nameChanged(ConstantEntryDeclaration*, const QString&)),
+                        this, SLOT(handleNewConstantName(ConstantEntryDeclaration*, const QString&)));
+
+                this->constants.push_back(constantEntry);
+
+                // Associate each entry with its default name when it is created.
+                constantNames.push_back(EntryNames{constantEntry, i.getConstantName()});
+                constantNames.back().validName = true;
+            }
+        }
+
         // Beginning of public slots
 
         void ConstantsWidget::addConstantEntry()
@@ -135,7 +159,7 @@ namespace GUI
             }
         }
 
-        // Begininng of private functions
+        // Beginning of private functions
 
         bool ConstantsWidget::newConstantNameUnique(const QString &newName)
         {
@@ -156,6 +180,21 @@ namespace GUI
 
             // Check for no whitespaces.
             return !newName.contains(QRegExp{"\\s+"});
+        }
+
+        void ConstantsWidget::removeExistingEntries()
+        {
+            QLayoutItem *layoutItem = nullptr;
+
+            while((layoutItem = layout->takeAt(0)) != nullptr)
+            {
+                delete layoutItem->widget();
+                delete layoutItem;
+            }
+
+            this->constants.clear();
+
+            constantNames.clear();
         }
     }
 }

@@ -25,5 +25,23 @@ namespace L_System
         {
             return successorTokens;
         }
+
+        bool Rule::operator==(const Rule &other) const
+        {
+            if(successorTokens.size() != other.successorTokens.size())
+            {
+                return false;
+            }
+
+            for(unsigned int i = 0; i < successorTokens.size(); ++i)
+            {
+                if(!(successorTokens[i] == other.successorTokens[i]))
+                {
+                    return false;
+                }
+            }
+
+            return predecessor == other.predecessor;
+        }
     }
 }

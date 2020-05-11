@@ -24,6 +24,11 @@ namespace GUI
            return ui->scrollAreaWidgetContents->getRuleInformations();
         }
 
+        void RuleTabContent::loadRules(const std::vector<::L_System::DataStructures::Rule> &rules)
+        {
+            ui->scrollAreaWidgetContents->loadRules(rules);
+        }
+
         // Beginning of public slots
 
         void RuleTabContent::updateAvailableConstantEntries(std::vector<QString> constantNames)

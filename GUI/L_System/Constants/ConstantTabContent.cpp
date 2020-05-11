@@ -26,7 +26,12 @@ namespace GUI
             return ui->scrollAreaWidgetContents->getConstantsTokens();
         }
 
-        // Begininng of private functions
+        void ConstantTabContent::loadEntries(const std::vector<::L_System::DataStructures::Constant> &constants)
+        {
+            ui->scrollAreaWidgetContents->loadEntries(constants);
+        }
+
+        // Beginning of private functions
 
         void ConstantTabContent::setupConnections()
         {

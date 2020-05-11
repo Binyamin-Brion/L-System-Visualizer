@@ -54,6 +54,13 @@ namespace GUI
                  */
                 std::vector<::L_System::DataStructures::Constant> getConstantsTokens() const;
 
+                /**
+                 * Creates entries for each of the constant data structures held in the passed in vector.
+                 *
+                 * @param constants vector of constant data structure from which to create entries
+                 */
+                void loadEntries(const std::vector<::L_System::DataStructures::Constant> &constants);
+
             public slots:
 
                 /**
@@ -96,6 +103,11 @@ namespace GUI
                  * @return true if the passed in name is valid
                  */
                 bool newConstantNameUnique(const QString &newName);
+
+                /**
+                 * Removes all current entries in the layout, and deallocate them as well.
+                 */
+                void removeExistingEntries();
 
                 QVBoxLayout *layout = nullptr;
 

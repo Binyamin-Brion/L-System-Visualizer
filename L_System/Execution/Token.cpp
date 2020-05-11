@@ -43,6 +43,18 @@ namespace L_System
         {
             return _isVariable;
         }
+
+        bool Token::operator==(const Token &other) const
+        {
+            if(_isConstant)
+            {
+                return other.isConstant() && constant == other.getConstant();
+            }
+            else
+            {
+                return other.isVariable() && variable == other.getVariable();
+            }
+        }
     }
 
 }

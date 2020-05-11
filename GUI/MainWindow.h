@@ -6,6 +6,8 @@
 #define VOXEL_L_SYSTEM_MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ProjectSaverLoader/ProjectLoader.h"
+#include "ProjectSaverLoader/ProjectSaver.h"
 
 namespace Ui
 {
@@ -14,6 +16,11 @@ namespace Ui
 
 namespace GUI
 {
+    namespace Dialogs
+    {
+        class SaveResultNameDialog;
+    }
+
     /**
      * Main window which contains all of the GUI components.
      */
@@ -41,10 +48,31 @@ namespace GUI
         private slots:
 
             /**
+             *
+             */
+            void bookmarkCurrentScriptExecutionResult();
+
+            void handleChangedSaveScript(int index);
+
+            /**
+             * Opens the a project after the user specifies one using a file dialog.
+             */
+            void openProject();
+
+            /**
              * Makes the request to upload the script parameters to the ScriptInput data structure, then execute and
              * interpret the script. A check for no valid rules is made- if there are none, the script is not executed.
              */
             void runScript();
+
+            void removeBookmarkedScriptExecutionResult();
+
+            /**
+             * Saves the project to a file, allowing it to be reopened using the openProject() function.
+             *
+             * TODO: change hard coded save destination to one where the user chooses using a file dialog
+             */
+            void saveProject();
 
         private:
 
@@ -54,6 +82,12 @@ namespace GUI
             void setupConnections();
 
             Ui::MainWindow *ui = nullptr;
+            Dialogs::SaveResultNameDialog *saveResultNameDialog = nullptr;
+            int currentSaveResultIndex = -1;
+
+            ::ProjectSaverLoader::ProjectLoader projectLoader;
+            ::ProjectSaverLoader::ProjectSaver projectSaver;
+            ::ProjectSaverLoader::ProjectDetails projectDetails;
     };
 }
 

@@ -49,6 +49,11 @@ namespace GUI
                 void addModelEntry(const QString &modelName);
 
                 /**
+                 * Clears existing model entries that are currently stored.
+                 */
+                void clearExistingModelEntries();
+
+                /**
                  * Gets the associated model name for the variable with the passed in name.
                  *
                  * @param variableName that contains the required associatedModelName
@@ -69,6 +74,13 @@ namespace GUI
                  * @return list of equivalent Variable data structures
                  */
                 std::vector<::L_System::DataStructures::Variable> getVariablesTokens() const;
+
+                /**
+                 * Creates entries for each of the variable data structures held in the passed in vector.
+                 *
+                 * @param constants vector of variable data structure from which to create entries
+                 */
+                void loadVariables(const std::vector<::L_System::DataStructures::Variable> &variables);
 
             public slots:
 
@@ -111,6 +123,11 @@ namespace GUI
                  * @return true if the passed in name is valid
                  */
                 bool newVariableNameUnique(const QString &newName) const;
+
+                /**
+                 * Removes all current entries in the layout, and deallocate them as well.
+                 */
+                void removeExistingEntries();
 
                 std::vector<VariableEntry*> variables;
                 std::vector<VariableEntry*> selectedVariables;
