@@ -25,11 +25,13 @@ namespace ProjectSaverLoader
              * @param saveConstants the script's constants
              * @param saveRules the script's rules
              * @param saveVariables the script's variables
+             * @param favouriteResults the script's bookmarked results
              */
             void addScriptInformation(const ::L_System::DataStructures::Variable &saveAxiom,
                                              const std::vector<::L_System::DataStructures::Constant> &saveConstants,
                                              const std::vector<::L_System::DataStructures::Rule> &saveRules,
-                                             const std::vector<::L_System::DataStructures::Variable> &saveVariables);
+                                             const std::vector<::L_System::DataStructures::Variable> &saveVariables,
+                                             const std::vector<FavouriteResult> &favouriteResults);
 
             /**
              * Get the scripts that have been uploaded to this class.

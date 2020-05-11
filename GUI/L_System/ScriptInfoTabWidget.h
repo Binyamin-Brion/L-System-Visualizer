@@ -54,11 +54,34 @@ namespace GUI
                 explicit ScriptInfoTabWidget(QWidget *parent = nullptr);
 
                 /**
+                 * Stores the result of an execution as a Favourite Result structure.
+                 *
+                 * @param saveResultName name of the result that is being saved
+                 * @param executionResult execution result to associate with the passed in name
+                 */
+                void addFavouriteScript(const QString &saveResultName, const std::vector<std::vector<::L_System::Execution::Token>> &executionResult);
+
+                /**
+                 * Gets the favourite script that was stored with the given name.
+                 *
+                 * @param saveResultName the name of the saved result to return
+                 * @return result with the same name as what was passed in
+                 */
+                const ::ProjectSaverLoader::FavouriteResult& getFavouriteScript(const QString &saveResultName) const;
+
+                /**
                  * Loads the project using the information stored in the ProjectDetails structure.
                  *
                  * @param scriptInformation structure holding the script information to display
                  */
                 void loadProject(const ::ProjectSaverLoader::ScriptInformation &scriptInformation);
+
+                /**
+                 * Removes the favourite script that was stored with the given name.
+                 *
+                 * @param saveResultName the name of the saved result to return
+                 */
+                void removeFavouriteScript(const QString &saveResultName);
 
                 /**
                  * Stores the script information into the structure passed in.
@@ -75,6 +98,10 @@ namespace GUI
 
             private:
 
+                /**
+                 * Accumulates all of the script details stored in the various tabs into the internal variables stored
+                 * in this object.
+                 */
                 void accumulateScriptInformation();
 
                 /**
@@ -100,6 +127,7 @@ namespace GUI
                 std::vector<::L_System::DataStructures::Constant> scriptConstants;
                 std::vector<::L_System::DataStructures::Rule> scriptRules;
                 std::vector<::L_System::DataStructures::Variable> scriptVariables;
+                std::vector<::ProjectSaverLoader::FavouriteResult> favouriteResults;
         };
     }
 }

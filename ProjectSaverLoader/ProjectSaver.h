@@ -73,10 +73,9 @@ namespace ProjectSaverLoader
             void saveRules(const std::vector<::L_System::DataStructures::Rule> &rules);
 
             /**
-             * Writes the output of a script file to scrit.
-             * // TODO: implement functionality of this function + in the rest of the program
+             * Writes the output of a script file to script.
              */
-            void saveRequestedScriptOutputs();
+            void saveRequestedScriptOutputs(const std::vector<FavouriteResult> &favouriteResults);
 
             /**
              * Writes the passed in variables to the project save file.

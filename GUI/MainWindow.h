@@ -48,11 +48,23 @@ namespace GUI
         private slots:
 
             /**
-             *
+             * Saves the current execution result as a Favourite Result.
              */
             void bookmarkCurrentScriptExecutionResult();
 
+            /**
+             * Updates the current index signifying the current index of the result stack combo box.
+             *
+             * @param index the current index of the result combo box
+             */
             void handleChangedSaveScript(int index);
+
+            /**
+             * Shows the saved result associated with the passed in name.
+             *
+             * @param text the name of the selected saved result
+             */
+            void handleChangedSaveScript(const QString &text);
 
             /**
              * Opens the a project after the user specifies one using a file dialog.
@@ -65,12 +77,13 @@ namespace GUI
              */
             void runScript();
 
+            /**
+             * Removes the currently selected saved script result.
+             */
             void removeBookmarkedScriptExecutionResult();
 
             /**
              * Saves the project to a file, allowing it to be reopened using the openProject() function.
-             *
-             * TODO: change hard coded save destination to one where the user chooses using a file dialog
              */
             void saveProject();
 

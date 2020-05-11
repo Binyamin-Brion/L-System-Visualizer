@@ -9,6 +9,14 @@
 
 class QVBoxLayout;
 
+namespace L_System
+{
+    namespace Execution
+    {
+        class Token;
+    }
+}
+
 namespace GUI
 {
     namespace Output
@@ -33,11 +41,26 @@ namespace GUI
                 public slots:
 
                     /**
+                     * Shows the output of the given execution result.
+                     *
+                     * @param tokens result of executing a script
+                     */
+                    void showSavedScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>>& tokens);
+
+                    /**
                      * Shows the output of executing the script.
                      */
                     void showScriptOutput();
 
                 private:
+
+                    /**
+                     * Creates the entries to display the passed in execution result. This function is called by both
+                     * showSavedScriptOutput() and showScriptOutput().
+                     *
+                     * @param tokens result of executing a script
+                     */
+                    void displayScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>>& tokens);
 
                     /**
                      * Removes the visual output showing the result of the previous script execution.

@@ -31,7 +31,7 @@ namespace ProjectSaverLoader
             saveAxiom(i.axiom);
             saveConstants(i.constants);
             saveRules(i.rules);
-            //  saveRequestedScriptOutputs();
+            saveRequestedScriptOutputs(i.favouriteResults);
 
             // Mark the end of the read in script. The explicit flush is required to ensure that this text
             // is written to the file before the script contents.
@@ -123,38 +123,38 @@ namespace ProjectSaverLoader
         }
     }
 
-    void ProjectSaver::saveRequestedScriptOutputs()
+    void ProjectSaver::saveRequestedScriptOutputs(const std::vector<FavouriteResult> &favouriteResults)
     {
-//        QTextStream writeStream{&file};
-//
-//        writeStream << "Favourite_results: \n\n";
-//
-//        for(const auto &i : ProjectDetails::getFavouriteResults())
-//        {
-//            writeStream << "Result_name: " << i.resultName + '\n';
-//
-//            for(unsigned int j = 0; j < i.executionResult.size(); ++j)
-//            {
-//                writeStream << "Recursion depth: " << j << + '\n';
-//
-//                for(const auto &k : i.executionResult[j])
-//                {
-//                    if(k.isConstant())
-//                    {
-//                        writeStream << "Successor token (Constant): " << k.getConstant().getConstantName() + '\n';
-//                    }
-//
-//                    if(k.isVariable())
-//                    {
-//                        writeStream << "Successor token (Variable): " << k.getVariable().getVariableName() + '\n';
-//                    }
-//                }
-//
-//                writeStream << '\n';
-//            }
-//
-//            writeStream << '\n';
-//        }
+        QTextStream writeStream{&file};
+
+        writeStream << "Favourite_results: \n\n";
+
+        for(const auto &i : favouriteResults)
+        {
+            writeStream << "Result_name -- " << i.resultName + "\n\n";
+
+            for(unsigned int j = 0; j < i.executionResult.size(); ++j)
+            {
+                writeStream << "Recursion_depth -- " << j << + "\n\n";
+
+                for(const auto &k : i.executionResult[j])
+                {
+                    if(k.isConstant())
+                    {
+                        writeStream << "Successor_token -- (Constant) -- " << k.getConstant().getConstantName() + '\n';
+                    }
+
+                    if(k.isVariable())
+                    {
+                        writeStream << "Successor_token -- (Variable) -- " << k.getVariable().getVariableName() + '\n';
+                    }
+                }
+
+                writeStream << '\n';
+            }
+
+            writeStream << "\nEND FAVOURITE RESULT\n\n";
+        }
     }
 
     void ProjectSaver::saveVariables(const std::vector<::L_System::DataStructures::Variable> &variables)

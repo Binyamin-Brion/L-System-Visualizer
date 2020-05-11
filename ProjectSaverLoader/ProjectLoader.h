@@ -83,6 +83,14 @@ namespace ProjectSaverLoader
             void loadConstant(const QString &fileLine);
 
             /**
+             * Extracts the bookmarked result from the given file line.
+             *
+             * @param fileLine from which to extract the bookmarked result
+             * @throws runtime_exception if the file line is not of the expected format
+             */
+            void loadFavouriteScriptResult(const QString &fileLine);
+
+            /**
              * Extracts the rule from the given file line.
              *
              * @param fileLine from which to extract a script rule
@@ -100,6 +108,7 @@ namespace ProjectSaverLoader
 
             ::L_System::DataStructures::Variable axiom;
             std::vector<::L_System::DataStructures::Constant> loadedConstants;
+            std::vector<FavouriteResult> loadedFavouriteResults;
             std::vector<::L_System::DataStructures::Rule> loadedRules;
             std::vector<::L_System::DataStructures::Variable> loadedVariables;
     };

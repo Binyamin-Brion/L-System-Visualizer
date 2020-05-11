@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include "../../../L_System/Execution/Executor.h"
 #include "ScriptOutputEntry.h"
+#include "L_System/Execution/Token.h"
 
 namespace GUI
 {
@@ -25,12 +26,25 @@ namespace GUI
 
             // Beginning of public slots
 
+            void ScriptOutputWidget::showSavedScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>> &tokens)
+            {
+                displayScriptOutput(tokens);
+            }
+
             void ScriptOutputWidget::showScriptOutput()
+            {
+                displayScriptOutput(::L_System::Execution::Executor::getRecursionResult());
+            }
+
+            // Beginning of private functions
+
+            void ScriptOutputWidget::displayScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>> &tokens)
             {
                 removePreviousResult();
 
-                for(unsigned int depthResult = 0; depthResult < ::L_System::Execution::Executor::getRecursionResult().size(); ++depthResult)
+                for(unsigned int depthResult = 0; depthResult < tokens.size(); ++depthResult)
                 {
+                    // Create an entry for the current depth result.
                     ScriptOutputEntry *entry = new ScriptOutputEntry{this};
 
                     entries.push_back(entry);
@@ -39,7 +53,8 @@ namespace GUI
 
                     layout->addWidget(entry);
 
-                    for(const auto &variableResult : ::L_System::Execution::Executor::getRecursionResult()[depthResult])
+                    // Show the (text equivalent) result of the current depth.
+                    for(const auto &variableResult : tokens[depthResult])
                     {
                         if(variableResult.isVariable())
                         {
@@ -56,8 +71,6 @@ namespace GUI
                     }
                 }
             }
-
-            // Beginning of private functions
 
             void ScriptOutputWidget::removePreviousResult()
             {

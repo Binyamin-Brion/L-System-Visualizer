@@ -29,10 +29,33 @@ namespace GUI
             setupConnections();
         }
 
+        void ScriptInfoTabWidget::addFavouriteScript(const QString &saveResultName, const std::vector<std::vector<::L_System::Execution::Token>> &executionResult)
+        {
+            favouriteResults.push_back(::ProjectSaverLoader::FavouriteResult{saveResultName, executionResult});
+        }
+
+        const ::ProjectSaverLoader::FavouriteResult &ScriptInfoTabWidget::getFavouriteScript(const QString &saveResultName) const
+        {
+            auto saveResultLocation = std::find_if(favouriteResults.begin(), favouriteResults.end(), [&](const ::ProjectSaverLoader::FavouriteResult &favouriteResult)
+            {
+                return favouriteResult.resultName == saveResultName;
+            });
+
+            return *saveResultLocation;
+        }
+
         void ScriptInfoTabWidget::loadProject(const ::ProjectSaverLoader::ScriptInformation &scriptInformation)
         {
             // Start at a clean state.
             loadedModels.clear();
+
+            scriptConstants.clear();
+
+            scriptRules.clear();
+
+            scriptVariables.clear();
+
+            favouriteResults.clear();
 
             variableTabContent->clearExistingModelEntries();
 
@@ -72,6 +95,18 @@ namespace GUI
             ruleTabContent->updateAvailableVariableEntries(variableNames);
 
             ruleTabContent->loadRules(scriptInformation.rules);
+
+            favouriteResults.insert(favouriteResults.end(), scriptInformation.favouriteResults.begin(), scriptInformation.favouriteResults.end());
+        }
+
+        void ScriptInfoTabWidget::removeFavouriteScript(const QString &saveResultName)
+        {
+            auto saveResultLocation = std::find_if(favouriteResults.begin(), favouriteResults.end(), [&](const ::ProjectSaverLoader::FavouriteResult &favouriteResult)
+            {
+                return favouriteResult.resultName == saveResultName;
+            });
+
+            favouriteResults.erase(saveResultLocation);
         }
 
         void ScriptInfoTabWidget::saveProject(::ProjectSaverLoader::ProjectDetails &projectDetails)
@@ -81,7 +116,8 @@ namespace GUI
             projectDetails.addScriptInformation(scriptAxiom,
                                                 scriptConstants,
                                                 scriptRules,
-                                                scriptVariables);
+                                                scriptVariables,
+                                                favouriteResults);
         }
 
         void ScriptInfoTabWidget::setScriptInput()
@@ -100,6 +136,7 @@ namespace GUI
 
         void ScriptInfoTabWidget::accumulateScriptInformation()
         {
+            // Remove the previous accumulation.
             scriptConstants.clear();
             scriptRules.clear();
             scriptVariables.clear();

@@ -33,6 +33,7 @@ namespace ProjectSaverLoader
         bool readingConstants = false;
         bool readingRules = false;
         bool readingVariables = false;
+        bool readingFavouriteResults = false;
 
         while(!inputStream.atEnd())
         {
@@ -53,6 +54,7 @@ namespace ProjectSaverLoader
                 readingAxiom = false;
                 readingConstants = false;
                 readingRules = false;
+                readingFavouriteResults = false;
 
                 continue;
             }
@@ -64,6 +66,7 @@ namespace ProjectSaverLoader
                 readingConstants = false;
                 readingRules = false;
                 readingVariables = false;
+                readingFavouriteResults = false;
             }
 
             if(currentLine.contains("Constants:"))
@@ -73,6 +76,7 @@ namespace ProjectSaverLoader
                 readingAxiom = false;
                 readingRules = false;
                 readingVariables = false;
+                readingFavouriteResults = false;
 
                 continue;
             }
@@ -84,6 +88,19 @@ namespace ProjectSaverLoader
                 readingAxiom = false;
                 readingConstants = false;
                 readingVariables = false;
+                readingFavouriteResults = false;
+
+                continue;
+            }
+
+            if(currentLine.contains("Favourite_results:"))
+            {
+                readingFavouriteResults = true;
+
+                readingAxiom = false;
+                readingConstants = false;
+                readingRules = false;
+                readingVariables = false;
 
                 continue;
             }
@@ -92,14 +109,14 @@ namespace ProjectSaverLoader
             // that information.
             if(currentLine.contains("END SCRIPT"))
             {
-                projectDetails.addScriptInformation(axiom, loadedConstants, loadedRules, loadedVariables);
+                projectDetails.addScriptInformation(axiom, loadedConstants, loadedRules, loadedVariables, loadedFavouriteResults);
 
                 // Reset the state of how to interpret each line.
                 readingAxiom = false;
                 readingConstants = false;
                 readingRules = false;
                 readingVariables = false;
-
+                readingFavouriteResults = false;
             }
 
             // Depending on the type of information that was being marked as being held on the next line(s),
@@ -124,6 +141,11 @@ namespace ProjectSaverLoader
             {
                 loadRule(currentLine);
             }
+
+            if(readingFavouriteResults)
+            {
+                loadFavouriteScriptResult(currentLine);
+            }
         }
 
         return projectDetails;
@@ -138,6 +160,8 @@ namespace ProjectSaverLoader
         loadedRules.clear();
 
         loadedVariables.clear();
+
+        loadedFavouriteResults.clear();
     }
 
     void ProjectLoader::checkExpectedNumberLineTokens(int numberTokens, std::vector<int> expectedNumberTokens, const QString &fileLine) const
@@ -274,8 +298,7 @@ namespace ProjectSaverLoader
          *
          *  Token 0              Token 2
          *
-         *
-         *                          OR, if the line is a successor token
+         *                          OR, if the line is a successor token (type actually doesn't matter- it is stored in the file for convenience)
          *
          *  Successor_token -- Variable -- variableName
          *
@@ -289,9 +312,9 @@ namespace ProjectSaverLoader
          *
          *                      OR if the line signifies the end of a rule
          *
-         *  END RULE
+         *  END     RULE
          *
-         *  (tokens don't matter here)
+         *  Token 0 Token 2
          *
          *  Note: the '--' are tokens but are not listed due to space limitations in the above lines.
          */
@@ -324,6 +347,75 @@ namespace ProjectSaverLoader
         }
     }
 
+    void ProjectLoader::loadFavouriteScriptResult(const QString &fileLine)
+    {
+        QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
+
+        /*
+         * A favourite script result ine has the following format, which when split using whitespace:
+         *
+         * Result_Name -- resultName
+         *
+         * Token 0          Token 2
+         *
+         *              OR if the line specifies a recursion depth:
+         *
+         * Recursion depth -- recursionDepth
+         *
+         * Token 0              Token 2
+         *
+         *              OR if the line specifies a successor token (type of token is irrelevant- type is stored in file for convenience):
+         *
+         *  Successor_Token -- (Variable) -- tokenVariableName
+         *
+         *  Token 0             Token 2        Token 4
+         *
+         *              OR if the line specifies a Constant successor token:
+         *
+         *  Successor_Token -- (Constant) -- tokenConstantName
+         *
+         *  Token 0             Token 2        Token 4
+         *
+         *              OR if the line specifies the end of a favourite result:
+         *
+         *  END         FAVOURITE   RESULT
+         *
+         *  Token 0     Token 1     Token 2
+         *
+         *   Note: the '--' are tokens but are not listed due to space limitations in the above lines.
+         */
+
+        checkExpectedNumberLineTokens(lineTokens.size(), {3, 5}, fileLine);
+
+        static QString resultName;
+        static std::vector<std::vector<::L_System::Execution::Token>> successorTokens;
+
+        if(lineTokens[0].contains("Result_name"))
+        {
+            resultName = lineTokens[2];
+        }
+        else if(lineTokens[0].contains("Recursion_depth"))
+        {
+            successorTokens.emplace_back();
+        }
+        else if(lineTokens[0].contains("Successor_token"))
+        {
+            successorTokens.back().emplace_back(::HelperFunctions::findEquivalentSuccessorTokens(lineTokens[4], loadedConstants, loadedVariables));
+        }
+        else if(fileLine.contains("END FAVOURITE RESULT"))
+        {
+            loadedFavouriteResults.push_back(FavouriteResult{resultName, successorTokens});
+
+            // Ensure that this result's successor tokens are not in the next result. The resultName is assigned a new
+            // value when a new result is encountered so no action has to be done there.
+            successorTokens.clear();
+        }
+        else
+        {
+            throw std::runtime_error{"Unexpected file line: " + fileLine.toStdString()};
+        }
+    }
+
     void ProjectLoader::loadVariable(const QString &fileLine)
     {
         QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
@@ -333,7 +425,7 @@ namespace ProjectSaverLoader
          *
          * Variable_name -- variableName -- Associated_model_name -- associatedModelName
          *
-         *  Token 0:         Token 2:               Token 4:              Token 6:
+         *  Token 0         Token 2               Token 4              Token 6
          *
          * Note: the '--' are tokens but are not listed due to space limitations in the above line.
          *

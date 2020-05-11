@@ -41,7 +41,7 @@ namespace Tests
             Rule secondRule{variableB, {Token{variableA}}};
 
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(variableA, {}, {firstRule, secondRule}, {variableA, variableB});
+            beforeProjectDetails.addScriptInformation(variableA, {}, {firstRule, secondRule}, {variableA, variableB}, {});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -64,6 +64,8 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts()[0].rules.size() == 2);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == firstRule);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[1] == secondRule);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
         }
 
         void TestProjectSaveLoad::testFractalTree()
@@ -87,8 +89,27 @@ namespace Tests
 
             Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
 
+            // Create a favourite result.
+            ::ProjectSaverLoader::FavouriteResult favouriteResult
+                    {
+                        "firstDepthFavouriteResult",
+                        {
+                            {
+                                Token{secondVariable}
+                            },
+
+                            {
+                                Token{secondVariable},
+                                Token{firstConstant},
+                                Token{firstVariable},
+                                Token{secondConstant},
+                                Token{secondVariable}
+                            }
+                        }
+                    };
+
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(firstVariable, {firstConstant, secondConstant}, {rule, secondRule}, {firstVariable, secondVariable});
+            beforeProjectDetails.addScriptInformation(firstVariable, {firstConstant, secondConstant}, {rule, secondRule}, {firstVariable, secondVariable}, {favouriteResult});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -115,6 +136,37 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts()[0].rules.size() == 2);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == rule);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[1] == secondRule);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.size() == 1);
+
+            ::ProjectSaverLoader::FavouriteResult loadedFavouriteResult = afterProjectDetails.getScripts()[0].favouriteResults[0];
+
+            QVERIFY(loadedFavouriteResult.resultName == "firstDepthFavouriteResult");
+            QVERIFY(loadedFavouriteResult.executionResult.size() == 2);
+
+            // Test the first depth level of the first saved result
+            QVERIFY(loadedFavouriteResult.executionResult[0].size() == 1);
+
+            // First Token
+            QVERIFY(loadedFavouriteResult.executionResult[0][0].getVariable() == secondVariable);
+
+            // Test the second depth level of the second saved result
+            QVERIFY(loadedFavouriteResult.executionResult[1].size() == 5);
+
+            // First Token
+            QVERIFY(loadedFavouriteResult.executionResult[1][0].getVariable() == secondVariable);
+
+            // Second Token
+            QVERIFY(loadedFavouriteResult.executionResult[1][1].getConstant() == firstConstant);
+
+            // Third Token
+            QVERIFY(loadedFavouriteResult.executionResult[1][2].getVariable() == firstVariable);
+
+            // Fourth Token
+            QVERIFY(loadedFavouriteResult.executionResult[1][3].getConstant() == secondConstant);
+
+            // Fifth Token
+            QVERIFY(loadedFavouriteResult.executionResult[1][4].getVariable() == secondVariable);
         }
 
         void TestProjectSaveLoad::testKochCurve()
@@ -142,7 +194,7 @@ namespace Tests
                                   Token{variable}}};
 
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(variable, {plusConstant, minusConstant},{rule}, {variable});
+            beforeProjectDetails.addScriptInformation(variable, {plusConstant, minusConstant},{rule}, {variable}, {});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -167,6 +219,8 @@ namespace Tests
 
             QVERIFY(afterProjectDetails.getScripts()[0].rules.size() == 1);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == rule);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
         }
     }
 }

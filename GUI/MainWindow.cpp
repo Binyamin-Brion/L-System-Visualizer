@@ -27,18 +27,6 @@ namespace GUI
 
         ui->discardResultButton->setEnabled(false);
 
-//        ui->spinBox->setMinimum(1);
-//
-//        ui->splitter_2->setStretchFactor(ui->splitter_2->sizes().size() - 1, 1);
-//
-//        ui->splitter_3->setStretchFactor(ui->splitter_3->sizes().size() - 1, 1);
-//
-//        ui->splitter_4->setStretchFactor(ui->splitter_4->sizes().size() - 1, 1);
-//
-//        ui->splitter_5->setStretchFactor(ui->splitter_5->sizes().size() - 1, 1);
-//
-//        ui->splitter_6->setStretchFactor(ui->splitter_6->sizes().size() - 1, 1);
-
         setupConnections();
     }
 
@@ -61,12 +49,28 @@ namespace GUI
             ui->savedResultsComboBox->addItem(saveResultNameDialog->getMostRecentName());
 
             ui->discardResultButton->setEnabled(true);
+
+            ui->tabWidget->addFavouriteScript(saveResultNameDialog->getMostRecentName(), ::L_System::Execution::Executor::getRecursionResult());
         }
     }
 
     void MainWindow::handleChangedSaveScript(int index)
     {
         currentSaveResultIndex = index;
+    }
+
+    void MainWindow::handleChangedSaveScript(const QString &text)
+    {
+        // When loading a saved project, the stack combo box is cleared, causing the input to this function to be nothing.
+        // To prevent a crash from occurring, this function exits if such an input is given.
+        if(text.isEmpty())
+        {
+            return;
+        }
+
+        const ::ProjectSaverLoader::FavouriteResult favouriteResult = ui->tabWidget->getFavouriteScript(text);
+
+        ui->scrollAreaWidgetContents->showSavedScriptOutput(favouriteResult.executionResult);
     }
 
     void MainWindow::openProject()
@@ -77,7 +81,19 @@ namespace GUI
         {
             projectDetails = projectLoader.loadProject(modelFileLocation);
 
+            // Call this function BEFORE uploading entries to the savedResultsComboBox. This ensures that as the index
+            // changes when adding a new entry, triggering the appropriate slot, a Favourite result is associated with
+            // each entry name, ensuring no crash happens.
             ui->tabWidget->loadProject(projectDetails.getScripts()[0]);
+
+            // Remove any previous shown saved results
+            ui->savedResultsComboBox->clear();
+
+            // Show an entry for each of the loaded saved results.
+            for(const auto &savedResult : projectDetails.getScripts()[0].favouriteResults)
+            {
+                ui->savedResultsComboBox->addItem(savedResult.resultName);
+            }
         }
         catch(std::runtime_error &e)
         {
@@ -115,6 +131,8 @@ namespace GUI
 
     void MainWindow::removeBookmarkedScriptExecutionResult()
     {
+        ui->tabWidget->removeFavouriteScript(ui->savedResultsComboBox->currentText());
+
         saveResultNameDialog->removeExistingName(ui->savedResultsComboBox->currentText());
 
         ui->savedResultsComboBox->removeItem(currentSaveResultIndex);
@@ -127,7 +145,11 @@ namespace GUI
 
     void MainWindow::saveProject()
     {
-        ui->tabWidget->saveProject(projectDetails);
+        ::ProjectSaverLoader::ProjectDetails newProjectDetails;
+
+        ui->tabWidget->saveProject(newProjectDetails);
+
+        projectDetails = newProjectDetails;
 
         projectSaver.saveProject("/home/binybrion/saveTest.txt", projectDetails);
     }
@@ -145,6 +167,8 @@ namespace GUI
         connect(ui->discardResultButton, SIGNAL(clicked()), this, SLOT(removeBookmarkedScriptExecutionResult()));
 
         connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChangedSaveScript(int)));
+
+        connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleChangedSaveScript(const QString&)));
 
         connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openProject()));
 

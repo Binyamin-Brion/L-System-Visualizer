@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 
     for(const auto &i : suite)
     {
-        if(i.first == "Test_Project_Save_Load")
+        if(i.first == "Test_Basic_Save_Load")
             QTest::qExec(i.second);
     }
 

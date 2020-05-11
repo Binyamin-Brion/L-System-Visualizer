@@ -63,6 +63,7 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         ProjectSaverLoader/ProjectDetails.h ProjectSaverLoader/FavouriteResult.h GUI/Dialogs/SaveResultNameDialog.cpp
         GUI/Dialogs/SaveResultNameDialog.h ProjectSaverLoader/ProjectLoader.cpp ProjectSaverLoader/ProjectLoader.h
         HelperFunctions/RuleLoading.cpp HelperFunctions/RuleLoading.h Tests/ProjectSaverLoader/TestProjectSaveLoad.cpp
-        Tests/ProjectSaverLoader/TestProjectSaveLoad.h ProjectSaverLoader/ScriptInformation.h)
+        Tests/ProjectSaverLoader/TestProjectSaveLoad.h ProjectSaverLoader/ScriptInformation.h Tests/ProjectSaverLoader/TestBasicSaveLoad.cpp
+        Tests/ProjectSaverLoader/TestBasicSaveLoad.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)
