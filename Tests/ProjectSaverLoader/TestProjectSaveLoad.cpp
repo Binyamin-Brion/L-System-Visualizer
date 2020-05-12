@@ -55,6 +55,8 @@ namespace Tests
             // Check that the loaded script matches the script that was created in memory.
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
 
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == variableA);
+
             QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 2);
             QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == variableA);
             QVERIFY(afterProjectDetails.getScripts()[0].variables[1] == variableB);
@@ -122,6 +124,8 @@ namespace Tests
 
             // Check that the loaded script matches the script that was created in memory.
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
 
             QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 2);
             QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == firstVariable);
@@ -207,6 +211,8 @@ namespace Tests
 
             // Check that the loaded script matches the script that was created in memory.
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == variable);
 
             QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 1);
             QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == variable);

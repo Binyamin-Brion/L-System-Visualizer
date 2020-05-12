@@ -150,6 +150,13 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QPushButton" name="renderSavedResultButton">
+             <property name="text">
+              <string>Render SavedResult</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -163,7 +170,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>565</width>
+           <width>646</width>
            <height>68</height>
           </rect>
          </property>
@@ -195,7 +202,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>209</width>
+           <width>128</width>
            <height>68</height>
           </rect>
          </property>

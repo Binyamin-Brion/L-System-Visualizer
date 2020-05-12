@@ -27,6 +27,8 @@ namespace GUI
 
         ui->discardResultButton->setEnabled(false);
 
+        ui->renderSavedResultButton->setEnabled(false);
+
         setupConnections();
     }
 
@@ -46,16 +48,41 @@ namespace GUI
     {
         if(saveResultNameDialog->exec() == QDialog::Accepted)
         {
+            savedNewResult = true;
+
+            // Call this BEFORE editing the savedResultsComboBox, as doing so changes the index of that combo box, triggering the connections.
+            // If the new result is not add to the tab widget first, then a segfault could occur as the connection slot would search for a daved result
+            // in the tab widget, when it is only being added after the connection has been executed.
+            ui->tabWidget->addFavouriteScript(saveResultNameDialog->getMostRecentName(), ::L_System::Execution::Executor::getRecursionResult());
+
+            ui->savedResultsComboBox->removeItem(ui->savedResultsComboBox->count() - 1);
+
             ui->savedResultsComboBox->addItem(saveResultNameDialog->getMostRecentName());
 
             ui->discardResultButton->setEnabled(true);
 
-            ui->tabWidget->addFavouriteScript(saveResultNameDialog->getMostRecentName(), ::L_System::Execution::Executor::getRecursionResult());
+            ui->savedResultsComboBox->setCurrentIndex(ui->savedResultsComboBox->count() - 1);
         }
     }
 
     void MainWindow::handleChangedSaveScript(int index)
     {
+        if(!savedNewResult)
+        {
+            // Assume that the user has saved. If they don't, such as by cancelling the save dialog, then it is assumed
+            // they changed their mind and did not want to change.
+            savedNewResult = true;
+
+            ui->savedResultsComboBox->removeItem(ui->savedResultsComboBox->count() - 1);
+
+            int response = QMessageBox::warning(this, "Unsaved Exection Result", "The previous execution was not saved. Would you like to save it?", QMessageBox::Yes | QMessageBox::No);
+
+            if(response == QMessageBox::Yes)
+            {
+                bookmarkCurrentScriptExecutionResult();
+            }
+        }
+
         currentSaveResultIndex = index;
     }
 
@@ -63,22 +90,33 @@ namespace GUI
     {
         // When loading a saved project, the stack combo box is cleared, causing the input to this function to be nothing.
         // To prevent a crash from occurring, this function exits if such an input is given.
-        if(text.isEmpty())
+        if(text.isEmpty() || text == newResultEntry)
         {
             return;
         }
 
         const ::ProjectSaverLoader::FavouriteResult favouriteResult = ui->tabWidget->getFavouriteScript(text);
 
+        // Allow user to remove the current bookmarked result as well as render it.
+        ui->renderSavedResultButton->setEnabled(true);
+
+        ui->discardResultButton->setEnabled(true);
+
         ui->scrollAreaWidgetContents->showSavedScriptOutput(favouriteResult.executionResult);
     }
 
     void MainWindow::openProject()
     {
+        // Loading a project may mean loading saved bookmarked results- these should not trigger a warning asking the user to save,
+        // as adding saved bookmarks to the savedResultComboBox will trigger the connections as the index of that widget will change.
+        savedNewResult = true;
+
         QString modelFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
 
         try
         {
+            saveResultNameDialog->clearExistingName();
+
             projectDetails = projectLoader.loadProject(modelFileLocation);
 
             // Call this function BEFORE uploading entries to the savedResultsComboBox. This ensures that as the index
@@ -93,6 +131,10 @@ namespace GUI
             for(const auto &savedResult : projectDetails.getScripts()[0].favouriteResults)
             {
                 ui->savedResultsComboBox->addItem(savedResult.resultName);
+
+                // Let the dialog associated with adding a new bookmarked result know of the names that are taken
+                // so that if a new result is added, it knows whether or not to reject the new name.
+                saveResultNameDialog->addExistingName(savedResult.resultName);
             }
         }
         catch(std::runtime_error &e)
@@ -101,6 +143,41 @@ namespace GUI
 
             return;
         }
+    }
+
+    void MainWindow::removeBookmarkedScriptExecutionResult()
+    {
+        ui->tabWidget->removeFavouriteScript(ui->savedResultsComboBox->currentText());
+
+        saveResultNameDialog->removeExistingName(ui->savedResultsComboBox->currentText());
+
+        ui->savedResultsComboBox->removeItem(currentSaveResultIndex);
+
+        if(saveResultNameDialog->noExistingNames())
+        {
+            ui->discardResultButton->setEnabled(false);
+
+            ui->renderSavedResultButton->setEnabled(false);
+
+            // Don't allow a result to be saved if all of them were removed- the user must rerun a script to enable saving again.
+            ui->saveResultButton->setEnabled(false);
+
+            // Ensure that any previous bookmarked results are not shown if all of them were removed.
+            ui->scrollAreaWidgetContents->removePreviousResult();
+        }
+    }
+
+    void MainWindow::renderScript()
+    {
+        // Get the execution tokens of a bookmarked result, interpret it and then render that interpretation.
+
+        const QString currentFavouriteSaveResult = ui->savedResultsComboBox->currentText();
+
+        const ::ProjectSaverLoader::FavouriteResult favouriteResult = ui->tabWidget->getFavouriteScript(currentFavouriteSaveResult);
+
+        ::L_System::Interpretation::Interpreter::interpretExistingResult(favouriteResult.executionResult);
+
+        ui->openGLWidget->addModelInstances();
     }
 
     void MainWindow::runScript()
@@ -126,21 +203,15 @@ namespace GUI
 
         ui->discardResultButton->setEnabled(false);
 
-        saveProject();
-    }
+        ui->savedResultsComboBox->addItem(newResultEntry);
 
-    void MainWindow::removeBookmarkedScriptExecutionResult()
-    {
-        ui->tabWidget->removeFavouriteScript(ui->savedResultsComboBox->currentText());
+        ui->savedResultsComboBox->setCurrentIndex(ui->savedResultsComboBox->count() - 1);
 
-        saveResultNameDialog->removeExistingName(ui->savedResultsComboBox->currentText());
+        // Allow user to save, and ensure a warning is given if a user tries to look at a different bookmarked result
+        // without saving the current new result first.
+        savedNewResult = false;
 
-        ui->savedResultsComboBox->removeItem(currentSaveResultIndex);
-
-        if(saveResultNameDialog->noExistingNames())
-        {
-            ui->discardResultButton->setEnabled(false);
-        }
+        ui->saveResultButton->setEnabled(true);
     }
 
     void MainWindow::saveProject()
@@ -169,6 +240,8 @@ namespace GUI
         connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChangedSaveScript(int)));
 
         connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleChangedSaveScript(const QString&)));
+
+        connect(ui->renderSavedResultButton, SIGNAL(clicked()), this, SLOT(renderScript()));
 
         connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openProject()));
 

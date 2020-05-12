@@ -35,52 +35,12 @@ namespace L_System
 
         void Interpreter::interpret()
         {
-            clearPreviousResult();
+            runInterpretation(Execution::Executor::getRecursionResult());
+        }
 
-            unsigned int currentDepthLevel = 0;
-
-            for(const auto &depthResult : Execution::Executor::getRecursionResult())
-            {
-                // Add a list of instance matrices for this current depth level
-                modelInstances.emplace_back();
-
-                for(const auto &token : depthResult)
-                {
-                    // If the token is a constant, modify the token stack and calculate the new transformation matrix
-                    // for the next encountered variable
-                    if(token.isConstant())
-                    {
-                        // The matrix needs to be reset in order to prevent a previous constant transformation
-                        // from compounding with this constant's transformation more than once
-                        transformationMatrix = glm::mat4x4{1.0};
-
-                        handleToken(token, currentDepthLevel);
-                    }
-                    else if(token.isVariable())
-                    {
-                        // Add the associated model with the most transformation matrix, which represents all of the transformations
-                        // preceding th variable.
-                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getVariableName(), token.getVariable().getAssociatedModelName(), transformationMatrix, currentDepthLevel});
-                    }
-                    else
-                    {
-                        // A token is either a constant or a variable- this branch should never be reached.
-                        assert(false);
-                    }
-                }
-
-                if(!tokenStack.empty())
-                {
-                    unbalancedErrors.push_back(currentDepthLevel);
-                }
-
-                // Clear everything for the next depth level.
-                tokenStack.clear();
-
-                transformationMatrix = glm::mat4x4{1.0};
-
-                currentDepthLevel += 1;
-            }
+        void Interpreter::interpretExistingResult(const std::vector<std::vector<Execution::Token>> &previousExecutionResult)
+        {
+            runInterpretation(previousExecutionResult);
         }
 
         void Interpreter::clearPreviousResult()
@@ -153,6 +113,56 @@ namespace L_System
                     tokenStack.push_back(token);
                     calculateTransformation();
                     break;
+            }
+        }
+
+        void Interpreter::runInterpretation(const std::vector<std::vector<Execution::Token>> &executionResult)
+        {
+            clearPreviousResult();
+
+            unsigned int currentDepthLevel = 0;
+
+            for(const auto &depthResult : executionResult)
+            {
+                // Add a list of instance matrices for this current depth level
+                modelInstances.emplace_back();
+
+                for(const auto &token : depthResult)
+                {
+                    // If the token is a constant, modify the token stack and calculate the new transformation matrix
+                    // for the next encountered variable
+                    if(token.isConstant())
+                    {
+                        // The matrix needs to be reset in order to prevent a previous constant transformation
+                        // from compounding with this constant's transformation more than once
+                        transformationMatrix = glm::mat4x4{1.0};
+
+                        handleToken(token, currentDepthLevel);
+                    }
+                    else if(token.isVariable())
+                    {
+                        // Add the associated model with the most transformation matrix, which represents all of the transformations
+                        // preceding th variable.
+                        modelInstances.back().push_back(ModelInstancePlacement{token.getVariable().getVariableName(), token.getVariable().getAssociatedModelName(), transformationMatrix, currentDepthLevel});
+                    }
+                    else
+                    {
+                        // A token is either a constant or a variable- this branch should never be reached.
+                        assert(false);
+                    }
+                }
+
+                if(!tokenStack.empty())
+                {
+                    unbalancedErrors.push_back(currentDepthLevel);
+                }
+
+                // Clear everything for the next depth level.
+                tokenStack.clear();
+
+                transformationMatrix = glm::mat4x4{1.0};
+
+                currentDepthLevel += 1;
             }
         }
     }

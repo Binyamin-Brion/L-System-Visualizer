@@ -38,6 +38,11 @@ namespace GUI
                      */
                     explicit ScriptOutputWidget(QWidget *parent = nullptr);
 
+                    /**
+                     * Removes the visual output showing the result of the previous script execution.
+                     */
+                    void removePreviousResult();
+
                 public slots:
 
                     /**
@@ -61,11 +66,6 @@ namespace GUI
                      * @param tokens result of executing a script
                      */
                     void displayScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>>& tokens);
-
-                    /**
-                     * Removes the visual output showing the result of the previous script execution.
-                     */
-                    void removePreviousResult();
 
                     QVBoxLayout *layout = nullptr;
                     std::vector<ScriptOutputEntry*> entries;

@@ -72,15 +72,20 @@ namespace GUI
             void openProject();
 
             /**
-             * Makes the request to upload the script parameters to the ScriptInput data structure, then execute and
-             * interpret the script. A check for no valid rules is made- if there are none, the script is not executed.
+             * Renders the current opened favourite result, if there is one currently openend.
              */
-            void runScript();
+            void renderScript();
 
             /**
              * Removes the currently selected saved script result.
              */
             void removeBookmarkedScriptExecutionResult();
+
+            /**
+             * Makes the request to upload the script parameters to the ScriptInput data structure, then execute and
+             * interpret the script. A check for no valid rules is made- if there are none, the script is not executed.
+             */
+            void runScript();
 
             /**
              * Saves the project to a file, allowing it to be reopened using the openProject() function.
@@ -101,6 +106,9 @@ namespace GUI
             ::ProjectSaverLoader::ProjectLoader projectLoader;
             ::ProjectSaverLoader::ProjectSaver projectSaver;
             ::ProjectSaverLoader::ProjectDetails projectDetails;
+
+            const QString newResultEntry = "Unsaved result";
+            bool savedNewResult = true;
     };
 }
 

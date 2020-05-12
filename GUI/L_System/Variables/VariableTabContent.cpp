@@ -48,6 +48,7 @@ namespace GUI
 
             // Find the location of the axiom within the variable vector to show it in the axiom combo box.
             int axiomIndex = 0;
+            bool foundAxiomIndex = false; // Keeps track of whether or not to increment the axiom index.
 
             // The axiom must be one of the variables in the vector.
             for(const auto &i : variables)
@@ -56,7 +57,12 @@ namespace GUI
 
                 // Don't break after finding matching variable- this prevents all of the variables from being added to
                 // the axiom combo box.
-                if(!(i.getVariableName() == axiom.getVariableName()))
+                if(i.getVariableName() == axiom.getVariableName())
+                {
+                    foundAxiomIndex = true;
+                }
+
+                if(!foundAxiomIndex)
                 {
                     axiomIndex += 1;
                 }

@@ -16,12 +16,24 @@ namespace GUI
         {
             ScriptOutputWidget::ScriptOutputWidget(QWidget *parent)
                     :
-                    QWidget{parent},
-                    layout{new QVBoxLayout{this}}
+                        QWidget{parent},
+                        layout{new QVBoxLayout{this}}
             {
                 setLayout(layout);
 
 
+            }
+
+            void ScriptOutputWidget::removePreviousResult()
+            {
+                for(auto &i : entries)
+                {
+                    layout->removeWidget(i);
+
+                    delete i;
+                }
+
+                entries.clear();
             }
 
             // Beginning of public slots
@@ -70,18 +82,6 @@ namespace GUI
                         }
                     }
                 }
-            }
-
-            void ScriptOutputWidget::removePreviousResult()
-            {
-                for(auto &i : entries)
-                {
-                    layout->removeWidget(i);
-
-                    delete i;
-                }
-
-                entries.clear();
             }
         }
     }

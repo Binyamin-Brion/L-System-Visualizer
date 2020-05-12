@@ -20,6 +20,16 @@ namespace GUI
             setupConnections();
         }
 
+        void SaveResultNameDialog::addExistingName(const QString &name)
+        {
+            existingNames.push_back(name);
+        }
+
+        void SaveResultNameDialog::clearExistingName()
+        {
+            existingNames.clear();
+        }
+
         int SaveResultNameDialog::exec()
         {
             int executionResult = QDialog::exec();
@@ -65,6 +75,8 @@ namespace GUI
             }
             else
             {
+                // Visually display an error as a red back-ground and do not allow user to check the "Ok" button.
+
                 ui->nameLineEdit->setStyleSheet("background-color: rgba(255, 0, 0, 64);");
 
                 ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
