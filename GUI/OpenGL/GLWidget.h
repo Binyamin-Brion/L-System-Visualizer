@@ -45,11 +45,6 @@ namespace GUI
                 void addModelInstances();
 
                 /**
-                 * Removes all rendering data. Afterwards, nothing will be rendered.
-                 */
-                void clearData();
-
-                /**
                  * Handles key press events when this widget is in focus.
                  *
                  * @param event containing information about they key press
@@ -114,6 +109,11 @@ namespace GUI
                 void uploadModelGPU(const ::ModelLoading::Model &model);
 
             private slots:
+
+                /**
+                 * Ensures that all OpenGL resources are freed.
+                 */
+                void cleanUp();
 
                 /**
                  * Prints messages created by the OpenGL implementation.

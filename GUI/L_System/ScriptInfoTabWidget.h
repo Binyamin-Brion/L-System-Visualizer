@@ -88,7 +88,7 @@ namespace GUI
                  *
                  * @param projectDetails structure to hold the script information
                  */
-                void saveProject(::ProjectSaverLoader::ProjectDetails &projectDetails);
+                void saveProject(const QString &scriptName, ::ProjectSaverLoader::ProjectDetails &projectDetails);
 
                 /**
                  * Uploads the information stored in the various tabs that hold parameters for the script into the

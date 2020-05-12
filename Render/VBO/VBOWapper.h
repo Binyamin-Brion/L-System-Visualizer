@@ -35,17 +35,11 @@ namespace Render
                 }
 
                 /**
-                 * Clears all data held in the buffer. Afterwards, any previously uploaded data is lost.
+                 * Destroys the VBO resource. The VAO that references this VBO must be unbound first!
                  */
-                void clearData()
+                void deleteVBO()
                 {
-                    glBindBuffer(bufferTarget, vbo);
-
-                    // The space for the current data is already allocated; it simply needs to be told to reuse it
-                    // for different data.
-                    glBufferData(bufferTarget, heldData.size() * sizeof(T), nullptr, bufferUsage);
-
-                    heldData.clear();
+                   glDeleteBuffers(1, &vbo);
                 }
 
                 /**

@@ -109,11 +109,12 @@ namespace GUI
             favouriteResults.erase(saveResultLocation);
         }
 
-        void ScriptInfoTabWidget::saveProject(::ProjectSaverLoader::ProjectDetails &projectDetails)
+        void ScriptInfoTabWidget::saveProject(const QString &scriptName, ::ProjectSaverLoader::ProjectDetails &projectDetails)
         {
             accumulateScriptInformation();
 
-            projectDetails.addScriptInformation(scriptAxiom,
+            projectDetails.addScriptInformation(scriptName,
+                                                scriptAxiom,
                                                 scriptConstants,
                                                 scriptRules,
                                                 scriptVariables,

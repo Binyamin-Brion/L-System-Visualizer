@@ -53,9 +53,9 @@ namespace Render
                 void checkRayIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection);
 
                 /**
-                 * Removes all rendering data. Afterwards, nothing will be rendered.
+                 * Removes all OpenGL rendering data. Afterwards, nothing will be rendered.
                  */
-                void clearData();
+                void deleteOpenGLResources();
 
                 /**
                  * Initializes all internal buffers for use for rendering.

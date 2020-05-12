@@ -26,6 +26,7 @@ namespace ProjectSaverLoader
 
             writeStream.flush();
 
+            saveName(i.scriptName);
             // Write the variables BEFORE the axiom. This is required due to how the project file is loaded.
             saveVariables(i.variables);
             saveAxiom(i.axiom);
@@ -91,6 +92,13 @@ namespace ProjectSaverLoader
 
             writeStream << '\n';
         }
+    }
+
+    void ProjectSaver::saveName(const QString &scriptName)
+    {
+        QTextStream writeStream{&file};
+
+        writeStream << "Script_name -- " << scriptName << "\n\n";
     }
 
     void ProjectSaver::saveRules(const std::vector<::L_System::DataStructures::Rule> &rules)

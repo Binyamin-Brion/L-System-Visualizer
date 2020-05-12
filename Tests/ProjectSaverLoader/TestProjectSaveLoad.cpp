@@ -25,6 +25,8 @@ namespace Tests
 
         void TestProjectSaveLoad::testSaveLoadAlgae()
         {
+            const QString scriptName = "Algae";
+
             ::ProjectSaverLoader::ProjectDetails beforeProjectDetails;
 
             // Create the script.
@@ -41,7 +43,7 @@ namespace Tests
             Rule secondRule{variableB, {Token{variableA}}};
 
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(variableA, {}, {firstRule, secondRule}, {variableA, variableB}, {});
+            beforeProjectDetails.addScriptInformation(scriptName, variableA, {}, {firstRule, secondRule}, {variableA, variableB}, {});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -53,7 +55,10 @@ namespace Tests
             ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject("testSaveAlgae.txt");
 
             // Check that the loaded script matches the script that was created in memory.
+
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
 
             QVERIFY(afterProjectDetails.getScripts()[0].axiom == variableA);
 
@@ -72,6 +77,8 @@ namespace Tests
 
         void TestProjectSaveLoad::testFractalTree()
         {
+            const QString scriptName = "FractalTree";
+
             ::ProjectSaverLoader::ProjectDetails beforeProjectDetails;
 
             // Create the script.
@@ -111,7 +118,7 @@ namespace Tests
                     };
 
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(firstVariable, {firstConstant, secondConstant}, {rule, secondRule}, {firstVariable, secondVariable}, {favouriteResult});
+            beforeProjectDetails.addScriptInformation(scriptName, firstVariable, {firstConstant, secondConstant}, {rule, secondRule}, {firstVariable, secondVariable}, {favouriteResult});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -124,6 +131,8 @@ namespace Tests
 
             // Check that the loaded script matches the script that was created in memory.
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
 
             QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
 
@@ -175,6 +184,8 @@ namespace Tests
 
         void TestProjectSaveLoad::testKochCurve()
         {
+            const QString scriptName = "KochCurve";
+
             // Create the script.
             ::ProjectSaverLoader::ProjectDetails beforeProjectDetails;
 
@@ -198,7 +209,7 @@ namespace Tests
                                   Token{variable}}};
 
             // Upload the script.
-            beforeProjectDetails.addScriptInformation(variable, {plusConstant, minusConstant},{rule}, {variable}, {});
+            beforeProjectDetails.addScriptInformation(scriptName, variable, {plusConstant, minusConstant},{rule}, {variable}, {});
 
             // Save and load the script.
             ::ProjectSaverLoader::ProjectSaver projectSaver;
@@ -211,6 +222,8 @@ namespace Tests
 
             // Check that the loaded script matches the script that was created in memory.
             QVERIFY(afterProjectDetails.getScripts().size() == 1); // Only one script was created and saved.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
 
             QVERIFY(afterProjectDetails.getScripts()[0].axiom == variable);
 

@@ -26,6 +26,8 @@ namespace Tests
 
         void TestBasicSaveLoad::testSaveFavouriteResult()
         {
+            const QString scriptName = "SaveFavouriteResult";
+
             // Create the variables used in the favourite result.
             Variable firstVariable{"something", ""};
             Variable secondVariable{"aVariable", ""};
@@ -72,7 +74,7 @@ namespace Tests
 
             // Save and reload the script
             ::ProjectSaverLoader::ProjectDetails projectDetails;
-            projectDetails.addScriptInformation(firstVariable, {}, {}, {firstVariable, secondVariable, thirdVariable}, {firstFavouriteResult, secondFavouriteResult});
+            projectDetails.addScriptInformation(scriptName, firstVariable, {}, {}, {firstVariable, secondVariable, thirdVariable}, {firstFavouriteResult, secondFavouriteResult});
 
             ::ProjectSaverLoader::ProjectSaver projectSaver;
             projectSaver.saveProject("testSaveBasicFavouriteResults.txt", projectDetails);
@@ -85,6 +87,8 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts().size() == 1);
 
             QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.size() == 2);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
 
             // First Saved Result
 
@@ -155,6 +159,69 @@ namespace Tests
             QVERIFY(secondResult.executionResult[2][3].isVariable());
             QVERIFY(secondResult.executionResult[2][3].getVariable().getVariableName() == "aVariable");
 
+        }
+
+        void TestBasicSaveLoad::testSaveSeveralScripts()
+        {
+            const QString firstScriptName = "SaveFavouriteResult";
+
+            const QString secondScriptName = "SaveFavouriteResult2";
+
+            const QString thirdScriptName = "SaveFavouriteResult3";
+
+            // Create the variables used in the favourite result.
+            Variable firstVariable{"something", ""};
+
+            // Save and reload the script
+            ::ProjectSaverLoader::ProjectDetails projectDetails;
+            projectDetails.addScriptInformation(firstScriptName, firstVariable, {}, {}, {firstVariable}, {});
+            projectDetails.addScriptInformation(secondScriptName, firstVariable, {}, {}, {firstVariable}, {});
+            projectDetails.addScriptInformation(thirdScriptName, firstVariable, {}, {}, {firstVariable}, {});
+
+            ::ProjectSaverLoader::ProjectSaver projectSaver;
+            projectSaver.saveProject("testSaveBasicFavouriteResults.txt", projectDetails);
+
+            ::ProjectSaverLoader::ProjectLoader projectLoader;
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject("testSaveBasicFavouriteResults.txt");
+
+            // There should be three scripts- each with a unique name.
+            QVERIFY(afterProjectDetails.getScripts().size() == 3);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == firstScriptName);
+            QVERIFY(afterProjectDetails.getScripts()[1].scriptName == secondScriptName);
+            QVERIFY(afterProjectDetails.getScripts()[2].scriptName == thirdScriptName);
+
+            // Test the other aspects of the script- not required of this test, but does't hurt to include.
+
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[1].axiom == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[2].axiom == firstVariable);
+
+            // Test Variables
+            QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[1].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[1].variables[0] == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[2].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[2].variables[0] == firstVariable);
+
+            // Test Constants
+
+            QVERIFY(afterProjectDetails.getScripts()[0].constants.empty());
+            QVERIFY(afterProjectDetails.getScripts()[1].constants.empty());
+            QVERIFY(afterProjectDetails.getScripts()[2].constants.empty());
+
+            // Test Rules
+
+            QVERIFY(afterProjectDetails.getScripts()[0].rules.empty());
+            QVERIFY(afterProjectDetails.getScripts()[1].rules.empty());
+            QVERIFY(afterProjectDetails.getScripts()[2].rules.empty());
+
+            // Test Favourite Results
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
+            QVERIFY(afterProjectDetails.getScripts()[1].favouriteResults.empty());
+            QVERIFY(afterProjectDetails.getScripts()[2].favouriteResults.empty());
         }
     }
 }

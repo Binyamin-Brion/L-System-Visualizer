@@ -44,6 +44,21 @@ namespace ProjectSaverLoader
             void checkExpectedNumberLineTokens(int numberTokens, std::vector<int> expectedNumberTokens, const QString &fileLine) const;
 
             /**
+             * Checks section is encountered when reading the project file, and updating the readingXXX flags so that the
+             * next lines are processed according to what information is stored in those next line(s).
+             *
+             * @param currentLine
+             */
+            void checkSectionTag(const QString &currentLine);
+
+            /**
+             * Chooses which one of the loadXXX function to call based off of the readingXXX flags.
+             *
+             * @param currentLine from which to extract script data
+             */
+            void chooseLoadFunction(const QString &currentLine);
+
+            /**
              * Clears the result of loading the previous project file.
              */
             void clearPreviousLoad();
@@ -64,6 +79,36 @@ namespace ProjectSaverLoader
              * @return the stack-operation data structure equivalent of the passed in string
              */
             ::L_System::DataStructures::StackOperation convertStackOperation(const QString &stringToConvert) const;
+
+            /**
+             * Updates the readingXXX flags so that the script name is read from the project file.
+             */
+            void handleScriptNameFlags();
+
+            /**
+             * Updates the readingXXX flags so that the variables are read from the project file.
+             */
+            void handleVariableFlags();
+
+            /**
+             * Updates the readingXXX flags so that the script axiom is read from the project file.
+             */
+            void handleAxiomFlags();
+
+            /**
+             * Updates the readingXXX flags so that the script constants is read from the project file.
+             */
+            void handleConstantFlags();
+
+            /**
+             * Updates the readingXXX flags so that the script rules are read from the project file.
+             */
+            void handleRuleFlags();
+
+            /**
+             * Updates the readingXXX flags so that the script bookmarked (favourite) results are read from the project file.
+             */
+            void handleFavouriteResultFlags();
 
             /**
              * Extracts the axiom from the given file line.
@@ -91,6 +136,14 @@ namespace ProjectSaverLoader
             void loadFavouriteScriptResult(const QString &fileLine);
 
             /**
+             * Extracts the name of the script from the given file line.
+             *
+             * @param fileLine from which to extract the script name
+             * @throws runtime_exception if the file line is not of the expected format
+             */
+            void loadScriptName(const QString &fileLine);
+
+            /**
              * Extracts the rule from the given file line.
              *
              * @param fileLine from which to extract a script rule
@@ -106,11 +159,28 @@ namespace ProjectSaverLoader
              */
             void loadVariable(const QString &fileLine);
 
+            void resetFlags();
+
+            bool readScriptName = false;
+
             ::L_System::DataStructures::Variable axiom;
             std::vector<::L_System::DataStructures::Constant> loadedConstants;
             std::vector<FavouriteResult> loadedFavouriteResults;
+            QString loadedScriptName;
             std::vector<::L_System::DataStructures::Rule> loadedRules;
             std::vector<::L_System::DataStructures::Variable> loadedVariables;
+
+            // Controls how to interpret the current line based off of the previous section tag (Variables:, Constants:, etc).
+            bool modifiedSectionFlag = false; // Know when to continue to next loop iteration after reading a section (Variable:, Constants:, etc) tag.
+
+            // Note: the axiom and name are contained on the same line as the section tag, and since there is only one of each
+            // meaning the results for them are not stored in a vector, a variable is needed to keep track of whether or not they were read.
+
+            bool readAxiom = false;
+            bool readingConstants = false;
+            bool readingRules = false;
+            bool readingVariables = false;
+            bool readingFavouriteResults = false;
     };
 }
 

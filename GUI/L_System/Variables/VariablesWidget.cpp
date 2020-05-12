@@ -42,65 +42,6 @@ namespace GUI
             modelEntries.clear();
         }
 
-        void VariablesWidget::loadVariables(const std::vector<::L_System::DataStructures::Variable> &variables)
-        {
-            removeExistingEntries();
-
-            for(const auto &i : variables)
-            {
-                VariableEntry *variableEntry = new VariableEntry{i,this};
-
-                connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
-
-                connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),
-                        this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
-
-                this->variables.push_back(variableEntry);
-
-                layout->addWidget(variableEntry);
-
-                for(const auto &j : modelEntries)
-                {
-                    variableEntry->addModelEntry(j);
-                }
-
-                // Find the index of the associated model within the associated model combo box, and make that combo box
-                // should that entry. The combo box should have been filled with the model entries BEFORE doing this action.
-                auto modelEntryLocation = std::find(modelEntries.begin(), modelEntries.end(), i.getAssociatedModelName());
-
-                int modelEntryIndex = std::distance(modelEntries.begin(), modelEntryLocation);
-
-                variableEntry->setAssociatedModelIndex(modelEntryIndex);
-
-                // Associate each entry with its default name when it is created.
-                variableNames.push_back(EntryNames{variableEntry, i.getVariableName()});
-                variableNames.back().nameValid = true;
-            }
-        }
-
-        // Beginning of public slots
-
-        void VariablesWidget::addVariableEntry()
-        {
-            VariableEntry *variableEntry = new VariableEntry{this};
-
-            connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
-
-            connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),
-                    this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
-
-            variables.push_back(variableEntry);
-
-            layout->addWidget(variableEntry);
-
-            for(const auto &i : modelEntries)
-            {
-                variableEntry->addModelEntry(i);
-            }
-
-            // Associate each entry with its default name when it is created.
-            variableNames.push_back(EntryNames{variableEntry, "Enter a name..."});
-        }
 
         QString VariablesWidget::getAssociatedModelName(const QString &variableName) const
         {
@@ -147,6 +88,65 @@ namespace GUI
             return variablesTokens;
         }
 
+        void VariablesWidget::loadVariables(const std::vector<::L_System::DataStructures::Variable> &variables)
+        {
+            removeExistingEntries();
+
+            for(const auto &i : variables)
+            {
+                VariableEntry *variableEntry = new VariableEntry{i,this};
+
+                connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
+
+                connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),
+                        this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
+
+                this->variables.push_back(variableEntry);
+
+                layout->addWidget(variableEntry);
+
+                for(const auto &j : modelEntries)
+                {
+                    variableEntry->addModelEntry(j);
+                }
+
+                // Find the index of the associated model within the associated model combo box, and make that combo box
+                // should that entry. The combo box should have been filled with the model entries BEFORE doing this action.
+                auto modelEntryLocation = std::find(modelEntries.begin(), modelEntries.end(), i.getAssociatedModelName());
+
+                int modelEntryIndex = std::distance(modelEntries.begin(), modelEntryLocation);
+
+                variableEntry->setAssociatedModelIndex(modelEntryIndex);
+
+                // Associate each entry with its default name when it is created.
+                variableNames.push_back(EntryNames{variableEntry, i.getVariableName()});
+                variableNames.back().nameValid = true;
+            }
+        }
+
+        // Beginning of public slots
+
+        void VariablesWidget::addVariableEntry()
+        {
+            VariableEntry *variableEntry = new VariableEntry{this};
+
+            connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
+
+            connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
+
+            variables.push_back(variableEntry);
+
+            layout->addWidget(variableEntry);
+
+            for(const auto &i : modelEntries)
+            {
+                variableEntry->addModelEntry(i);
+            }
+
+            // Associate each entry with its default name when it is created.
+            variableNames.push_back(EntryNames{variableEntry, "Enter a name..."});
+        }
+
         void VariablesWidget::handleDeleteButtonPushed()
         {
             // For all of the selected entries, remove them visually, then remove them from the program.
@@ -175,20 +175,6 @@ namespace GUI
             emit entryNamesChanged(getEntryNames());
         }
 
-        void VariablesWidget::handleVariableEntrySelected(VariableEntry *variableEntry, int newState)
-        {
-            if(newState == Qt::Checked)
-            {
-                selectedVariables.push_back(variableEntry);
-            }
-            else
-            {
-                auto selectedVariableLocation = std::find(selectedVariables.begin(), selectedVariables.end(), variableEntry);
-
-                selectedVariables.erase(selectedVariableLocation);
-            }
-        }
-
         // Beginning of private slots
 
         void VariablesWidget::handleNewVariableName(VariableEntry *entry, const QString &newName)
@@ -206,6 +192,20 @@ namespace GUI
 
             // Automatically update the list of variables available for use in a rule.
             emit entryNamesChanged(getEntryNames());
+        }
+
+        void VariablesWidget::handleVariableEntrySelected(VariableEntry *variableEntry, int newState)
+        {
+            if(newState == Qt::Checked)
+            {
+                selectedVariables.push_back(variableEntry);
+            }
+            else
+            {
+                auto selectedVariableLocation = std::find(selectedVariables.begin(), selectedVariables.end(), variableEntry);
+
+                selectedVariables.erase(selectedVariableLocation);
+            }
         }
 
         // Beginning of private functions

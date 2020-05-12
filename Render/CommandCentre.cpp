@@ -48,10 +48,7 @@ namespace Render
 
         while (i != sortedInstancedMatrices.constEnd())
         {
-            for(const auto &depthInstances : i.value())
-            {
-                modelVao.addModelInstances(i.key(), i.value());
-            }
+            modelVao.addModelInstances(i.key(), i.value());
 
             ++i;
         }
@@ -66,9 +63,9 @@ namespace Render
         modelVao.checkRayIntersection(cameraObject.getPosition(), rayDirection);
     }
 
-    void CommandCentre::clearData()
+    void CommandCentre::deleteOpenGLResources()
     {
-        modelVao.clearData();
+        modelVao.deleteOpenGLResources();
     }
 
     Camera::CameraObject &CommandCentre::getCamera()

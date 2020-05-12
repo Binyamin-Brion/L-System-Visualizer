@@ -6,8 +6,6 @@
 #define VOXEL_L_SYSTEM_MAINWINDOW_H
 
 #include <QMainWindow>
-#include "ProjectSaverLoader/ProjectLoader.h"
-#include "ProjectSaverLoader/ProjectSaver.h"
 
 namespace Ui
 {
@@ -18,7 +16,7 @@ namespace GUI
 {
     namespace Dialogs
     {
-        class SaveResultNameDialog;
+        class NewNameDialog;
     }
 
     /**
@@ -48,47 +46,13 @@ namespace GUI
         private slots:
 
             /**
-             * Saves the current execution result as a Favourite Result.
-             */
-            void bookmarkCurrentScriptExecutionResult();
-
-            /**
-             * Updates the current index signifying the current index of the result stack combo box.
-             *
-             * @param index the current index of the result combo box
-             */
-            void handleChangedSaveScript(int index);
-
-            /**
-             * Shows the saved result associated with the passed in name.
-             *
-             * @param text the name of the selected saved result
-             */
-            void handleChangedSaveScript(const QString &text);
-
-            /**
-             * Opens the a project after the user specifies one using a file dialog.
+             * Requests the user to select a file from the file system, and then loads the project using that file.
              */
             void openProject();
 
             /**
-             * Renders the current opened favourite result, if there is one currently openend.
-             */
-            void renderScript();
-
-            /**
-             * Removes the currently selected saved script result.
-             */
-            void removeBookmarkedScriptExecutionResult();
-
-            /**
-             * Makes the request to upload the script parameters to the ScriptInput data structure, then execute and
-             * interpret the script. A check for no valid rules is made- if there are none, the script is not executed.
-             */
-            void runScript();
-
-            /**
-             * Saves the project to a file, allowing it to be reopened using the openProject() function.
+             * Requests the user to select a location to save the project to, and the project is saved to a file at the
+             * given location.
              */
             void saveProject();
 
@@ -100,15 +64,6 @@ namespace GUI
             void setupConnections();
 
             Ui::MainWindow *ui = nullptr;
-            Dialogs::SaveResultNameDialog *saveResultNameDialog = nullptr;
-            int currentSaveResultIndex = -1;
-
-            ::ProjectSaverLoader::ProjectLoader projectLoader;
-            ::ProjectSaverLoader::ProjectSaver projectSaver;
-            ::ProjectSaverLoader::ProjectDetails projectDetails;
-
-            const QString newResultEntry = "Unsaved result";
-            bool savedNewResult = true;
     };
 }
 

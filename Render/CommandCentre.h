@@ -53,9 +53,9 @@ namespace Render
             void checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY);
 
             /**
-             * Removes all rendering data. Afterwards, nothing will be rendered.
+             * Removes all (OpenGL) rendering data. Afterwards, nothing will be rendered.
              */
-            void clearData();
+            void deleteOpenGLResources();
 
             /**
              * Get the reference to the camera used for rending.

@@ -2,14 +2,14 @@
 // Created by binybrion on 5/9/20.
 //
 
-#ifndef VOXEL_L_SYSTEM_SAVERESULTNAMEDIALOG_H
-#define VOXEL_L_SYSTEM_SAVERESULTNAMEDIALOG_H
+#ifndef VOXEL_L_SYSTEM_NEWNAMEDIALOG_H
+#define VOXEL_L_SYSTEM_NEWNAMEDIALOG_H
 
 #include <QtWidgets/QDialog>
 
 namespace Ui
 {
-    class SaveResultNameDialog;
+    class NewNameDialog;
 }
 
 namespace GUI
@@ -20,7 +20,7 @@ namespace GUI
          * A dialog to request the user to enter a name for a bookmarked favourite execution result.
          */
 
-        class SaveResultNameDialog : public QDialog
+        class NewNameDialog : public QDialog
         {
                 Q_OBJECT
 
@@ -31,7 +31,7 @@ namespace GUI
                  *
                  * @param parent that has ownership of this widget
                  */
-                explicit SaveResultNameDialog(QWidget *parent = nullptr);
+                explicit NewNameDialog(QWidget *parent = nullptr);
 
                 /**
                  * Adds the passed in name to the list of already taken names. After passing in the name, a new bookmarked
@@ -41,6 +41,9 @@ namespace GUI
                  */
                 void addExistingName(const QString &name);
 
+                /**
+                 * All existing names are cleared, and those names may now be used creating a new tab.
+                 */
                 void clearExistingName();
 
                 /**
@@ -93,10 +96,10 @@ namespace GUI
                  */
                 void setupConnections();
 
-                Ui::SaveResultNameDialog *ui = nullptr;
+                Ui::NewNameDialog *ui = nullptr;
                 std::vector<QString> existingNames;
         };
     }
 }
 
-#endif //VOXEL_L_SYSTEM_SAVERESULTNAMEDIALOG_H
+#endif //VOXEL_L_SYSTEM_NEWNAMEDIALOG_H

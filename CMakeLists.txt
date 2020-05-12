@@ -59,10 +59,10 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         GUI/Output/L_System/ScriptOutputWidget.h GUI/Output/L_System/ScriptOutputEntry.cpp GUI/Output/L_System/ScriptOutputEntry.h
         L_System/ScriptInput.cpp L_System/ScriptInput.h L_System/DataStructures/Variable/Variable.h L_System/Execution/NoMatchError.h
         ProjectSaverLoader/ProjectSaver.cpp ProjectSaverLoader/ProjectSaver.h ProjectSaverLoader/ProjectDetails.cpp
-        ProjectSaverLoader/ProjectDetails.h ProjectSaverLoader/FavouriteResult.h GUI/Dialogs/SaveResultNameDialog.cpp
-        GUI/Dialogs/SaveResultNameDialog.h ProjectSaverLoader/ProjectLoader.cpp ProjectSaverLoader/ProjectLoader.h
+        ProjectSaverLoader/ProjectDetails.h ProjectSaverLoader/FavouriteResult.h GUI/Dialogs/NewNameDialog.cpp
+        GUI/Dialogs/NewNameDialog.h ProjectSaverLoader/ProjectLoader.cpp ProjectSaverLoader/ProjectLoader.h
         HelperFunctions/RuleLoading.cpp HelperFunctions/RuleLoading.h Tests/ProjectSaverLoader/TestProjectSaveLoad.cpp
         Tests/ProjectSaverLoader/TestProjectSaveLoad.h ProjectSaverLoader/ScriptInformation.h Tests/ProjectSaverLoader/TestBasicSaveLoad.cpp
-        Tests/ProjectSaverLoader/TestBasicSaveLoad.h)
+        Tests/ProjectSaverLoader/TestBasicSaveLoad.h GUI/L_System/ScriptTabs.cpp GUI/L_System/ScriptTabs.h GUI/L_System/ScriptTabWidget.cpp GUI/L_System/ScriptTabWidget.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

@@ -36,6 +36,11 @@ namespace Tests
                  * Tests saving and loading only the favourite (bookmarked) results of a script.
                  */
                 void testSaveFavouriteResult();
+
+                /**
+                 * Tests saving and loading several scripts.
+                 */
+                void testSaveSeveralScripts();
         };
     }
 }

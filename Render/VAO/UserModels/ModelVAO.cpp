@@ -11,8 +11,6 @@ namespace Render
     {
         void ModelVAO::addModel(const ::ModelLoading::Model &model)
         {
-            glBindVertexArray(vao);
-
             storedModels.addModel(model);
 
             // For some reason uploading the actual model data to vRam leads to a crash; therefore a copy of the
@@ -82,18 +80,19 @@ namespace Render
             }
         }
 
-        void ModelVAO::clearData()
+        void ModelVAO::deleteOpenGLResources()
         {
-            verticesVBO.clearData();
-            indices.clearData();
-            transformationsVBO.clearData();
-            instanceColours.clearData();
+            // Unbind the vao so that the VBOs are no longer referenced, ensuring that deleting the VBOs actually
+            // causes the VBO resource to be released.
 
-            storedModels.removeAllInstances();
+            glBindVertexArray(0);
 
-            intersectionIndexes.clear();
+            glDeleteVertexArrays(1, &vao);
 
-            modelsToUpload.clear();
+            verticesVBO.deleteVBO();
+            indices.deleteVBO();
+            transformationsVBO.deleteVBO();
+            instanceColours.deleteVBO();
         }
 
         void ModelVAO::initialize()
@@ -183,6 +182,8 @@ namespace Render
 
             intersectionIndexes.clear();
         }
+
+        // Beginning of private functions
 
         void ModelVAO::uploadModel()
         {

@@ -44,11 +44,6 @@ namespace GUI
             commandCentre.addModelInstances();
         }
 
-        void GLWidget::clearData()
-        {
-            commandCentre.clearData();
-        }
-
         void GLWidget::keyPressEvent(QKeyEvent *event)
         {
            switch (event->key())
@@ -114,6 +109,8 @@ namespace GUI
         void GLWidget::initializeGL()
         {
             QOpenGLWidget::initializeGL();
+
+            connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(cleanUp()));
 
             commandCentre.initialize();
 
@@ -195,6 +192,15 @@ namespace GUI
         }
 
         // Beginning of private slots
+
+        void GLWidget::cleanUp()
+        {
+            makeCurrent();
+
+            commandCentre.deleteOpenGLResources();
+
+            doneCurrent();
+        }
 
         void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message) const
         {

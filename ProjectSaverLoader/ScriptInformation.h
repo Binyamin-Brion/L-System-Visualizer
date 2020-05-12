@@ -18,12 +18,12 @@ namespace ProjectSaverLoader
 
     struct ScriptInformation
     {
+         QString scriptName;
          ::L_System::DataStructures::Variable axiom;
          std::vector<::L_System::DataStructures::Constant> constants;
          std::vector<::L_System::DataStructures::Rule> rules;
          std::vector<::L_System::DataStructures::Variable> variables;
-
-        std::vector<FavouriteResult> favouriteResults;
+         std::vector<FavouriteResult> favouriteResults;
     };
 }
 

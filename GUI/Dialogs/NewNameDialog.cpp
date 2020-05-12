@@ -2,35 +2,35 @@
 // Created by binybrion on 5/9/20.
 //
 
-#include "SaveResultNameDialog.h"
-#include "ui_saveResultNameDialog.h"
+#include "NewNameDialog.h"
+#include "ui_newNameDialog.h"
 #include <QPushButton>
 
 namespace GUI
 {
     namespace Dialogs
     {
-        SaveResultNameDialog::SaveResultNameDialog(QWidget *parent)
+        NewNameDialog::NewNameDialog(QWidget *parent)
                                 :
                                     QDialog{parent},
-                                    ui{new Ui::SaveResultNameDialog}
+                                    ui{new Ui::NewNameDialog}
         {
             ui->setupUi(this);
 
             setupConnections();
         }
 
-        void SaveResultNameDialog::addExistingName(const QString &name)
+        void NewNameDialog::addExistingName(const QString &name)
         {
             existingNames.push_back(name);
         }
 
-        void SaveResultNameDialog::clearExistingName()
+        void NewNameDialog::clearExistingName()
         {
             existingNames.clear();
         }
 
-        int SaveResultNameDialog::exec()
+        int NewNameDialog::exec()
         {
             int executionResult = QDialog::exec();
 
@@ -44,17 +44,17 @@ namespace GUI
             return executionResult;
         }
 
-        QString SaveResultNameDialog::getMostRecentName() const
+        QString NewNameDialog::getMostRecentName() const
         {
             return existingNames.back();
         }
 
-        bool SaveResultNameDialog::noExistingNames() const
+        bool NewNameDialog::noExistingNames() const
         {
             return existingNames.empty();
         }
 
-        void SaveResultNameDialog::removeExistingName(const QString &name)
+        void NewNameDialog::removeExistingName(const QString &name)
         {
             auto nameLocation = std::find(existingNames.begin(), existingNames.end(), name);
 
@@ -63,7 +63,7 @@ namespace GUI
 
         // Beginning of private functions
 
-        void SaveResultNameDialog::checkUniqueName(const QString &name)
+        void NewNameDialog::checkUniqueName(const QString &name)
         {
             auto nameLocation = std::find(existingNames.begin(), existingNames.end(), name);
 
@@ -85,7 +85,7 @@ namespace GUI
 
         // Beginning of private functions
 
-        void SaveResultNameDialog::setupConnections()
+        void NewNameDialog::setupConnections()
         {
             connect(ui->nameLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(checkUniqueName(const QString&)));
         }

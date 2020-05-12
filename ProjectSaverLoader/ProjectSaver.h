@@ -66,6 +66,13 @@ namespace ProjectSaverLoader
             void saveConstants(const std::vector<::L_System::DataStructures::Constant> &constants);
 
             /**
+             * Writes the passed in name to the project save file.
+             *
+             * @param scriptName the name of the script being saved
+             */
+            void saveName(const QString &scriptName);
+
+            /**
              * Writes the passed in rules to the project save file.
              *
              * @param rules to save to disk

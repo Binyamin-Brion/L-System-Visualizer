@@ -17,6 +17,7 @@ namespace ProjectSaverLoader
         ProjectDetails projectDetails;
 
         // Ensure that any previous load does not affect this one.
+        resetFlags();
         clearPreviousLoad();
 
         QFile projectFile{projectFileLocation};
@@ -28,13 +29,6 @@ namespace ProjectSaverLoader
 
         QTextStream inputStream{&projectFile};
 
-        // Controls how to interpret the current line based off of the previous section tag (Variables:, Constants:, etc).
-        bool readingAxiom = false;
-        bool readingConstants = false;
-        bool readingRules = false;
-        bool readingVariables = false;
-        bool readingFavouriteResults = false;
-
         while(!inputStream.atEnd())
         {
             QString currentLine = inputStream.readLine();
@@ -45,62 +39,13 @@ namespace ProjectSaverLoader
                 continue;
             }
 
-            // Mark what type of information subsequent lines are holding.
+            checkSectionTag(currentLine);
 
-            if(currentLine.contains("Variables:"))
+            // If a section tag was read, then the contents for the section are on the next line(s). Don't interpret
+            // the current line as having the section information.
+            if(modifiedSectionFlag)
             {
-                readingVariables = true;
-
-                readingAxiom = false;
-                readingConstants = false;
-                readingRules = false;
-                readingFavouriteResults = false;
-
-                continue;
-            }
-
-            if(currentLine.contains("Axiom"))
-            {
-                readingAxiom = true;
-
-                readingConstants = false;
-                readingRules = false;
-                readingVariables = false;
-                readingFavouriteResults = false;
-            }
-
-            if(currentLine.contains("Constants:"))
-            {
-                readingConstants = true;
-
-                readingAxiom = false;
-                readingRules = false;
-                readingVariables = false;
-                readingFavouriteResults = false;
-
-                continue;
-            }
-
-            if(currentLine.contains("Rules:"))
-            {
-                readingRules = true;
-
-                readingAxiom = false;
-                readingConstants = false;
-                readingVariables = false;
-                readingFavouriteResults = false;
-
-                continue;
-            }
-
-            if(currentLine.contains("Favourite_results:"))
-            {
-                readingFavouriteResults = true;
-
-                readingAxiom = false;
-                readingConstants = false;
-                readingRules = false;
-                readingVariables = false;
+                modifiedSectionFlag = false;
 
                 continue;
             }
@@ -109,43 +54,24 @@ namespace ProjectSaverLoader
             // that information.
             if(currentLine.contains("END SCRIPT"))
             {
-                projectDetails.addScriptInformation(axiom, loadedConstants, loadedRules, loadedVariables, loadedFavouriteResults);
+                if(!readScriptName)
+                {
+                    throw std::runtime_error{"There was a script encountered without a script name!\n"};
+                }
+
+                if(!readAxiom)
+                {
+                    throw std::runtime_error{qPrintable("The script: " + loadedScriptName + " does not have an axiom!\n")};
+                }
+
+                projectDetails.addScriptInformation(loadedScriptName, axiom, loadedConstants, loadedRules, loadedVariables, loadedFavouriteResults);
 
                 // Reset the state of how to interpret each line.
-                readingAxiom = false;
-                readingConstants = false;
-                readingRules = false;
-                readingVariables = false;
-                readingFavouriteResults = false;
+                resetFlags();
+                clearPreviousLoad();
             }
 
-            // Depending on the type of information that was being marked as being held on the next line(s),
-            // load the appropriate type of information.
-
-            if(readingVariables)
-            {
-                loadVariable(currentLine);
-            }
-
-            if(readingAxiom)
-            {
-                loadAxiom(currentLine);
-            }
-
-            if(readingConstants)
-            {
-                loadConstant(currentLine);
-            }
-
-            if(readingRules)
-            {
-                loadRule(currentLine);
-            }
-
-            if(readingFavouriteResults)
-            {
-                loadFavouriteScriptResult(currentLine);
-            }
+            chooseLoadFunction(currentLine);
         }
 
         return projectDetails;
@@ -162,6 +88,83 @@ namespace ProjectSaverLoader
         loadedVariables.clear();
 
         loadedFavouriteResults.clear();
+    }
+
+    void ProjectLoader::checkSectionTag(const QString &currentLine)
+    {
+        if(currentLine.contains("Script_name"))
+        {
+            handleScriptNameFlags();
+
+            loadScriptName(currentLine);
+
+            return;
+        }
+
+        // Mark what type of information subsequent lines are holding.
+
+        if(currentLine.contains("Variables:"))
+        {
+            handleVariableFlags();
+
+            return;
+        }
+
+        if(currentLine.contains("Axiom"))
+        {
+            handleAxiomFlags();
+
+            loadAxiom(currentLine);
+
+            return;
+        }
+
+        if(currentLine.contains("Constants:"))
+        {
+            handleConstantFlags();
+
+            return;
+        }
+
+        if(currentLine.contains("Rules:"))
+        {
+            handleRuleFlags();
+
+            return;
+        }
+
+        if(currentLine.contains("Favourite_results:"))
+        {
+            handleFavouriteResultFlags();
+
+            return;
+        }
+    }
+
+    void ProjectLoader::chooseLoadFunction(const QString &currentLine)
+    {
+        // Depending on the type of information that was being marked as being held on the next line(s),
+        // load the appropriate type of information.
+
+        if(readingVariables)
+        {
+            loadVariable(currentLine);
+        }
+
+        if(readingConstants)
+        {
+            loadConstant(currentLine);
+        }
+
+        if(readingRules)
+        {
+            loadRule(currentLine);
+        }
+
+        if(readingFavouriteResults)
+        {
+            loadFavouriteScriptResult(currentLine);
+        }
     }
 
     void ProjectLoader::checkExpectedNumberLineTokens(int numberTokens, std::vector<int> expectedNumberTokens, const QString &fileLine) const
@@ -201,6 +204,74 @@ namespace ProjectSaverLoader
         }
 
         throw std::runtime_error{stringToConvert.toStdString() + " is not a valid number!"};
+    }
+
+    void ProjectLoader::handleScriptNameFlags()
+    {
+        readScriptName = true;
+
+        readingConstants = false;
+        readingRules = false;
+        readingVariables = false;
+        readingFavouriteResults = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleVariableFlags()
+    {
+        readingVariables = true;
+
+        readingConstants = false;
+        readingRules = false;
+        readingFavouriteResults = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleAxiomFlags()
+    {
+        readAxiom = true;
+
+        readingConstants = false;
+        readingRules = false;
+        readingVariables = false;
+        readingFavouriteResults = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleConstantFlags()
+    {
+        readingConstants = true;
+
+        readingRules = false;
+        readingVariables = false;
+        readingFavouriteResults = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleRuleFlags()
+    {
+        readingRules = true;
+
+        readingConstants = false;
+        readingVariables = false;
+        readingFavouriteResults = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleFavouriteResultFlags()
+    {
+        readingFavouriteResults = true;
+
+        readingConstants = false;
+        readingRules = false;
+        readingVariables = false;
+
+        modifiedSectionFlag = true;
     }
 
     void ProjectLoader::loadAxiom(const QString &fileLine)
@@ -416,6 +487,27 @@ namespace ProjectSaverLoader
         }
     }
 
+    void ProjectLoader::loadScriptName(const QString &fileLine)
+    {
+        QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
+
+        /*
+         * A name line has the following format, which when split using whitespace:
+         *
+         * Script_name -- scriptName
+         *
+         * Token 0          Token 2
+         *
+         *  Note: the '--' are tokens but are not listed due to space limitations in the above line.
+         *
+         *  The information needed to get the script name is token 2.
+         */
+
+        checkExpectedNumberLineTokens(lineTokens.size(), {3}, fileLine);
+
+        loadedScriptName = lineTokens[2];
+    }
+
     void ProjectLoader::loadVariable(const QString &fileLine)
     {
         QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
@@ -435,5 +527,17 @@ namespace ProjectSaverLoader
         checkExpectedNumberLineTokens(lineTokens.size(), {7}, fileLine);
 
         loadedVariables.emplace_back(lineTokens[2], lineTokens[6]);
+    }
+
+    void ProjectLoader::resetFlags()
+    {
+        readAxiom = false;
+        readingConstants = false;
+        readingRules = false;
+        readingVariables = false;
+        readingFavouriteResults = false;
+        readScriptName = false;
+
+        modifiedSectionFlag = false;
     }
 }
