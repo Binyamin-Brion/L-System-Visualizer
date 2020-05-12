@@ -21,7 +21,6 @@ namespace L_System
             QString variableName;
             QString modelName;
             glm::mat4x4 transformation;
-            unsigned int depthLevel;
         };
     }
 }

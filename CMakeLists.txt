@@ -39,9 +39,8 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         Render/VAO/GridSystem/GridVAO.h Render/Camera/CameraMovement.h Render/Camera/CameraObject.cpp Render/Camera/CameraObject.h
         ModelLoading/Mesh.cpp ModelLoading/Mesh.h ModelLoading/Model.cpp
         ModelLoading/Model.h ModelLoading/Face.h Render/VAO/UserModels/ModelVAO.cpp Render/VAO/UserModels/ModelVAO.h ModelLoading/Face.cpp
-        Render/DataStructures/RecursionTree.cpp Render/DataStructures/RecursionTree.h Render/DataStructures/RecursionModelRange.cpp
-        Render/DataStructures/RecursionModelRange.h Render/DataStructures/StoredModels.cpp Render/DataStructures/StoredModels.h
-        Render/DataStructures/ModelRange.h Render/DataStructures/ModelRange.cpp Render/DataStructures/RemoveModelRecursionResult.h
+        Render/DataStructures/StoredModels.cpp Render/DataStructures/StoredModels.h
+        Render/DataStructures/ModelRange.h Render/DataStructures/ModelRange.cpp
         GUI/L_System/ScriptInfoTabWidget.cpp GUI/L_System/ScriptInfoTabWidget.h GUI/L_System/Variables/VariablesWidget.cpp
         GUI/L_System/Variables/VariablesWidget.h GUI/L_System/Variables/VariableTabContent.cpp GUI/L_System/Variables/VariableTabContent.h
         GUI/L_System/Variables/VariableEntry.cpp GUI/L_System/Variables/VariableEntry.h GUI/L_System/Constants/ConstantTabContent.cpp

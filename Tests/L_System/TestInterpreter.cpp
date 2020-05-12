@@ -92,55 +92,53 @@ namespace Tests
         {
             // Note: constant '[' means calling transformFractalTreeConstant().
 
-            unsigned int _unused_Depth_Result = 0;
-
             std::vector<std::vector<ModelInstancePlacement>> expectedTransformations;
 
             expectedTransformations.emplace_back();
 
             // First depth - 0
             glm::mat4x4 matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             // Second depth - 1[0]0
             expectedTransformations.emplace_back();
 
             matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             matrix = glm::mat4x4{1.f};
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             // Third depth - 11[1[0]0]1[0]0
             expectedTransformations.emplace_back();
 
             matrix = glm::mat4x4{1.0};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix, _unused_Depth_Result});
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4{1.0};
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
             transformFractalTreeConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
             // Since all of the ']' were matched by a '[', no transformations have to be done.
-            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             return expectedTransformations;
         }
@@ -154,32 +152,30 @@ namespace Tests
             // its transformation must be done explicitly, rather than just cancelling out a call to the transformation
             // associated with '+'.
 
-            unsigned int _unused_Depth_Result = 0;
-
             std::vector<std::vector<ModelInstancePlacement>> expectedTransformations;
 
             // First depth - F
             expectedTransformations.emplace_back();
 
             glm::mat4x4 matrix = glm::mat4x4{1.0f};
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // Second depth - F+F-F-F+F
             expectedTransformations.emplace_back();
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             transformKochCurveConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             transformKochCurveSecondConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // Note: due to how the interpreter works, the matrix needs to be reset to avoid compounding
             // imprecision in floating values. The effective sequence of transformations given to the model is the same however.
 
             matrix = glm::mat4x4{1.0f};
             transformKochCurveSecondConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             // For example, stack is empty here in the interpreter. Thus this transformation will start from a "clean"
             // identity matrix, instead of a slightly off identity matrix by going from '+' -> '-' -> '-'
@@ -188,7 +184,7 @@ namespace Tests
             //                                                                              stack is still empty here.
             matrix = glm::mat4x4{1.0f};
             transformKochCurveConstant(matrix);
-            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix, _unused_Depth_Result});
+            expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
             return expectedTransformations;
         }

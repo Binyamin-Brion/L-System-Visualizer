@@ -35,6 +35,20 @@ namespace Render
                 }
 
                 /**
+                 * Clears all data held in the buffer. Afterwards, any previously uploaded data is lost.
+                 */
+                void clearData()
+                {
+                    glBindBuffer(bufferTarget, vbo);
+
+                    // The space for the current data is already allocated; it simply needs to be told to reuse it
+                    // for different data.
+                    glBufferData(bufferTarget, heldData.size() * sizeof(T), nullptr, bufferUsage);
+
+                    heldData.clear();
+                }
+
+                /**
                  * Creates the raw OpenGL resource.
                  */
                 void initialize()

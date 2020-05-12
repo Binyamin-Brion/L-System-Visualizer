@@ -36,33 +36,21 @@ namespace Render
 
                 if(!sortedInstancedMatrices.contains(modelInstance.modelName))
                 {
-                    entryLocation = sortedInstancedMatrices.insert(modelInstance.modelName, std::vector<DepthInstances>{});
+                    entryLocation = sortedInstancedMatrices.insert(modelInstance.modelName, std::vector<glm::mat4x4>{});
                 }
 
-                // Ensure there is a vector for the matrices for the given depth level.
-                auto depthInstanceLocation = std::find_if(entryLocation->begin(), entryLocation->end(), [&](const DepthInstances &depthInstances)
-                {
-                    return depthInstances.depth == modelInstance.depthLevel;
-                });
-
-                if(depthInstanceLocation == entryLocation->end())
-                {
-                    depthInstanceLocation = entryLocation->insert(depthInstanceLocation, DepthInstances{modelInstance.depthLevel, std::vector<glm::mat4x4>{}});
-                }
-
-                // Add the associated matrix for the current depth level.
-                depthInstanceLocation->instanceMatrices.push_back(modelInstance.transformation);
+                entryLocation.value().push_back(modelInstance.transformation);
             }
         }
 
         // Iterate over the associated model matrices and uploaded them to the GPU memory.
-        QHash<QString, std::vector<DepthInstances>>::const_iterator i = sortedInstancedMatrices.constBegin();
+        QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = sortedInstancedMatrices.constBegin();
 
         while (i != sortedInstancedMatrices.constEnd())
         {
             for(const auto &depthInstances : i.value())
             {
-                modelVao.addModelInstances(i.key(), depthInstances.depth, depthInstances.instanceMatrices);
+                modelVao.addModelInstances(i.key(), i.value());
             }
 
             ++i;
@@ -76,6 +64,11 @@ namespace Render
         glm::vec3 rayDirection = worldCoordinates - cameraObject.getPosition();
 
         modelVao.checkRayIntersection(cameraObject.getPosition(), rayDirection);
+    }
+
+    void CommandCentre::clearData()
+    {
+        modelVao.clearData();
     }
 
     Camera::CameraObject &CommandCentre::getCamera()
@@ -132,14 +125,11 @@ namespace Render
 
     void CommandCentre::clearPreviousRender()
     {
-        QHash<QString, std::vector<DepthInstances>>::const_iterator i = sortedInstancedMatrices.constBegin();
+        QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = sortedInstancedMatrices.constBegin();
 
         while (i != sortedInstancedMatrices.constEnd())
         {
-            for(const auto &depthInstances : i.value())
-            {
-                modelVao.removeModelInstances(i.key(), depthInstances.depth);
-            }
+            modelVao.removeModelInstances(i.key());
 
             ++i;
         }

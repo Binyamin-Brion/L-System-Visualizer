@@ -45,6 +45,11 @@ namespace GUI
                 void addModelInstances();
 
                 /**
+                 * Removes all rendering data. Afterwards, nothing will be rendered.
+                 */
+                void clearData();
+
+                /**
                  * Handles key press events when this widget is in focus.
                  *
                  * @param event containing information about they key press

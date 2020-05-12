@@ -62,21 +62,17 @@ namespace Render
                 const std::vector<ModelRange>& getModelRanges() const;
 
                 /**
+                 * Remove all instances of the stored models.
+                 */
+                void removeAllInstances();
+
+                /**
                  * Remove all instances of the referred to model. Instances for the model can be added again without calling
                  * addModel() again.
                  *
                  * @param modelFileName name of the the file that was used to load the model
                  */
                 void removeModel(const QString &modelFileName);
-
-                /**
-                 * Removes the specified number of instance matrices for the referred to model.
-                 *
-                 * @param modelFileName name of the the file that was used to load the model . Used to ensure data integrity.
-                 * @param instanceMatrixBegin index into the instance matrix vector at which the number of instances is to be removed
-                 * @param instanceMatrixCount number of instance matrices to be removed starting at instanceMatrixBegin
-                 */
-                void removeModelInstances(const QString &modelFileName, unsigned int instanceMatrixBegin, unsigned int instanceMatrixCount);
 
             private:
 

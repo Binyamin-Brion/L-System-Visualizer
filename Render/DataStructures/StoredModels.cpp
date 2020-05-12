@@ -91,6 +91,13 @@ namespace Render
             }
         }
 
+        void StoredModels::removeAllInstances()
+        {
+            storedModels.clear();
+
+            numberIndicesStored = 0;
+        }
+
         void StoredModels::removeModel(const QString &modelFileName)
         {
             auto modelLocation = std::find_if(storedModels.begin(), storedModels.end(), [&modelFileName](const ModelRange &storedModel)
@@ -106,25 +113,6 @@ namespace Render
 
             modelLocation->setInstanceMatrixBegin(0);
             modelLocation->incrementInstanceMatrixCount(-modelLocation->getInstanceMatrixCount());
-
-            updateIndiceIndexes();
-        }
-
-        void StoredModels::removeModelInstances(const QString &modelFileName, unsigned int instanceMatrixBegin, unsigned int instanceMatrixCount)
-        {
-            for(auto &i : storedModels)
-            {
-                bool lowerBoundRange = i.getInstanceMatrixBegin() <= instanceMatrixBegin;
-                bool higherBoundRange = (instanceMatrixBegin + instanceMatrixCount) <= i.getInstanceMatrixBegin() + i.getInstanceMatrixCount();
-
-                if(lowerBoundRange && higherBoundRange)
-                {
-                    // Additional check to ensure data integrity. Prevents accidentally removing instance matrices for other models.
-                    assert(i.getModel().getModelFileName() == modelFileName);
-
-                    i.deIncrementInstanceMatrixCount(instanceMatrixCount);
-                }
-            }
 
             updateIndiceIndexes();
         }

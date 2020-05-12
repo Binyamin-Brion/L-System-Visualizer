@@ -9,7 +9,6 @@
 #include <Render/VBO/VBOWapper.h>
 #include <vec3.hpp>
 #include <mat4x4.hpp>
-#include "../../DataStructures/RecursionTree.h"
 #include "../../DataStructures//StoredModels.h"
 
 namespace ModelLoading
@@ -40,10 +39,9 @@ namespace Render
                  * Add instances of a model to be rendered. The model must have been loaded first using addModel().
                  *
                  * @param modelFileName name of the file used to load the model
-                 * @param recursionDepth the level of recursion the instance is a result of
                  * @param transformationMatrices the matrices representing instances of the model to render
                  */
-                void addModelInstances(const QString &modelFileName, unsigned int recursionDepth, const std::vector<glm::mat4x4> &transformationMatrices);
+                void addModelInstances(const QString &modelFileName, const std::vector<glm::mat4x4> &transformationMatrices);
 
                 /**
                  * Checks for an intersection with the ray and an instance of a model. If there is one, that instance
@@ -55,17 +53,21 @@ namespace Render
                 void checkRayIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection);
 
                 /**
+                 * Removes all rendering data. Afterwards, nothing will be rendered.
+                 */
+                void clearData();
+
+                /**
                  * Initializes all internal buffers for use for rendering.
                  */
                 void initialize();
 
                 /**
-                 * Removes all instances of the passed in model at the specified recursion depth.
+                 * Removes all instances of the passed in model.
                  *
                  * @param modelFileName the name of the file used to loader the model
-                 * @param recursionDepth recursion depth instances to remove
                  */
-                void removeModelInstances(const QString &modelFileName, unsigned int recursionDepth);
+                void removeModelInstances(const QString &modelFileName);
 
                 /**
                  * Renders the instances of models.
@@ -78,6 +80,10 @@ namespace Render
                 void resetIntersectionColours();
 
             private:
+
+                /**
+                 * Uploads the deferred models into vRam.
+                 */
                 void uploadModel();
 
                 unsigned int vao;
@@ -86,7 +92,6 @@ namespace Render
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::mat4x4> transformationsVBO;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec3> instanceColours;
 
-                DataStructures::RecursionTree recursionTree;
                 DataStructures::StoredModels storedModels;
 
                 std::vector<unsigned int> intersectionIndexes;

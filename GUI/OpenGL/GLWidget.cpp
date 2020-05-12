@@ -44,6 +44,11 @@ namespace GUI
             commandCentre.addModelInstances();
         }
 
+        void GLWidget::clearData()
+        {
+            commandCentre.clearData();
+        }
+
         void GLWidget::keyPressEvent(QKeyEvent *event)
         {
            switch (event->key())

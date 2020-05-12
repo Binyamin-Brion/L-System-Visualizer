@@ -15,15 +15,13 @@ namespace Render
 
             storedModels.addModel(model);
 
+            // For some reason uploading the actual model data to vRam leads to a crash; therefore a copy of the
+            // of the model is made and is uploaded in the next render loop.
             modelsToUpload.push_back(model);
         }
 
-        void ModelVAO::addModelInstances(const QString &modelFileName, unsigned int recursionDepth, const std::vector<glm::mat4x4> &transformationMatrices)
+        void ModelVAO::addModelInstances(const QString &modelFileName, const std::vector<glm::mat4x4> &transformationMatrices)
         {
-            DataStructures::RecursionModelRange model(modelFileName, storedModels.getModelRange(modelFileName).getInstanceMatrixBegin() + storedModels.getModelRange(modelFileName).getInstanceMatrixCount(), transformationMatrices.size());
-
-            recursionTree.addModelRecursiveResult(recursionDepth, model);
-
             // Add the transformation matrices to the required location in the instance matrices vector. This has to be done so that the
             // instance rendering will render only those instances associated with a particular model.
             auto instanceTransformationVector = transformationsVBO.getHeldData();
@@ -84,6 +82,20 @@ namespace Render
             }
         }
 
+        void ModelVAO::clearData()
+        {
+            verticesVBO.clearData();
+            indices.clearData();
+            transformationsVBO.clearData();
+            instanceColours.clearData();
+
+            storedModels.removeAllInstances();
+
+            intersectionIndexes.clear();
+
+            modelsToUpload.clear();
+        }
+
         void ModelVAO::initialize()
         {
             if(!initializeOpenGLFunctions())
@@ -131,21 +143,9 @@ namespace Render
             glEnableVertexAttribArray(5);
         }
 
-        void ModelVAO::removeModelInstances(const QString &modelFileName, unsigned int recursionDepth)
+        void ModelVAO::removeModelInstances(const QString &modelFileName)
         {
-            auto removeResult = recursionTree.removeModelRecursiveResult(recursionDepth, modelFileName);
-
-            if(removeResult.entryRemoved) // There is the requested model at the specified recursion level
-            {
-                auto instanceMatrices = transformationsVBO.getHeldData();
-
-                // Remove instances from being rendered
-                instanceMatrices.erase(instanceMatrices.begin() + removeResult.instanceMatrixBeginIndex, instanceMatrices.begin() + removeResult.instanceMatrixBeginIndex + removeResult.instanceMatrixCount);
-
-                transformationsVBO.uploadData(instanceMatrices);
-
-                storedModels.removeModelInstances(modelFileName, removeResult.instanceMatrixBeginIndex, removeResult.instanceMatrixCount);
-            }
+            storedModels.removeModel(modelFileName);
         }
 
         void ModelVAO::render()

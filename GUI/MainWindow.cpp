@@ -115,6 +115,8 @@ namespace GUI
 
         try
         {
+            ui->openGLWidget->clearData();
+
             saveResultNameDialog->clearExistingName();
 
             projectDetails = projectLoader.loadProject(modelFileLocation);

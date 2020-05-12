@@ -53,6 +53,11 @@ namespace Render
             void checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY);
 
             /**
+             * Removes all rendering data. Afterwards, nothing will be rendered.
+             */
+            void clearData();
+
+            /**
              * Get the reference to the camera used for rending.
              *
              * @return reference to the camera
@@ -102,16 +107,9 @@ namespace Render
 
             glm::vec3 backgroundColour;
 
-            // Stores the matrices for a depth result.
-            struct DepthInstances
-            {
-                unsigned int depth;
-                std::vector<glm::mat4x4> instanceMatrices;
-            };
-
             // Key: holds the model file name.
             // Value: holds the associated matrices for each depth result level.
-            QHash<QString, std::vector<DepthInstances>> sortedInstancedMatrices;
+            QHash<QString, std::vector<glm::mat4x4>> sortedInstancedMatrices;
     };
 }
 
