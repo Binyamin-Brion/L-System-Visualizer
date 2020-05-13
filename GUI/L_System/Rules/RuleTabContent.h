@@ -59,14 +59,14 @@ namespace GUI
                  *
                  * @param constantNames list of valid constants
                  */
-                void updateAvailableConstantEntries(std::vector<QString> constantNames);
+                void updateAvailableConstantEntries(const std::vector<QString> &constantNames);
 
                 /**
                  * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
                  *
                  * @param constantNames list of valid constants
                  */
-                void updateAvailableVariableEntries(std::vector<QString> variableNames);
+                void updateAvailableVariableEntries(const std::vector<QString> &variableNames);
 
             private:
 

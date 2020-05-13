@@ -27,7 +27,7 @@ namespace GUI
 
             for(const auto &i : constantNames)
             {
-                if(i.validName)
+                if(i.validName && i.entryDeclaration->informationValid())
                 {
                     names.push_back(i.name);
                 }
@@ -63,9 +63,9 @@ namespace GUI
 
                 connect(constantEntry, SIGNAL(constantEntrySelected(ConstantEntryDeclaration*, int)), this, SLOT(handleConstantEntrySelected(ConstantEntryDeclaration*, int)));
 
+                connect(constantEntry, SIGNAL(nameChanged(ConstantEntryDeclaration*, const QString&)),this, SLOT(handleNewConstantName(ConstantEntryDeclaration*, const QString&)));
 
-                connect(constantEntry, SIGNAL(nameChanged(ConstantEntryDeclaration*, const QString&)),
-                        this, SLOT(handleNewConstantName(ConstantEntryDeclaration*, const QString&)));
+                connect(constantEntry, &ConstantEntryDeclaration::informationChanged, [this]() { emit constantsChangedValidity(getConstantNames()); });
 
                 this->constants.push_back(constantEntry);
 
@@ -73,6 +73,11 @@ namespace GUI
                 constantNames.push_back(EntryNames{constantEntry, i.getConstantName()});
                 constantNames.back().validName = true;
             }
+        }
+
+        void ConstantsWidget::setVariableNames(const std::vector<QString> &variableNames)
+        {
+            this->variableNames = variableNames;
         }
 
         // Beginning of public slots
@@ -85,9 +90,9 @@ namespace GUI
 
             connect(constantEntry, SIGNAL(constantEntrySelected(ConstantEntryDeclaration*, int)), this, SLOT(handleConstantEntrySelected(ConstantEntryDeclaration*, int)));
 
+            connect(constantEntry, SIGNAL(nameChanged(ConstantEntryDeclaration*, const QString&)), this, SLOT(handleNewConstantName(ConstantEntryDeclaration*, const QString&)));
 
-            connect(constantEntry, SIGNAL(nameChanged(ConstantEntryDeclaration*, const QString&)),
-                    this, SLOT(handleNewConstantName(ConstantEntryDeclaration*, const QString&)));
+            connect(constantEntry, &ConstantEntryDeclaration::informationChanged, [this]() { emit constantsChangedValidity(getConstantNames()); });
 
             constants.push_back(constantEntry);
 
@@ -120,7 +125,7 @@ namespace GUI
             selectedConstants.clear();
 
             // Automatically update the list of constants available for use in a rule.
-            emit entryNamesChanged(getConstantNames());
+            emit constantsChangedValidity(getConstantNames());
         }
 
         // Beginning of private slots
@@ -142,7 +147,7 @@ namespace GUI
             entryLocation->validName = nameValid;
 
             // Automatically update the list of constants available for use in a rule.
-            emit entryNamesChanged(getConstantNames());
+            emit constantsChangedValidity(getConstantNames());
         }
 
         void ConstantsWidget::handleConstantEntrySelected(ConstantEntryDeclaration *constantEntry, int newState)
@@ -167,6 +172,15 @@ namespace GUI
             for(const auto &i : constantNames)
             {
                 if(i.name == newName)
+                {
+                    return false;
+                }
+            }
+
+            // Constant names cannot be the same as a variable.
+            for(const auto &i : variableNames)
+            {
+                if(i == newName)
                 {
                     return false;
                 }

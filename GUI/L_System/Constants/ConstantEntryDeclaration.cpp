@@ -104,6 +104,11 @@ namespace GUI
             }
         }
 
+        bool ConstantEntryDeclaration::informationValid() const
+        {
+            return ui->entryInformation->informationValid();
+        }
+
         void ConstantEntryDeclaration::nameValid(bool valid)
         {
             if(valid)
@@ -136,6 +141,8 @@ namespace GUI
 
         void ConstantEntryDeclaration::setUpConnections()
         {
+            connect(ui->entryInformation, &ConstantEntryInformation::informationChanged, [this]() { emit informationChanged(); });
+
             connect(ui->visibleCheckBox, SIGNAL(stateChanged(int)), this, SLOT(handleEntryVisibility(int)));
 
             // The check to see if the entry name is valid can only be done in the object that owns this object, as that object holds

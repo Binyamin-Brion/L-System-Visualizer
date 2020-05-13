@@ -27,9 +27,10 @@ namespace GUI
             signals:
 
                 /**
-                 * Emitted when an entry name changes, and the list of constants that can be used in a rule has to be updated.
+                 * Emitted when an entry has its name or information changed, resulting in the constant becoming
+                 * either valid or invalid.
                  */
-                void entryNamesChanged(std::vector<QString>);
+                void constantsChangedValidity(std::vector<QString>);
 
             public:
 
@@ -60,6 +61,13 @@ namespace GUI
                  * @param constants vector of constant data structure from which to create entries
                  */
                 void loadEntries(const std::vector<::L_System::DataStructures::Constant> &constants);
+
+                /**
+                 * Updates the variables names that are currently being used.
+                 *
+                 * @param constantNames vector of valid variable names
+                 */
+                void setVariableNames(const std::vector<QString> &variableNames);
 
             public slots:
 
@@ -123,6 +131,7 @@ namespace GUI
                 };
 
                 std::vector<EntryNames> constantNames;
+                std::vector<QString> variableNames;
         };
     }
 }

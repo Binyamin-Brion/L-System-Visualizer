@@ -54,7 +54,7 @@ namespace GUI
             }
         }
 
-        void RuleWidget::updateAvailableConstants(std::vector<QString> constantNames)
+        void RuleWidget::updateAvailableConstants(const std::vector<QString> &constantNames)
         {
             // Keep track of the new list of valid constant names for when a rule entry is added. See addRuleEntry() for more details.
             this->constantNames = constantNames;
@@ -65,7 +65,7 @@ namespace GUI
             }
         }
 
-        void RuleWidget::updateAvailableVariables(std::vector<QString> variableNames)
+        void RuleWidget::updateAvailableVariables(const std::vector<QString> &variableNames)
         {
             // Keep track of the new list of valid variable names for when a rule entry is added. See addRuleEntry() for more details.
             this->variableNames = variableNames;

@@ -42,7 +42,6 @@ namespace GUI
             modelEntries.clear();
         }
 
-
         QString VariablesWidget::getAssociatedModelName(const QString &variableName) const
         {
             for(const auto &i : variableNames)
@@ -53,7 +52,7 @@ namespace GUI
                 }
             }
 
-            assert(false);
+            throw std::runtime_error{"There is no associated model for the variable: " + variableName.toStdString()};
         }
 
         std::vector<QString> VariablesWidget::getEntryNames() const
@@ -64,7 +63,8 @@ namespace GUI
 
             for(const auto &i : variableNames)
             {
-                if(i.nameValid)
+                // Only variables with accepted name and an associated model are valid variables.
+                if(i.nameValid && i.entry->getAssociatedModelName() != i.entry->getNoModelText())
                 {
                     names.push_back(i.name);
                 }
@@ -79,7 +79,8 @@ namespace GUI
 
             for(auto &i : variableNames)
             {
-                if(i.nameValid)
+                // Only variables with an associated model are included in the list of valid variable tokens.
+                if(i.nameValid && i.entry->getAssociatedModelName() != i.entry->getNoModelText())
                 {
                     variablesTokens.push_back(i.entry->getVariableToken());
                 }
@@ -98,8 +99,7 @@ namespace GUI
 
                 connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
 
-                connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),
-                        this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
+                connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
 
                 this->variables.push_back(variableEntry);
 
@@ -124,11 +124,19 @@ namespace GUI
             }
         }
 
+        void VariablesWidget::setConstantNames(const std::vector<QString> &constantNames)
+        {
+            this->constantNames = constantNames;
+        }
+
         // Beginning of public slots
 
         void VariablesWidget::addVariableEntry()
         {
             VariableEntry *variableEntry = new VariableEntry{this};
+
+            // This will cause the rule entries to be updated if a new associated model is selected, which results in the variable being valid.
+            connect(variableEntry, &VariableEntry::modelSelected, [this]() {  emit variablesChangedValidity(getEntryNames()); });
 
             connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
 
@@ -172,7 +180,7 @@ namespace GUI
             selectedVariables.clear();
 
             // Automatically update the list of variables available for use in a rule.
-            emit entryNamesChanged(getEntryNames());
+            emit variablesChangedValidity(getEntryNames());
         }
 
         // Beginning of private slots
@@ -191,7 +199,7 @@ namespace GUI
             entryLocation->nameValid = nameValid;
 
             // Automatically update the list of variables available for use in a rule.
-            emit entryNamesChanged(getEntryNames());
+            emit variablesChangedValidity(getEntryNames());
         }
 
         void VariablesWidget::handleVariableEntrySelected(VariableEntry *variableEntry, int newState)
@@ -215,6 +223,15 @@ namespace GUI
             for(const auto &i : variableNames)
             {
                 if(i.name == newName)
+                {
+                    return false;
+                }
+            }
+
+            // Name cannot be the same as that of a variable
+            for(const auto &i : constantNames)
+            {
+                if(i == newName)
                 {
                     return false;
                 }

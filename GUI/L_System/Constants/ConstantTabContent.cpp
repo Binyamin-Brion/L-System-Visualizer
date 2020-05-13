@@ -31,6 +31,13 @@ namespace GUI
             ui->scrollAreaWidgetContents->loadEntries(constants);
         }
 
+        // Beginning of public slots
+
+        void ConstantTabContent::setVariableNames(const std::vector<QString> &variableNames)
+        {
+            ui->scrollAreaWidgetContents->setVariableNames(variableNames);
+        }
+
         // Beginning of private functions
 
         void ConstantTabContent::setupConnections()
@@ -39,7 +46,7 @@ namespace GUI
 
             connect(ui->deleteConstantButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(handleDeleteButtonPushed()));
 
-            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::entryNamesChanged, [this](std::vector<QString> variableNames) { emit entryNamesChanged(variableNames); });
+            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::constantsChangedValidity, [this](std::vector<QString> variableNames) { emit constantsChangedValidity(variableNames); });
         }
     }
 }

@@ -151,9 +151,20 @@ namespace GUI
         {
             // Before running a script, check if the previous result needs to be saved, and if it does, ask the user to do so.
             // Note: this is required because running a script discard the previous result.
-           requestResultSave();
+            requestResultSave();
 
-            ui->scriptInfoTabs->setScriptInput();
+            try
+            {
+                // If not all the required information is present to run a script, for whatever reason, such as an invalid axiom,
+                // then don't proceed to try and execute the script. Abort the execution and show an error message.
+                ui->scriptInfoTabs->setScriptInput();
+            }
+            catch(std::runtime_error &e)
+            {
+                QMessageBox::critical(this, "Error running script", e.what(), QMessageBox::Ok);
+
+                return;
+            }
 
             // There must be rules to run the script. This implicitly also checks that there are valid variables and (maybe) constants
             // defined as these must exist in order for a rule to be created. *Constants are not required to create a rule.

@@ -35,9 +35,10 @@ namespace GUI
             signals:
 
                 /**
-                 * Emitted when an entry name changes, and the list of variables that can be used in a rule has to be updated.
+                 * Emitted when an entry name changes or an associated model changes, resulting in the variable becoming
+                 * either valid or invalid.
                  */
-                void entryNamesChanged(std::vector<QString>);
+                void variablesChangedValidity(std::vector<QString>);
 
                 /**
                  * Emitted when a model selected by the user from the file disk was successfully loaded.
@@ -75,6 +76,13 @@ namespace GUI
                 std::vector<::L_System::DataStructures::Variable> getVariablesTokens() const;
 
                 /**
+                 * Check whether a valid axiom has been chosen.
+                 *
+                 * @return true if a valid axiom is chosen
+                 */
+                bool hasValidAxiom() const;
+
+                /**
                  * Creates entries for each of the variable data structures held in the passed in vector.
                  * Request forwarded to VariablesWidget.
                  *
@@ -88,6 +96,17 @@ namespace GUI
                  * @param modelFileLocation location of file containing the model to load
                  */
                 void loadNewModel(const QString &modelFileLocation);
+
+            public slots:
+
+                /**
+                 * Updates the constant names that are currently being used.
+                 *
+                 * Forwards argument to VariableWidget.
+                 *
+                 * @param constantNames vector of valid constant names
+                 */
+                void setConstantNames(const std::vector<QString> &constantNames);
 
             private slots:
 

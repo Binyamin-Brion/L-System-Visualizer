@@ -37,6 +37,11 @@ namespace GUI
                 void constantEntrySelected(ConstantEntryDeclaration*, int newState);
 
                 /**
+                 * Emitted when the constant information has been changed.
+                 */
+                void informationChanged();
+
+                /**
                  * Emitted when a new name for the entry is given.
                  *
                  * @param newName name specified by the user for the entry
@@ -67,6 +72,13 @@ namespace GUI
                  * @return constant token for use in the execution of the L-Script
                  */
                 ::L_System::DataStructures::Constant getConstantToken() const;
+
+                /**
+                 * Get whether the information in this constant is valid or not.
+                 *
+                 * @return true if the information is valid
+                 */
+                bool informationValid() const;
 
                 /**
                  * Update the line edit field where the entry name is given visually to reflect if the given name is

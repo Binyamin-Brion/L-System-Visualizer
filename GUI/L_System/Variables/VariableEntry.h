@@ -28,6 +28,12 @@ namespace GUI
             signals:
 
                 /**
+                 * Emitted when a new model is selected for the variable. This causes the list of valid variables to be updated,
+                 * as a valid variable must include a valid associated model.
+                 */
+                void modelSelected();
+
+                /**
                  * Emitted when a new name for the entry is given.
                  *
                  * @param newName name specified by the user for the entry
@@ -74,6 +80,13 @@ namespace GUI
                 QString getAssociatedModelName() const;
 
                 /**
+                 * Get the text used to show that no associated model is selected.
+                 *
+                 * @return the text used to show no associated model
+                 */
+                const QString& getNoModelText() const;
+
+                /**
                  * Get the equivalent Variable data structure for this variable for use in the script execution.
                  *
                  * @return equivalent Variable data structure
@@ -103,6 +116,12 @@ namespace GUI
                 void setupConnections();
 
                 Ui::VariableEntry *ui = nullptr;
+
+                const QString noModelText = "No model selected.";
+
+                // Keep track of whether the noModelText has been deleted; this has to be done once as the noModelText
+                // is automatically added during construction of this object, and is removed when a model name is added.
+                bool noModelItemDeleted = false;
         };
     }
 }

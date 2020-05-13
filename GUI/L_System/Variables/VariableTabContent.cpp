@@ -76,6 +76,13 @@ namespace GUI
             loadModel(modelFileLocation);
         }
 
+        // Beginning of public slots
+
+        void VariableTabContent::setConstantNames(const std::vector<QString> &constantNames)
+        {
+            ui->declaredVariables->setConstantNames(constantNames);
+        }
+
         // Beginning of private slots
 
         void VariableTabContent::loadNewModel()
@@ -115,9 +122,9 @@ namespace GUI
 
             connect(ui->deleteVariableButtons, SIGNAL(clicked()), ui->declaredVariables, SLOT(handleDeleteButtonPushed()));
 
-            connect(ui->declaredVariables, SIGNAL(entryNamesChanged(std::vector<QString>)), this, SLOT(refreshAxiomList(std::vector<QString>)));
+            connect(ui->declaredVariables, SIGNAL(variablesChangedValidity(std::vector<QString>)), this, SLOT(refreshAxiomList(std::vector<QString>)));
 
-            connect(ui->declaredVariables, &VariablesWidget::entryNamesChanged, [this](std::vector<QString> variableNames) { emit entryNamesChanged(variableNames); });
+            connect(ui->declaredVariables, &VariablesWidget::variablesChangedValidity, [this](std::vector<QString> variableNames) { emit variablesChangedValidity(variableNames); });
         }
 
         void VariableTabContent::loadModel(const QString &modelFileLocation)
@@ -156,6 +163,11 @@ namespace GUI
                 QMessageBox::critical(this, "Load Model", "Unable to load the requested model.\n\n" +
                                                           QString{e.what()}, QMessageBox::Ok);
             }
+        }
+
+        bool VariableTabContent::hasValidAxiom() const
+        {
+            return !ui->axiomComboBox->currentText().isEmpty();
         }
     }
 }

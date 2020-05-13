@@ -137,6 +137,11 @@ namespace GUI
 
         void ScriptInfoTabWidget::accumulateScriptInformation()
         {
+            if(!variableTabContent->hasValidAxiom())
+            {
+                throw std::runtime_error{"No valid axiom has been selected\n"};
+            }
+
             // Remove the previous accumulation.
             scriptConstants.clear();
             scriptRules.clear();
@@ -173,9 +178,17 @@ namespace GUI
         {
             connect(variableTabContent, &VariableTabContent::modelLoaded, [this](const ::ModelLoading::Model &model) { emit modelLoaded(model); });
 
-            connect(constantTabContent, SIGNAL(entryNamesChanged(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableConstantEntries(std::vector<QString>)));
+            // Update the rules variable so that it is known the names of constants that can be used; update the variable (tab) so that it is known what variable names
+            // cannot be used due to constants already having that name.
+            connect(constantTabContent, SIGNAL(constantsChangedValidity(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableConstantEntries(const std::vector<QString>&)));
 
-            connect(variableTabContent, SIGNAL(entryNamesChanged(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableVariableEntries(std::vector<QString>)));
+            connect(constantTabContent, SIGNAL(constantsChangedValidity(std::vector<QString>)), variableTabContent, SLOT(setConstantNames(const std::vector<QString>&)));
+
+            // Update the rules variable so that it is known the names of variables that can be used; update the constant (tab) so that it is known what constant names
+            // cannot be used due to variables already having that name.
+            connect(variableTabContent, SIGNAL(variablesChangedValidity(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableVariableEntries(const std::vector<QString>&)));
+
+            connect(variableTabContent, SIGNAL(variablesChangedValidity(std::vector<QString>)), constantTabContent, SLOT(setVariableNames(const std::vector<QString>&)));
         }
     }
 }

@@ -31,12 +31,12 @@ namespace GUI
 
         // Beginning of public slots
 
-        void RuleTabContent::updateAvailableConstantEntries(std::vector<QString> constantNames)
+        void RuleTabContent::updateAvailableConstantEntries(const std::vector<QString> &constantNames)
         {
             ui->scrollAreaWidgetContents->updateAvailableConstants(constantNames);
         }
 
-        void RuleTabContent::updateAvailableVariableEntries(std::vector<QString> variableNames)
+        void RuleTabContent::updateAvailableVariableEntries(const std::vector<QString> &variableNames)
         {
             ui->scrollAreaWidgetContents->updateAvailableVariables(variableNames);
         }

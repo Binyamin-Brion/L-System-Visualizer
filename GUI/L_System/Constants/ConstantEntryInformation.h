@@ -29,6 +29,12 @@ namespace GUI
 
         class ConstantEntryInformation : public QWidget
         {
+                Q_OBJECT
+
+            signals:
+
+                void informationChanged();
+
             public:
 
                 /**
@@ -84,6 +90,8 @@ namespace GUI
                  */
                 ::L_System::DataStructures::Translation getTranslation() const;
 
+                bool informationValid() const;
+
                 /**
                  * Puts the information stored in the constant data structure in the appropriate fields of this widget.
                  *
@@ -92,6 +100,24 @@ namespace GUI
                 void setInformation(const ::L_System::DataStructures::Constant &constant);
 
             private:
+
+                /**
+                 * Checks whether the information stored in the rotation section of the constant is valid.
+                 * If it is, the related text fields are shown as being without error and the status of the validity
+                 * of this constant is updated.
+                 *
+                 * Should only be called if this constant represents a rotation.
+                 */
+                void checkValidRotation();
+
+                /**
+                 * Checks whether the information stored in the translation section of the constant is valid.
+                 * If it is, the related text fields are shown as being without error and the status of the validity
+                 * of this constant is updated.
+                 *
+                 * Should only be called if this constant represents a translation.
+                 */
+                void checkValidTranslation();
 
                 /**
                  * Determines the stack operation to return based off of the value in a combo box representing stack operation.
@@ -122,10 +148,17 @@ namespace GUI
                  */
                 glm::vec3 getTranslationVector() const;
 
+                /**
+                 * Sets up the connections used by this object's widgets.
+                 */
+                void setupConnections();
+
                 Ui::ConstantEntryInformation *ui = nullptr;
 
                 const QString pushActionString = "Push";
                 const QString popActionString = "Pop";
+
+                bool validInformation = false;
         };
     }
 }

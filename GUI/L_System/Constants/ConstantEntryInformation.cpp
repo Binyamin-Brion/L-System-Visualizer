@@ -25,6 +25,12 @@ namespace GUI
 
             // By default, a constant is assumed to be a translation, as they are easier to reason about.
             disableRotation();
+
+            checkValidRotation();
+
+            checkValidTranslation();
+
+            setupConnections();
         }
 
         void ConstantEntryInformation::disableRotation()
@@ -88,6 +94,11 @@ namespace GUI
             return ::L_System::DataStructures::Translation{getTranslationVector()};
         }
 
+        bool ConstantEntryInformation::informationValid() const
+        {
+            return validInformation;
+        }
+
         void ConstantEntryInformation::setInformation(const ::L_System::DataStructures::Constant &constant)
         {
             // If the constant is Rotation, set the correct index for stack operation for the rotations stack combo box
@@ -137,6 +148,106 @@ namespace GUI
 
         // Beginning of private functions
 
+        void ConstantEntryInformation::checkValidRotation()
+        {
+            const QString errorStyleSheet = "background-color: rgba(128, 0, 0, 32);";
+
+            bool successRotation;
+
+            bool successX;
+            bool successY;
+            bool successZ;
+
+            ui->angleLineEdit->text().toDouble(&successRotation);
+            ui->rotationLineEditX->text().toDouble(&successX);
+            ui->rotationLineEditY->text().toDouble(&successY);
+            ui->rotationLineEditZ->text().toDouble(&successZ);
+
+            if(!successRotation)
+            {
+                ui->angleLineEdit->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->angleLineEdit->setStyleSheet(styleSheet());
+            }
+
+            if(!successX)
+            {
+                ui->rotationLineEditX->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->rotationLineEditX->setStyleSheet(styleSheet());
+            }
+
+            if(!successY)
+            {
+                ui->rotationLineEditY->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->rotationLineEditY->setStyleSheet(styleSheet());
+            }
+
+            if(!successZ)
+            {
+                ui->rotationLineEditZ->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->rotationLineEditZ->setStyleSheet(styleSheet());
+            }
+
+            validInformation = successRotation && successX && successY && successZ;
+
+            emit informationChanged();
+        }
+
+        void ConstantEntryInformation::checkValidTranslation()
+        {
+            const QString errorStyleSheet = "background-color: rgba(128, 0, 0, 32);";
+
+            bool successX;
+            bool successY;
+            bool successZ;
+
+            ui->translationLineEditX->text().toDouble(&successX);
+            ui->translationLineEditY->text().toDouble(&successY);
+            ui->translationLineEditZ->text().toDouble(&successZ);
+
+            if(!successX)
+            {
+                ui->translationLineEditX->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->translationLineEditX->setStyleSheet(styleSheet());
+            }
+
+            if(!successY)
+            {
+                ui->translationLineEditY->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->translationLineEditY->setStyleSheet(styleSheet());
+            }
+
+            if(!successZ)
+            {
+                ui->translationLineEditZ->setStyleSheet(errorStyleSheet);
+            }
+            else
+            {
+                ui->translationLineEditZ->setStyleSheet(styleSheet());
+            }
+
+            validInformation = successX && successY && successZ;
+
+            emit informationChanged();
+        }
+
         ::L_System::DataStructures::StackOperation ConstantEntryInformation::determineStackOperation(const QString &operationString) const
         {
             if(operationString == pushActionString)
@@ -166,6 +277,23 @@ namespace GUI
             return glm::vec3{ui->translationLineEditX->text().toFloat(),
                              ui->translationLineEditY->text().toFloat(),
                              ui->translationLineEditZ->text().toFloat()};
+        }
+
+        void ConstantEntryInformation::setupConnections()
+        {
+            connect(ui->translationLineEditX, &QLineEdit::textChanged, [this](const QString&) { checkValidTranslation(); });
+
+            connect(ui->translationLineEditY, &QLineEdit::textChanged, [this](const QString&) { checkValidTranslation(); });
+
+            connect(ui->translationLineEditZ, &QLineEdit::textChanged, [this](const QString&) { checkValidTranslation(); });
+
+            connect(ui->angleLineEdit, &QLineEdit::textChanged, [this](const QString&) { checkValidRotation(); });
+
+            connect(ui->rotationLineEditX, &QLineEdit::textChanged, [this](const QString&) { checkValidRotation(); });
+
+            connect(ui->rotationLineEditY, &QLineEdit::textChanged, [this](const QString&) { checkValidRotation(); });
+
+            connect(ui->rotationLineEditZ, &QLineEdit::textChanged, [this](const QString&) { checkValidRotation(); });
         }
     }
 }

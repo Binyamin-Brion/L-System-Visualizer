@@ -20,7 +20,7 @@ namespace GUI
             // By default the name is not valid, nor is the model selected as no model is selected.
             ui->variableNameLineEdit->setStyleSheet("background-color: rgba(192, 0, 0, 0.2);");
 
-            ui->modelEntriesComboBox->addItem("No model selected.");
+            ui->modelEntriesComboBox->addItem(noModelText);
 
             ui->modelEntriesComboBox->setStyleSheet("background-color: rgba(192, 0, 0, 0.2);");
 
@@ -39,8 +39,6 @@ namespace GUI
 
         void VariableEntry::addModelEntry(const QString &modelName)
         {
-            static bool noModelItemDeleted = false;
-
             // If this is the first model name being added, then the model name combo box will contain the item
             // "No model selected". This should be removed as after this function call, there is a model that can be selected.
             if(!noModelItemDeleted)
@@ -61,6 +59,11 @@ namespace GUI
         QString VariableEntry::getAssociatedModelName() const
         {
             return ui->modelEntriesComboBox->currentText();
+        }
+
+        const QString &VariableEntry::getNoModelText() const
+        {
+            return noModelText;
         }
 
         ::L_System::DataStructures::Variable VariableEntry::getVariableToken() const
@@ -93,6 +96,8 @@ namespace GUI
 
         void VariableEntry::setupConnections()
         {
+            connect(ui->modelEntriesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) { emit modelSelected(); });
+
             connect(ui->variableSelectedCheckBox, &QCheckBox::stateChanged, [this](int state) { emit variableSelected(this, state); });
 
             // This will check if the new name is valid.
