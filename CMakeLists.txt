@@ -63,6 +63,6 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         GUI/Dialogs/NewNameDialog.h ProjectSaverLoader/ProjectLoader.cpp ProjectSaverLoader/ProjectLoader.h
         HelperFunctions/RuleLoading.cpp HelperFunctions/RuleLoading.h Tests/ProjectSaverLoader/TestProjectSaveLoad.cpp
         Tests/ProjectSaverLoader/TestProjectSaveLoad.h ProjectSaverLoader/ScriptInformation.h Tests/ProjectSaverLoader/TestBasicSaveLoad.cpp
-        Tests/ProjectSaverLoader/TestBasicSaveLoad.h GUI/L_System/ScriptTabs.cpp GUI/L_System/ScriptTabs.h GUI/L_System/ScriptTabWidget.cpp GUI/L_System/ScriptTabWidget.h)
+        Tests/ProjectSaverLoader/TestBasicSaveLoad.h GUI/L_System/ScriptTabs.cpp GUI/L_System/ScriptTabs.h GUI/L_System/ScriptTabWidget.cpp GUI/L_System/ScriptTabWidget.h L_System/Interpretation/UnderflowError.h L_System/Interpretation/UnbalancedError.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

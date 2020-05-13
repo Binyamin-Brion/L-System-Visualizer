@@ -85,6 +85,11 @@ namespace GUI
             private:
 
                 /**
+                 * Prompts the user to save the current execution result if it is unsaved.
+                 */
+                void requestResultSave();
+
+                /**
                  * Sets up the connections used by this object's widgets.
                  */
                 void setupConnections();

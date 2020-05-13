@@ -47,6 +47,13 @@ namespace GUI
                      */
                     void setDepthResult(unsigned int depthResult);
 
+                    /**
+                     * Shows the error message the dedicated area for the error message for a given depth level.
+                     *
+                     * @param errorMessage for the depth level result this entry represents and display
+                     */
+                    void setErrorMessage(const QString &errorMessage);
+
                 private:
                     Ui::ScriptOutputEntry *ui = nullptr;
             };

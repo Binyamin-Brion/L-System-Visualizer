@@ -15,6 +15,12 @@ namespace L_System
     {
         class Token;
     }
+
+    namespace Interpretation
+    {
+        class UnderflowError;
+        class UnbalancedError;
+    }
 }
 
 namespace GUI
@@ -60,12 +66,32 @@ namespace GUI
                 private:
 
                     /**
+                     * Adds an error message to the current depth entry if there was an unbalanced error at that depth level.
+                     *
+                     * @param depthLevel the depth level for which to check for an unbalanced error
+                     * @param scriptOutputEntry the entry to which to add an error message if there is an unbalanced error
+                     * @param unbalancedErrors vector of unbalanced errors that occurred from the interpretation of the L-Script
+                     */
+                    void addUnbalancedErrorMessage(unsigned int depthLevel, ScriptOutputEntry *scriptOutputEntry, const std::vector<::L_System::Interpretation::UnbalancedError> &unbalancedErrors);
+
+                    /**
+                     * Adds an error message to the current depth entry if there was an underflow error at that depth level.
+                     *
+                     * @param depthLevel the depth level for which to check for an unbalanced error
+                     * @param scriptOutputEntry the entry to which to add an error message if there is an unbalanced error
+                     * @param underflowErrors vector of underflowErrors errors that occurred from the interpretation of the L-Script
+                     */
+                    void addUnderflowErrorMessage(unsigned int depthLevel, ScriptOutputEntry *scriptOutputEntry, const std::vector<::L_System::Interpretation::UnderflowError> &underflowErrors);
+
+                    /**
                      * Creates the entries to display the passed in execution result. This function is called by both
                      * showSavedScriptOutput() and showScriptOutput().
                      *
                      * @param tokens result of executing a script
                      */
-                    void displayScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>>& tokens);
+                    void displayScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>>& tokens,
+                                             const std::vector<::L_System::Interpretation::UnbalancedError> &unbalancedErrors,
+                                             const std::vector<::L_System::Interpretation::UnderflowError> &underflowErrors);
 
                     QVBoxLayout *layout = nullptr;
                     std::vector<ScriptOutputEntry*> entries;

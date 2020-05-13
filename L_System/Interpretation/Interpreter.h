@@ -8,6 +8,8 @@
 #include "ModelInstancePlacement.h"
 #include "../Execution/Token.h"
 #include <vector>
+#include "UnbalancedError.h"
+#include "UnderflowError.h"
 
 namespace L_System
 {
@@ -37,7 +39,7 @@ namespace L_System
                  *
                  * @return list of unbalanced errors. Each number represents a depth level where an error occurred.
                  */
-                static const std::vector<unsigned int>& getUnBalancedErrors() ;
+                static const std::vector<UnbalancedError>& getUnBalancedErrors() ;
 
                 /**
                  * Get the list of underflow errors that occurred during the interpretation of the L-Script results.
@@ -47,7 +49,7 @@ namespace L_System
                  *
                  * @return list of underflow errors. Each number represents a depth level where an error occurred.
                  */
-                static const std::vector<unsigned int>& getUnderFlowErrors();
+                static const std::vector<UnderflowError>& getUnderFlowErrors();
 
                 /**
                  * Interpret results of executing a L-Script, using the result of executing an L-Script that is stored in
@@ -100,8 +102,8 @@ namespace L_System
 
                 static glm::mat4 transformationMatrix;
 
-                static std::vector<unsigned int> unbalancedErrors;
-                static std::vector<unsigned int> underflowErrors;
+                static std::vector<UnbalancedError> unbalancedErrors;
+                static std::vector<UnderflowError> underflowErrors;
         };
     }
 }

@@ -15,20 +15,20 @@ namespace L_System
 
         glm::mat4 Interpreter::transformationMatrix;
 
-        std::vector<unsigned int> Interpreter::unbalancedErrors;
-        std::vector<unsigned int> Interpreter::underflowErrors;
+        std::vector<UnbalancedError> Interpreter::unbalancedErrors;
+        std::vector<UnderflowError> Interpreter::underflowErrors;
 
         const std::vector<std::vector<ModelInstancePlacement>> &Interpreter::getResult()
         {
             return modelInstances;
         }
 
-        const std::vector<unsigned int> &Interpreter::getUnBalancedErrors()
+        const std::vector<UnbalancedError> &Interpreter::getUnBalancedErrors()
         {
             return unbalancedErrors;
         }
 
-        const std::vector<unsigned int> &Interpreter::getUnderFlowErrors()
+        const std::vector<UnderflowError> &Interpreter::getUnderFlowErrors()
         {
             return underflowErrors;
         }
@@ -85,7 +85,7 @@ namespace L_System
 
                     if(tokenStack.empty())
                     {
-                        underflowErrors.push_back(depthLevel);
+                        underflowErrors.push_back(UnderflowError{depthLevel, token});
 
                         // Temporarily push this token so that the calculation function applies this constant's
                         // transformation.
@@ -154,7 +154,7 @@ namespace L_System
 
                 if(!tokenStack.empty())
                 {
-                    unbalancedErrors.push_back(currentDepthLevel);
+                    unbalancedErrors.push_back(UnbalancedError{currentDepthLevel, {tokenStack.begin(), tokenStack.end()}});
                 }
 
                 // Clear everything for the next depth level.

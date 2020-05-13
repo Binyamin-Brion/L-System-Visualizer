@@ -86,21 +86,9 @@ namespace GUI
 
         void ScriptTabWidget::handleChangedSaveScript(int index)
         {
-            if(!savedNewResult)
-            {
-                // Assume that the user has saved. If they don't, such as by cancelling the save dialog, then it is assumed
-                // they changed their mind and did not want to change.
-                savedNewResult = true;
-
-                ui->savedResultsComboBox->removeItem(ui->savedResultsComboBox->count() - 1);
-
-                int response = QMessageBox::warning(this, "Unsaved Exection Result", "The previous execution was not saved. Would you like to save it?", QMessageBox::Yes | QMessageBox::No);
-
-                if(response == QMessageBox::Yes)
-                {
-                    bookmarkCurrentScriptExecutionResult();
-                }
-            }
+            // Before changing a viewed script, check if the previous result needs to be saved, and if it does, ask the user to do so.
+            // Note: this is required because changing the viewed result discard the previous result.
+            requestResultSave();
 
             currentSaveResultIndex = index;
         }
@@ -161,6 +149,10 @@ namespace GUI
 
         void ScriptTabWidget::runScript()
         {
+            // Before running a script, check if the previous result needs to be saved, and if it does, ask the user to do so.
+            // Note: this is required because running a script discard the previous result.
+           requestResultSave();
+
             ui->scriptInfoTabs->setScriptInput();
 
             // There must be rules to run the script. This implicitly also checks that there are valid variables and (maybe) constants
@@ -194,6 +186,25 @@ namespace GUI
         }
 
         // Beginning of private functions
+
+        void ScriptTabWidget::requestResultSave()
+        {
+            if(!savedNewResult)
+            {
+                // Assume that the user has saved. If they don't, such as by cancelling the save dialog, then it is assumed
+                // they changed their mind and did not want to change.
+                savedNewResult = true;
+
+                ui->savedResultsComboBox->removeItem(ui->savedResultsComboBox->count() - 1);
+
+                int response = QMessageBox::warning(this, "Unsaved Execution Result", "The previous execution was not saved. Would you like to save it?", QMessageBox::Yes | QMessageBox::No);
+
+                if(response == QMessageBox::Yes)
+                {
+                    bookmarkCurrentScriptExecutionResult();
+                }
+            }
+        }
 
         void ScriptTabWidget::setupConnections()
         {
