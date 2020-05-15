@@ -8,10 +8,11 @@ namespace L_System
 {
     namespace DataStructures
     {
-        Rule::Rule(Variable predecessor, std::vector<Execution::Token> successorTokens)
+        Rule::Rule(Variable predecessor, std::vector<Execution::Token> successorTokens, unsigned int probability)
                 :
                     predecessor{std::move(predecessor)},
-                    successorTokens{std::move(successorTokens)}
+                    successorTokens{std::move(successorTokens)},
+                    probability{probability}
         {
 
         }
@@ -19,6 +20,11 @@ namespace L_System
         const Variable &Rule::getPredecessor() const
         {
             return predecessor;
+        }
+
+        unsigned int Rule::getProbability() const
+        {
+            return probability;
         }
 
         const std::vector<Execution::Token> &Rule::getSuccessorTokens() const

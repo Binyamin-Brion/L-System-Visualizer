@@ -25,6 +25,17 @@ namespace GUI
         {
                 Q_OBJECT
 
+            signals:
+
+                /**
+                 * Emitted when the value of the allowed probability for a predecessor has changed.
+                 *
+                 * (The predecessor associated with the rule whose probability value was modified)/
+                 *
+                 * @param (first) int the allowed probability
+                 */
+                void allowedProbabilityChanged(int);
+
             public:
 
                 /**
@@ -78,6 +89,23 @@ namespace GUI
             private slots:
 
                 /**
+                 * Updates the maximum allowed probability for the passed in rule entry based off of its new predecessor.
+                 *
+                 * @param ruleEntry whose predecessor changed
+                 */
+                void handleNewPredecessor(RuleEntry *ruleEntry);
+
+                /**
+                 * Handles a new probability value being set for a rule entry. Updates the probability value rule entries
+                 * with the current predecessor can have.
+                 *
+                 * @param predecessorName of the rule
+                 * @param previousProbabilityValue of the rule
+                 * @param probabilityValue of the rule
+                 */
+                void handleNewProbabilityValue(const QString &predecessorName, int previousProbabilityValue, int probabilityValue);
+
+                /**
                  * Called when an entry's associated checkbox has its status changed.
                  *
                  * @param variableEntry whose associated checkbox was changed
@@ -107,6 +135,10 @@ namespace GUI
 
                 std::vector<QString> variableNames;
                 std::vector<QString> constantNames;
+
+                // Keeps track of the additional probability value rules with a given predecessor can have.
+                QHash<QString, int> allowedProbabilityValue;
+                const int startingAllowedProbability = 100;
         };
     }
 }

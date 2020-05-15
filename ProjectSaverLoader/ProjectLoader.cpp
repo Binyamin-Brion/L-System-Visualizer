@@ -192,11 +192,25 @@ namespace ProjectSaverLoader
         }
     }
 
-    float ProjectLoader::convertNumber(const QString &stringToConvert) const
+    float ProjectLoader::convertNumberFloat(const QString &stringToConvert) const
     {
         bool success;
 
         float numberEquivalent = stringToConvert.toFloat(&success);
+
+        if(!success)
+        {
+            throw std::runtime_error{ stringToConvert.toStdString() + " is not a valid number!"};
+        }
+
+        return numberEquivalent;
+    }
+
+    unsigned int ProjectLoader::convertNumberUnsigned(const QString &stringToConvert) const
+    {
+        bool success;
+
+        unsigned int numberEquivalent = stringToConvert.toUInt(&success);
 
         if(!success)
         {
@@ -351,15 +365,15 @@ namespace ProjectSaverLoader
         {
             ::L_System::DataStructures::StackOperation stackOperation = convertStackOperation(lineTokens[2]);
 
-            float axisX = convertNumber(lineTokens[6]);
+            float axisX = convertNumberFloat(lineTokens[6]);
 
-            float axisY = convertNumber(lineTokens[8]);
+            float axisY = convertNumberFloat(lineTokens[8]);
 
-            float axisZ = convertNumber(lineTokens[10]);
+            float axisZ = convertNumberFloat(lineTokens[10]);
 
             if(lineTokens[4].contains("Rotation"))
             {
-                float angle = convertNumber(lineTokens[14]);
+                float angle = convertNumberFloat(lineTokens[14]);
 
                 ::L_System::DataStructures::Rotation rotation{angle, glm::vec3{axisX, axisY, axisZ}};
 
@@ -396,6 +410,12 @@ namespace ProjectSaverLoader
          *
          *  Token 0              Token 2
          *
+         *                          OR, if the line states the rule probability
+         *
+         * Probability -- probability
+         *
+         * Token 0          Token 2
+         *
          *                          OR, if the line is a successor token (type actually doesn't matter- it is stored in the file for convenience)
          *
          *  Successor_token -- Variable -- variableName
@@ -421,10 +441,15 @@ namespace ProjectSaverLoader
 
         static ::L_System::DataStructures::Variable equivalentVariable;
         static std::vector<::L_System::Execution::Token> successorTokens;
+        static unsigned int probability = 0;
 
         if(lineTokens[0].contains("Predecessor_name"))
         {
             equivalentVariable = ::HelperFunctions::findEquivalentVariable(lineTokens[2], loadedVariables);
+        }
+        else if(lineTokens[0].contains("Probability"))
+        {
+            probability = convertNumberUnsigned(lineTokens[2]);
         }
         else if(lineTokens[0].contains("Successor_token"))
         {
@@ -433,7 +458,7 @@ namespace ProjectSaverLoader
         }
         else if(fileLine.contains("END RULE"))
         {
-            loadedRules.emplace_back(equivalentVariable, successorTokens);
+            loadedRules.emplace_back(equivalentVariable, successorTokens, probability);
 
             // Ensure that this rule's successor tokens are not in the next rule. The equivalentVariable is assigned a new
             // value when a new rule is encountered so no action has to be done there.
@@ -623,10 +648,10 @@ namespace ProjectSaverLoader
         }
         else if(startReadMatrix)
         {
-            userDefinedInstances.transformationMatrices.back()[columnCount][0] = convertNumber(lineTokens[0]);
-            userDefinedInstances.transformationMatrices.back()[columnCount][1] = convertNumber(lineTokens[1]);
-            userDefinedInstances.transformationMatrices.back()[columnCount][2] = convertNumber(lineTokens[2]);
-            userDefinedInstances.transformationMatrices.back()[columnCount][3] = convertNumber(lineTokens[3]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][0] = convertNumberFloat(lineTokens[0]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][1] = convertNumberFloat(lineTokens[1]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][2] = convertNumberFloat(lineTokens[2]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][3] = convertNumberFloat(lineTokens[3]);
 
             columnCount += 1;
         }

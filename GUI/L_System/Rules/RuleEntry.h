@@ -30,6 +30,22 @@ namespace GUI
             signals:
 
                 /**
+                 *  Emitted when the predecessor for a rule entry changes.
+                 *
+                 *  @param RuleEntry* the reference to the entry whose predecessor changed
+                 */
+                void predecessorChanged(RuleEntry*);
+
+                /**
+                 *  Emitted when the probability of a rule entry changes.
+                 *
+                 *  @param const QString& the predecessor of the rule entry whose probability changed
+                 *  @param (first) int the old probability value
+                 *  @oaram (second) int the new probability value
+                 */
+                void probabilityValueChanged(const QString&, int, int);
+
+                /**
                  * Emitted when rule is selected by checking its respective checkbox.
                  *
                  * @param newState state of the associated checkbox
@@ -62,6 +78,13 @@ namespace GUI
                 RuleInformation getRuleInformation() const;
 
                 /**
+                 * Sets the maximum probability value for an entry.
+                 *
+                 * @param value maximum probability entry for an entry
+                 */
+                void setMaximumProbability(int value);
+
+                /**
                  * Sets the index of the predecessor in the appropriate combo box.
                  *
                  * @param index that the appropriate combo box should have
@@ -87,6 +110,13 @@ namespace GUI
                  * @param state checked if the check box is checked
                  */
                 void handleEntryVisibility(int state);
+
+                /**
+                 * Handle a new probability value being chosen by keeping track of the previous probability value.
+                 *
+                 * @param value the new probability value for the entry
+                 */
+                void handleNewProbabilityValue(int value);
 
                 /**
                  * Appends the chosen production the final production for the rule. The default production, stating to the
@@ -115,6 +145,9 @@ namespace GUI
                 std::vector<QString> addedProductionsText; // The actual text of the productions added.
 
                 bool ignoreChosenProductions = false;
+
+                // Keep track of the previous probability value for when the user changes the probability value
+                int previousProbabilityValue;
         };
     }
 }

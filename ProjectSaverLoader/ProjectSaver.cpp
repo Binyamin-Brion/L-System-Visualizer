@@ -115,6 +115,8 @@ namespace ProjectSaverLoader
         {
             writeStream << "Predecessor_name -- " << i.getPredecessor().getVariableName() + '\n';
 
+            writeStream << "\n\n" << "Probability -- " << i.getProbability() << "\n\n";
+
             for(const auto &j : i.getSuccessorTokens())
             {
                 if(j.isConstant())

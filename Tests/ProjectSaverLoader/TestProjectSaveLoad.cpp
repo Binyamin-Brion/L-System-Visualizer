@@ -14,6 +14,9 @@ static Tests::ProjectSaverLoader::TestProjectSaveLoad testProjectSaveLoad{"Test_
 using namespace L_System::DataStructures;
 using namespace L_System::Execution;
 
+// All rules used have a probability of 100, meaning they are guaranteed to run. If they do not have a probability of 100,
+// no test can be written as the output of the test cannot be known.
+
 namespace Tests
 {
     namespace ProjectSaverLoader
@@ -39,9 +42,9 @@ namespace Tests
 
             // Create rules.
             Rule firstRule{variableA, {Token{variableA},
-                                       Token{variableB}}};
+                                       Token{variableB}}, 100};
 
-            Rule secondRule{variableB, {Token{variableA}}};
+            Rule secondRule{variableB, {Token{variableA}}, 100};
 
             // Upload the script.
             beforeProjectDetails.addScriptInformation(scriptName, variableA, {}, {firstRule, secondRule}, {variableA, variableB}, {});
@@ -96,9 +99,9 @@ namespace Tests
             Constant secondConstant{"]", StackOperation::Pop, Rotation{90, glm::vec3{1, 1, 1}}};
 
             // Create rules.
-            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}};
+            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}, 100};
 
-            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
+            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}, 100};
 
             // Create user defined instances
 
@@ -233,7 +236,7 @@ namespace Tests
                                   Token{minusConstant},
                                   Token{variable},
                                   Token{plusConstant},
-                                  Token{variable}}};
+                                  Token{variable}}, 100};
 
             // Upload the script.
             beforeProjectDetails.addScriptInformation(scriptName, variable, {plusConstant, minusConstant},{rule}, {variable}, {});

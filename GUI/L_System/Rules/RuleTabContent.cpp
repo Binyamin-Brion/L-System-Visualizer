@@ -48,6 +48,8 @@ namespace GUI
             connect(ui->addRuleButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(addRuleEntry()));
 
             connect(ui->deleteRuleButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(handleDeleteButtonPushed()));
+
+            connect(ui->scrollAreaWidgetContents, &RuleWidget::allowedProbabilityChanged, [this](int value) { ui->allowedProbability->setText("Additional Probability Allowed For the Given Predecessor: " + QString::number(value)); });
         }
     }
 }

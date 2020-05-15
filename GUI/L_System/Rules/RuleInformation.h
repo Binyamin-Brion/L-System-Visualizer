@@ -20,6 +20,7 @@ namespace GUI
         {
             QString startingRuleName;
             std::vector<QString> productionNames;
+            unsigned int probability;
         };
     }
 }

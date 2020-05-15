@@ -18,6 +18,15 @@ namespace GUI
 
             ui->ruleComboBox->addItem(defaultRule);
 
+            // Make sure to set these values as Qt's default are not the same!
+            ui->probabliltyValue->setMaximum(100);
+
+            ui->probabliltyValue->setMinimum(0);
+
+            // Set this value as when calling overloaded constructor passing in a Rule data structure this variable
+            // is assigned a different value.
+            previousProbabilityValue = 0;
+
             setupConnections();
         }
 
@@ -30,6 +39,17 @@ namespace GUI
 
             ui->ruleComboBox->addItem(defaultRule);
 
+            // Make sure to set these values as Qt's default are not the same!
+            ui->probabliltyValue->setMaximum(100);
+
+            ui->probabliltyValue->setMinimum(0);
+
+            // Update internal variables to match the rule's starting probability.
+            ui->probabliltyValue->setValue(rule.getProbability());
+
+            previousProbabilityValue = rule.getProbability();
+
+            // Call this after assigning probability value to the combo box!
             setupConnections();
 
             // FOr each successor token, handle it as if the user clicked the respective entry in the ruleComboBox.
@@ -52,7 +72,7 @@ namespace GUI
 
         RuleInformation RuleEntry::getRuleInformation() const
         {
-          return RuleInformation{ ui->startComboBox->currentText(), addedProductionsText};
+          return RuleInformation{ ui->startComboBox->currentText(), addedProductionsText, static_cast<unsigned int>(ui->probabliltyValue->value())};
         }
 
         void RuleEntry::updateAvailableRuleEntries(std::vector<QString> constantNames, std::vector<QString> variableNames)
@@ -103,7 +123,7 @@ namespace GUI
                 ui->startLabel->hide();
                 ui->startComboBox->hide();
 
-                ui->ruleLabel->hide();
+                ui->endRuleLabel->hide();
                 ui->ruleComboBox->hide();
 
                 ui->endRuleLabel->hide();
@@ -119,7 +139,7 @@ namespace GUI
                 ui->startLabel->show();
                 ui->startComboBox->show();
 
-                ui->ruleLabel->show();
+                ui->endRuleLabel->show();
                 ui->ruleComboBox->show();
 
                 ui->endRuleLabel->show();
@@ -130,6 +150,19 @@ namespace GUI
 
                 ui->undoButton->show();
             }
+        }
+
+        void RuleEntry::handleNewProbabilityValue(int value)
+        {
+            // To simplify implementation when changing predecessor, only allow the predecessor to be changed when the
+            // probability value is 0.
+            ui->startComboBox->setEnabled(value == 0);
+
+            // Emit the signal, then update the previous probability value. This ensures that the previousProbabilityValue
+            // and the current one sent in the signal are not equal to each other.
+            emit probabilityValueChanged(ui->startComboBox->currentText(), this->previousProbabilityValue, value);
+
+            previousProbabilityValue = value;
         }
 
         void RuleEntry::handleProductionChosen(const QString &text)
@@ -149,7 +182,7 @@ namespace GUI
             // A space is added to the end of the added production to make it easier to read.
             QString addedText = text + ' ';
 
-            ui->productionLabel->setText(ui->productionLabel->text() + addedText);
+            ui->ruleProductionLabel->setText(ui->ruleProductionLabel->text() + addedText);
 
             addedProductions.push(addedText.size());
 
@@ -164,19 +197,26 @@ namespace GUI
         {
             if(!addedProductions.empty())
             {
-                QString currentProduction = ui->productionLabel->text();
+                QString currentProduction = ui->ruleProductionLabel->text();
 
                 // This include the character included in the production for readability purposes.
                 int charactersToRemove = addedProductions.top();
 
                 currentProduction.chop(charactersToRemove);
 
-                ui->productionLabel->setText(currentProduction);
+                ui->ruleProductionLabel->setText(currentProduction);
 
                 addedProductions.pop();
 
                 addedProductionsText.pop_back();
             }
+        }
+
+        void RuleEntry::setMaximumProbability(int value)
+        {
+            // Add the current probability value so that if the passed in number is less than the current, the current
+            // value is still valid.
+            ui->probabliltyValue->setMaximum(value + ui->probabliltyValue->value());
         }
 
         void RuleEntry::setPredecessorIndex(int index)
@@ -188,6 +228,10 @@ namespace GUI
 
         void RuleEntry::setupConnections()
         {
+            connect(ui->probabliltyValue, SIGNAL(valueChanged(int)), this, SLOT(handleNewProbabilityValue(int)));
+
+            connect(ui->startComboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), [this](const QString&) { emit predecessorChanged(this); });
+
             connect(ui->selectedCheckBox, &QCheckBox::stateChanged, [this](int state) { emit ruleSelected(this, state); });
 
             connect(ui->visibleCheckBox, SIGNAL(stateChanged(int)), this, SLOT(handleEntryVisibility(int)));

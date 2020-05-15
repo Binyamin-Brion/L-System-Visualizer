@@ -27,8 +27,9 @@ namespace L_System
                  *
                  * @param predecessor the variable to match against
                  * @param successorTokens the sequence of tokens to replace the matched variable with
+                 * @param probability the chance of this rule being executed
                  */
-                Rule(Variable predecessor, std::vector<Execution::Token> successorTokens);
+                Rule(Variable predecessor, std::vector<Execution::Token> successorTokens, unsigned int probability);
 
                 /**
                  * Get the predecessor variable that this Rule was initialized with.
@@ -36,6 +37,13 @@ namespace L_System
                  * @return the initialized with predecessor
                  */
                 const Variable& getPredecessor() const;
+
+                /**
+                 * Get the probability that this rule is executed.
+                 *
+                 * @return rule's probability
+                 */
+                unsigned int getProbability() const;
 
                 /**
                  * Get the sequence of tokens used to replace the predecessor that was used to
@@ -51,6 +59,7 @@ namespace L_System
 
                 Variable predecessor;
                 std::vector<Execution::Token> successorTokens;
+                unsigned int probability;
         };
     }
 }

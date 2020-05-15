@@ -48,9 +48,28 @@ namespace GUI
 
                 connect(ruleEntry, SIGNAL(ruleSelected(RuleEntry*, int)), this, SLOT(handleRuleEntrySelected(RuleEntry*, int)));
 
+                connect(ruleEntry, SIGNAL(predecessorChanged(RuleEntry*)), this, SLOT(handleNewPredecessor(RuleEntry*)));
+
+                connect(ruleEntry, SIGNAL(probabilityValueChanged(const QString&, int, int)), this, SLOT(handleNewProbabilityValue(const QString&, int, int)));
+
                 this->rules.push_back(ruleEntry);
 
                 layout->addWidget(ruleEntry);
+
+                // Create a map entry for the current predecessor if it doesn't exist; otherwise update the allowed probability for rule entries
+                // with the same predecessor values.
+                if(!allowedProbabilityValue.contains(i.getPredecessor().getVariableName()))
+                {
+                    allowedProbabilityValue.insert(i.getPredecessor().getVariableName(), startingAllowedProbability - i.getProbability());
+                }
+                else
+                {
+                    allowedProbabilityValue[i.getPredecessor().getVariableName()] -= i.getProbability();
+                }
+
+                // Update the maximum allowed probability to reflect what was saved in the file.
+                // Call this after the modifications to the allowedProbabilityValue made above!
+                ruleEntry->setMaximumProbability( allowedProbabilityValue[i.getPredecessor().getVariableName()]);
             }
         }
 
@@ -74,6 +93,14 @@ namespace GUI
             {
                 i->updateAvailableRuleEntries(constantNames, variableNames);
             }
+
+            for(const auto &i : variableNames)
+            {
+                if(!allowedProbabilityValue.contains(i))
+                {
+                    allowedProbabilityValue.insert(i, startingAllowedProbability);
+                }
+            }
         }
 
         // Beginning of public slots
@@ -86,7 +113,15 @@ namespace GUI
             // click the Refresh button first.
             ruleEntry->updateAvailableRuleEntries(constantNames, variableNames);
 
+            ruleEntry->setMaximumProbability(startingAllowedProbability);
+
             connect(ruleEntry, SIGNAL(ruleSelected(RuleEntry*, int)), this, SLOT(handleRuleEntrySelected(RuleEntry*, int)));
+
+            connect(ruleEntry, SIGNAL(predecessorChanged(RuleEntry*)), this, SLOT(handleNewPredecessor(RuleEntry*)));
+
+            connect(ruleEntry, SIGNAL(probabilityValueChanged(const QString&, int, int)), this, SLOT(handleNewProbabilityValue(const QString&, int, int)));
+
+            handleNewProbabilityValue(ruleEntry->getRuleInformation().startingRuleName, 0, 0);
 
             rules.push_back(ruleEntry);
 
@@ -112,6 +147,47 @@ namespace GUI
         }
 
         // Beginning of private slots
+
+        void RuleWidget::handleNewPredecessor(RuleEntry *ruleEntry)
+        {
+            // Create a new map entry if the rule has selected a predecessor that was never selected before.
+            if(!allowedProbabilityValue.contains(ruleEntry->getRuleInformation().startingRuleName))
+            {
+                allowedProbabilityValue.insert(ruleEntry->getRuleInformation().startingRuleName, startingAllowedProbability);
+            }
+
+            // Remember that the rule entry can only change probability values if its current probability value is 0!
+            ruleEntry->setMaximumProbability(allowedProbabilityValue[ruleEntry->getRuleInformation().startingRuleName]);
+        }
+
+        void RuleWidget::handleNewProbabilityValue(const QString &predecessorName, int previousProbabilityValue, int probabilityValue)
+        {
+            // In case when adding a new rule entry at the beginning of a program before valid variables are specified.
+            if(predecessorName.isEmpty())
+            {
+                return;
+            }
+
+            // This function should have been called after the handleNewPredecessor, as the predecessor automatically changes
+            // to a valid variable after a valid variable is specified.
+            assert(allowedProbabilityValue.contains(predecessorName));
+
+            int changeProbabilityValue = probabilityValue - previousProbabilityValue;
+
+            allowedProbabilityValue[predecessorName] -= changeProbabilityValue;
+
+            // For all rules of the same predecessor, update their maximum possible probability value to reflect the change
+            // in a probability value of one rule entry with the same predecessor.
+            for(auto &i : rules)
+            {
+                if(i->getRuleInformation().startingRuleName == predecessorName)
+                {
+                    i->setMaximumProbability(allowedProbabilityValue[predecessorName]);
+                }
+            }
+
+            emit allowedProbabilityChanged(allowedProbabilityValue[predecessorName]);
+        }
 
         void RuleWidget::handleRuleEntrySelected(RuleEntry *ruleEntry, int newState)
         {

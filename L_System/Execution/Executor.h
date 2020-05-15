@@ -53,6 +53,22 @@ namespace L_System
 
             private:
 
+                struct ChooseRuleResult
+                {
+                    bool ruleChosen;
+                    const DataStructures::Rule& chosenRule;
+                };
+
+                /**
+                 * Chooses a rule from the vector rules based off of their probabilities.
+                 *
+                 * See note in Executor.cpp.
+                 *
+                 * @param rules from which to randomly choose a probability
+                 * @return result of choosing a rule
+                 */
+                static ChooseRuleResult chooseRule(const std::vector<DataStructures::Rule>& rules);
+
                 /**
                  * Clears the previous result, if any, ensuring that the next execution result contains only the
                  * result of the current execution.

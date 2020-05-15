@@ -319,7 +319,7 @@ namespace Render
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
-                printf("%d, %d \n", i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
+                //printf("%d, %d \n", i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
 
                 glDrawElementsInstancedBaseInstance(GL_TRIANGLES, i.getIndiceCount(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * i.getIndiceBegin()),
                                                     i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());

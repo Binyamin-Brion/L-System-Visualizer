@@ -14,6 +14,9 @@ using namespace L_System;
 using namespace L_System::DataStructures;
 using namespace L_System::Execution;
 
+// All rules used have a probability of 100, meaning they are guaranteed to run. If they do not have a probability of 100,
+// no test can be written as the output of the test cannot be known.
+
 namespace Tests
 {
     namespace L_System
@@ -34,9 +37,9 @@ namespace Tests
 
             // Create rules.
             Rule firstRule{variableA, {Token{variableA},
-                                       Token{variableB}}};
+                                       Token{variableB}}, 100};
 
-            Rule secondRule{variableB, {Token{variableA}}};
+            Rule secondRule{variableB, {Token{variableA}}, 100};
 
             ScriptInput::setAxiom(variableA);
             ScriptInput::setRules({firstRule, secondRule});
@@ -74,9 +77,9 @@ namespace Tests
             Constant secondConstant{"]"};
 
             // Create rules.
-            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}};
+            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}, 100};
 
-            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
+            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}, 100};
 
             ScriptInput::setAxiom(firstVariable);
             ScriptInput::setRules({rule, secondRule});
@@ -115,7 +118,7 @@ namespace Tests
                                   Token{minusConstant},
                                   Token{variable},
                                   Token{plusConstant},
-                                  Token{variable}}};
+                                  Token{variable}}, 100};
 
             ScriptInput::setAxiom(variable);
             ScriptInput::setRules({rule});

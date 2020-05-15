@@ -64,13 +64,22 @@ namespace ProjectSaverLoader
             void clearPreviousLoad();
 
             /**
-             * Converts the given string to a number.
+             * Converts the given string to a float.
              *
-             * @param stringToConvert to convert to a number
+             * @param stringToConvert to convert to a float
              * @return the float equivalent of the passed in string
              * @throws if the passed in string is not a valid floating point number
              */
-            float convertNumber(const QString &stringToConvert) const;
+            float convertNumberFloat(const QString &stringToConvert) const;
+
+            /**
+            * Converts the given string to an unsigned int.
+            *
+            * @param stringToConvert to convert to a unsigned int
+            * @return the float equivalent of the passed in string
+            * @throws if the passed in string is not a valid floating point number
+            */
+            unsigned int convertNumberUnsigned(const QString &stringToConvert) const;
 
             /**
              * Converts the given string to a stack operation.

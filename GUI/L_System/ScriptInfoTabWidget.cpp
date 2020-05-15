@@ -175,6 +175,12 @@ namespace GUI
             // Generate the rules composed of the Execution data structures
             for(const auto &i : ruleTabContent->getRuleInformations())
             {
+                // If a rule has a probability of 0, it will never execute and thus should not be included in the set of rules.
+                if(i.probability == 0)
+                {
+                    continue;
+                }
+
                 std::vector<::L_System::Execution::Token> predecessorTokens;
 
                 for(const auto &production : i.productionNames)
@@ -182,7 +188,7 @@ namespace GUI
                     predecessorTokens.emplace_back(::HelperFunctions::findEquivalentSuccessorTokens(production, scriptConstants, scriptVariables));
                 }
 
-                scriptRules.emplace_back(::HelperFunctions::findEquivalentVariable(i.startingRuleName, scriptVariables), predecessorTokens);
+                scriptRules.emplace_back(::HelperFunctions::findEquivalentVariable(i.startingRuleName, scriptVariables), predecessorTokens, i.probability);
             }
         }
 

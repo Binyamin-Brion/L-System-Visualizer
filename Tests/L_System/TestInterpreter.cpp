@@ -17,6 +17,9 @@ using namespace L_System::DataStructures;
 using namespace L_System::Execution;
 using namespace L_System::Interpretation;
 
+// All rules used have a probability of 100, meaning they are guaranteed to run. If they do not have a probability of 100,
+// no test can be written as the output of the test cannot be known.
+
 namespace Tests
 {
     namespace L_System
@@ -40,9 +43,9 @@ namespace Tests
             Constant secondConstant{"]", StackOperation::Pop, Translation{glm::vec3{-5.0f, 0.f, 0.f}}};
 
             // Create rules.
-            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}};
+            Rule rule{secondVariable, {Token{secondVariable}, Token{secondVariable}}, 100};
 
-            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
+            Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}, 100};
 
 
             ScriptInput::setAxiom(firstVariable);
@@ -75,7 +78,7 @@ namespace Tests
                                   Token{minusConstant},
                                   Token{variable},
                                   Token{plusConstant},
-                                  Token{variable}}};
+                                  Token{variable}}, 100};
 
             ScriptInput::setAxiom(variable);
             ScriptInput::setRules({rule});
