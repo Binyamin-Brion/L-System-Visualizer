@@ -27,20 +27,17 @@ namespace Render
          * according to the model and then uploaded in several calls (one for each depth level) for each model.
          */
 
-        for(const auto &i : ::L_System::Interpretation::Interpreter::getResult())
+        for(const auto &modelInstance : ::L_System::Interpretation::Interpreter::getResult().back())
         {
-            for(const auto &modelInstance : i)
+            // Ensure there is an entry for the model file name.
+            auto entryLocation = sortedInstancedMatrices.find(modelInstance.modelName);
+
+            if(!sortedInstancedMatrices.contains(modelInstance.modelName))
             {
-                // Ensure there is an entry for the model file name.
-                auto entryLocation = sortedInstancedMatrices.find(modelInstance.modelName);
-
-                if(!sortedInstancedMatrices.contains(modelInstance.modelName))
-                {
-                    entryLocation = sortedInstancedMatrices.insert(modelInstance.modelName, std::vector<glm::mat4x4>{});
-                }
-
-                entryLocation.value().push_back(modelInstance.transformation);
+                entryLocation = sortedInstancedMatrices.insert(modelInstance.modelName, std::vector<glm::mat4x4>{});
             }
+
+            entryLocation.value().push_back(modelInstance.transformation);
         }
 
         // Iterate over the associated model matrices and uploaded them to the GPU memory.
@@ -54,13 +51,23 @@ namespace Render
         }
     }
 
-    void CommandCentre::checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY)
+    void CommandCentre::addUserRequestedModelInstance(const QString &modelFileName)
+    {
+        modelVao.addUserRequestedModelInstance(modelFileName);
+    }
+
+    void CommandCentre::addUserRequestedModelInstances(const std::vector< ::ProjectSaverLoader::UserDefinedInstances> &modelInstances)
+    {
+        modelVao.addUserRequestedModelInstances(modelInstances);
+    }
+
+    void CommandCentre::checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY, bool appendIntersections)
     {
         glm::vec3 worldCoordinates = cameraObject.getWorldCoordinates(screenWidth, screenHeight, mouseX, mouseY);
 
         glm::vec3 rayDirection = worldCoordinates - cameraObject.getPosition();
 
-        modelVao.checkRayIntersection(cameraObject.getPosition(), rayDirection);
+        modelVao.checkRayIntersection(cameraObject.getPosition(), rayDirection, appendIntersections);
     }
 
     void CommandCentre::deleteOpenGLResources()
@@ -68,9 +75,19 @@ namespace Render
         modelVao.deleteOpenGLResources();
     }
 
+    void CommandCentre::deleteSelectedInstances()
+    {
+        modelVao.deleteSelectedInstances();
+    }
+
     Camera::CameraObject &CommandCentre::getCamera()
     {
         return cameraObject;
+    }
+
+    std::vector<::ProjectSaverLoader::UserDefinedInstances> CommandCentre::getUserDefinedInstances() const
+    {
+        return modelVao.getUserDefinedInstances();
     }
 
     void CommandCentre::initialize()
@@ -113,15 +130,18 @@ namespace Render
         modelVao.render();
     }
 
-    void CommandCentre::resetIntersectionColours()
+    void CommandCentre::transformSelectedModels(const DataStructures::TransformationData &transformationData)
     {
-        modelVao.resetIntersectionColours();
+        modelVao.transformSelectedModels(transformationData);
     }
 
     // Beginning of private functions
 
     void CommandCentre::clearPreviousRender()
     {
+        // Find all of the models that have been loaded in the previous render, and ask the ModelVAO to remove all of the
+        // instances associated with that model.
+
         QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = sortedInstancedMatrices.constBegin();
 
         while (i != sortedInstancedMatrices.constEnd())
@@ -131,6 +151,9 @@ namespace Render
             ++i;
         }
 
+        // Ensure that when starting a new render of an execution result, that any models from the previous render is
+        // not included in the render. Not clearing this may result in models that have no instances (if the new execution
+        // result does not use the same models), which isn't fatal, but does lead to redundant draw calls.
         sortedInstancedMatrices.clear();
     }
 

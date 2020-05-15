@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>745</width>
-    <height>453</height>
+    <width>966</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,191 +15,150 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QSplitter" name="splitter_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="GUI::L_System::ScriptInfoTabWidget" name="scriptInfoTabs"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="runDepthLabel">
-            <property name="text">
-             <string>Run to depth: </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="runDepthSpinBox"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="runScriptButton">
-            <property name="text">
-             <string>Run Script</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="savedResultsLabel">
-            <property name="text">
-             <string>Save Results:   </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="savedResultsComboBox"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="saveResultButton">
-            <property name="text">
-             <string>Save Result</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="discardResultButton">
-            <property name="text">
-             <string>Discard Result</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="renderSavedResultButton">
-            <property name="text">
-             <string>Render Saved Result</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QScrollArea" name="savedResultOutput">
-       <property name="widgetResizable">
-        <bool>true</bool>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <widget class="GUI::Output::L_System::ScriptOutputWidget" name="savedResultOutputWidget">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>626</width>
-          <height>213</height>
-         </rect>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="GUI::L_System::ScriptInfoTabWidget" name="scriptInfoTabs"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="runDepthLabel">
+             <property name="text">
+              <string>Run to depth: </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="runDepthSpinBox"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="runScriptButton">
+             <property name="text">
+              <string>Run Script</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="savedResultsLabel">
+             <property name="text">
+              <string>Save Results:   </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="savedResultsComboBox"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="saveResultButton">
+             <property name="text">
+              <string>Save as New Result</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="saveUserAddedInstancesButton">
+             <property name="text">
+              <string>Save User Added Instances</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="discardResultButton">
+             <property name="text">
+              <string>Discard Result</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="renderSavedResultButton">
+             <property name="text">
+              <string>Render Saved Result</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QScrollArea" name="savedResultOutput">
+        <property name="widgetResizable">
+         <bool>true</bool>
         </property>
+        <widget class="GUI::Output::L_System::ScriptOutputWidget" name="savedResultOutputWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>753</width>
+           <height>68</height>
+          </rect>
+         </property>
+        </widget>
        </widget>
       </widget>
-     </widget>
-     <widget class="QSplitter" name="splitter_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <widget class="QWidget" name="horizontalLayoutWidget_4">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QPushButton" name="pushButton_5">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="GUI::OpenGL::GLWidget" name="openGLWidget">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents_3">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>93</width>
-          <height>278</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </widget>
+     </item>
+     <item>
+      <widget class="GUI::OpenGL::RenderResultWidget" name="renderResultWidget" native="true"/>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>GUI::OpenGL::GLWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>GUI/OpenGL/GLWidget.h</header>
-  </customwidget>
   <customwidget>
    <class>GUI::L_System::ScriptInfoTabWidget</class>
    <extends>QTabWidget</extends>
@@ -210,6 +169,12 @@
    <class>GUI::Output::L_System::ScriptOutputWidget</class>
    <extends>QWidget</extends>
    <header>GUI/Output/L_System/ScriptOutputWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GUI::OpenGL::RenderResultWidget</class>
+   <extends>QWidget</extends>
+   <header>GUI/OpenGL/RenderResultWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

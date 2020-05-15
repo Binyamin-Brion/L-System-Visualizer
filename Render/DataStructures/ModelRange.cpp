@@ -21,9 +21,21 @@ namespace Render
 
         }
 
-        void ModelRange::deIncrementInstanceMatrixCount(unsigned int amount)
+        void ModelRange::clearInstanceCount()
+        {
+            instanceMatrixCount= 0;
+
+            userAddedMatrixCount = 0;
+        }
+
+        void ModelRange::deIncrementInstanceMatrixCount(unsigned int amount, bool userAddedIndex)
         {
             instanceMatrixCount -= amount;
+
+            if(userAddedIndex)
+            {
+                userAddedMatrixCount -= amount;
+            }
         }
 
         unsigned int ModelRange::getIndiceBegin() const
@@ -46,9 +58,27 @@ namespace Render
             return instanceMatrixCount;
         }
 
-        void ModelRange::incrementInstanceMatrixCount(unsigned int amount)
+        unsigned int ModelRange::getUserAddedMatrixCount() const
+        {
+            return userAddedMatrixCount;
+        }
+
+        void ModelRange::incrementInstanceMatrixCount(unsigned int amount, bool indexUserAdded)
         {
             instanceMatrixCount += amount;
+
+            if(indexUserAdded)
+            {
+                userAddedMatrixCount += amount;
+            }
+        }
+
+        bool ModelRange::indexUserAdded(unsigned int index) const
+        {
+            // User added instances are always added after the instances added by the interpretation of a script.
+            // instanceMatrixCount holds the total number of instances, thus subtracting the userAddedMatrixCount determines
+            // the number of instances that were added by the interpretation of the L-Script. Remember indexes start at 0!
+            return (instanceMatrixBegin + instanceMatrixCount - userAddedMatrixCount) <= index && index < (instanceMatrixBegin + instanceMatrixCount);
         }
 
         const ::ModelLoading::Model &ModelRange::getModel() const

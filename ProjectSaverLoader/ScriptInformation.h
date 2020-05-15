@@ -9,6 +9,7 @@
 #include "L_System/DataStructures/Rules/Rule.h"
 #include "L_System/DataStructures/Variable/Variable.h"
 #include "FavouriteResult.h"
+#include "UserDefinedInstances.h"
 
 namespace ProjectSaverLoader
 {

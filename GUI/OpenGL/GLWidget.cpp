@@ -44,6 +44,16 @@ namespace GUI
             commandCentre.addModelInstances();
         }
 
+        void GLWidget::addUserRequestedModelInstance(const QString &modelFileName)
+        {
+            commandCentre.addUserRequestedModelInstance(modelFileName);
+        }
+
+        void GLWidget::addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances)
+        {
+            commandCentre.addUserRequestedModelInstances(modelInstances);
+        }
+
         void GLWidget::keyPressEvent(QKeyEvent *event)
         {
            switch (event->key())
@@ -66,9 +76,33 @@ namespace GUI
 
                case Qt::Key_Shift:
                    keyShift_Pressed = true;
+                   break;
 
-                   // Check right now for an intersection, rather than waiting for an initial mouse movement.
-                   commandCentre.checkRayIntersection(width(), height(), mouseX, mouseY);
+                   // Whenever a user enters input that causes an instance of a model to (even potentially) change, update
+                   // the instances of models held by the current favourite result.
+
+               case Qt::Key_Left:
+
+                   commandCentre.transformSelectedModels({transformationData.transformationIdentifier, -transformationData.amount});
+
+                   emit modelInstancesChanged(commandCentre.getUserDefinedInstances());
+
+                   break;
+
+               case Qt::Key_Right:
+
+                   commandCentre.transformSelectedModels(transformationData);
+
+                   emit modelInstancesChanged(commandCentre.getUserDefinedInstances());
+
+                   break;
+
+               case Qt::Key_Delete:
+
+                   commandCentre.deleteSelectedInstances();
+
+                   emit modelInstancesChanged(commandCentre.getUserDefinedInstances());
+
                    break;
 
                case Qt::Key_Escape:
@@ -98,10 +132,6 @@ namespace GUI
 
                 case Qt::Key_Shift:
                     keyShift_Pressed = false;
-
-                    // As soon as the shift key is released, the program is not in a state to display and check for
-                    // intersections. As such, stop showing an intersections immediately.
-                    commandCentre.resetIntersectionColours();
                     break;
             }
         }
@@ -135,6 +165,10 @@ namespace GUI
             {
                 middleButtonDown = true;
             }
+            else if(event->button() == Qt::LeftButton)
+            {
+                commandCentre.checkRayIntersection(width(), height(), event->x(), event->y(), keyShift_Pressed);
+            }
         }
 
         void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -142,10 +176,6 @@ namespace GUI
             if(middleButtonDown)
             {
                 commandCentre.getCamera().rotate(event->x(), event->y());
-            }
-            else if(keyShift_Pressed)
-            {
-                commandCentre.checkRayIntersection(width(), height(), event->x(), event->y());
             }
 
             // Keep track of most recent mouse position for when the shift key is pressed.
@@ -182,6 +212,11 @@ namespace GUI
             glViewport(0, 0, width, height);
 
             commandCentre.getCamera().updateScreenSize(width, height);
+        }
+
+        void GLWidget::setTransformationData(const ::Render::DataStructures::TransformationData &transformationData)
+        {
+            this->transformationData = transformationData;
         }
 
         // Beginning of public slots

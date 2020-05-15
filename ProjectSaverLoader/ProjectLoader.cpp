@@ -65,6 +65,7 @@ namespace ProjectSaverLoader
                 }
 
                 projectDetails.addScriptInformation(loadedScriptName, axiom, loadedConstants, loadedRules, loadedVariables, loadedFavouriteResults);
+              //  projectDetails.addUserDefinedInstances(loadedScriptName, loadedUserDefinedInstances);
 
                 // Reset the state of how to interpret each line.
                 resetFlags();
@@ -88,6 +89,8 @@ namespace ProjectSaverLoader
         loadedVariables.clear();
 
         loadedFavouriteResults.clear();
+
+        loadedUserDefinedInstances.clear();
     }
 
     void ProjectLoader::checkSectionTag(const QString &currentLine)
@@ -139,6 +142,13 @@ namespace ProjectSaverLoader
 
             return;
         }
+
+        if(currentLine.contains("User Instances:"))
+        {
+            handleUserInstancesFlags();
+
+            return;
+        }
     }
 
     void ProjectLoader::chooseLoadFunction(const QString &currentLine)
@@ -164,6 +174,11 @@ namespace ProjectSaverLoader
         if(readingFavouriteResults)
         {
             loadFavouriteScriptResult(currentLine);
+        }
+
+        if(readingUserDefinedInstances)
+        {
+            loadUserAddedInstances(currentLine);
         }
     }
 
@@ -267,6 +282,18 @@ namespace ProjectSaverLoader
     {
         readingFavouriteResults = true;
 
+        readingConstants = false;
+        readingRules = false;
+        readingVariables = false;
+
+        modifiedSectionFlag = true;
+    }
+
+    void ProjectLoader::handleUserInstancesFlags()
+    {
+        readingUserDefinedInstances = true;
+
+        readingFavouriteResults = false;
         readingConstants = false;
         readingRules = false;
         readingVariables = false;
@@ -508,6 +535,113 @@ namespace ProjectSaverLoader
         loadedScriptName = lineTokens[2];
     }
 
+    void ProjectLoader::loadUserAddedInstances(const QString &fileLine)
+    {
+        QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
+
+        lineTokens.removeAll(",");
+
+        /*
+         * A user instance line has the following format, when split by white space:
+         *
+         * Model_Name -- modelName
+         *
+         * Token 0        Token 2
+         *
+         *          OR if the line represents the name of the favourite result associate with this instance
+         *
+         * Result_Name -- resultName
+         *
+         * Token 0          Token 2
+         *
+         *          OR if the line represents the beginning of a matrix
+         *
+         *  Begin_Matrix
+         *
+         *  Token 0
+         *
+         *          OR if the line represents a matrix column:
+         *
+         *  Value1  ,   Value2  ,   Value3  ,   Value4
+         *
+         *  Token 0     Token 2     Token 4     Token 6
+         *
+         *          OR if the line represents the end of a matrix
+         *
+         *  End_Matrix
+         *
+         *  Token 0
+         *
+         *          OR if the line represents the end of instance matrices for a model
+         *
+         * End_Model_Name
+         *
+         * Token 0
+         *
+         * Note: the '--' are tokens but are not listed due to space limitations in the above line.
+         *
+         */
+
+        checkExpectedNumberLineTokens(lineTokens.size(), {1, 3, 4}, fileLine);
+
+        static UserDefinedInstances userDefinedInstances;
+        static QString associatedFavouriteResultName;
+        static int columnCount = 0;
+        static bool startReadMatrix = false;
+
+        // Note: the "End_Result_Name" branch must be placed for the "Result_Name" branch as otherwise the "Result_Name"
+        //       will be taken incorrectly when the file line contains "End_Result_Name",
+
+        if(lineTokens[0].contains("Model_Name"))
+        {
+            userDefinedInstances.modelName = lineTokens[2];
+        }
+        else if(lineTokens[0].contains("End_Result_Name"))
+        {
+            auto favouriteResultLocation = std::find_if(loadedFavouriteResults.begin(), loadedFavouriteResults.end(), [&](const FavouriteResult favouriteResult)
+            {
+                return favouriteResult.resultName == associatedFavouriteResultName;
+            });
+
+            favouriteResultLocation->userDefinedInstances = loadedUserDefinedInstances;
+        }
+        else if(lineTokens[0].contains("Result_Name"))
+        {
+            associatedFavouriteResultName = lineTokens[2];
+        }
+        else if(lineTokens[0].contains("Begin_Matrix"))
+        {
+            userDefinedInstances.transformationMatrices.emplace_back(glm::mat4{1.0f});
+
+            startReadMatrix = true;
+        }
+        else if(lineTokens[0].contains("End_Matrix"))
+        {
+            columnCount = 0;
+
+            startReadMatrix = false;
+        }
+        else if(startReadMatrix)
+        {
+            userDefinedInstances.transformationMatrices.back()[columnCount][0] = convertNumber(lineTokens[0]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][1] = convertNumber(lineTokens[1]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][2] = convertNumber(lineTokens[2]);
+            userDefinedInstances.transformationMatrices.back()[columnCount][3] = convertNumber(lineTokens[3]);
+
+            columnCount += 1;
+        }
+        else if(lineTokens[0].contains("End_Model_Instances"))
+        {
+            loadedUserDefinedInstances.push_back(userDefinedInstances);
+
+            userDefinedInstances.transformationMatrices.clear();
+        }
+        else
+        {
+            throw std::runtime_error{"Unexpected file line: " + fileLine.toStdString()};
+        }
+    }
+
     void ProjectLoader::loadVariable(const QString &fileLine)
     {
         QStringList lineTokens = fileLine.split(QRegExp{"\\s+"});
@@ -537,6 +671,7 @@ namespace ProjectSaverLoader
         readingVariables = false;
         readingFavouriteResults = false;
         readScriptName = false;
+        readingUserDefinedInstances = false;
 
         modifiedSectionFlag = false;
     }

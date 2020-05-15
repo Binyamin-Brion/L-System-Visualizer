@@ -25,7 +25,7 @@ namespace Render
             numberIndicesStored += indiceCount;
         }
 
-        void StoredModels::addModelInstances(const QString &modelFileName, unsigned int numberInstances)
+        void StoredModels::addModelInstances(const QString &modelFileName, unsigned int numberInstances, bool userAddedIndex)
         {
             auto modelLocation = std::find_if(storedModels.begin(), storedModels.end(), [&modelFileName](const ModelRange &storedModel)
             {
@@ -38,7 +38,7 @@ namespace Render
                 assert(false);
             }
 
-            modelLocation->incrementInstanceMatrixCount(numberInstances);
+            modelLocation->incrementInstanceMatrixCount(numberInstances, userAddedIndex);
 
             updateIndiceIndexes();
         }
@@ -54,6 +54,12 @@ namespace Render
 
                if(passFirstIndexTest && passSecondIndexTest)
                {
+                   // Only instances that were added by the user can be selected.
+                   if(!i.indexUserAdded(index))
+                   {
+                       return false;
+                   }
+
                    return i.getModel().checkIntersection(cameraPosition, rayDirection, matrix);
                }
             }
@@ -79,6 +85,33 @@ namespace Render
             return storedModels;
         }
 
+        std::vector<UserAddedModelInstances> StoredModels::getUserAddedMatricesIndexes() const
+        {
+            std::vector<UserAddedModelInstances> indexes;
+
+            for(const auto &i : storedModels)
+            {
+                // If the associated model does not have any instances, then the index cannot refer to that model.
+                if(i.getUserAddedMatrixCount() == 0)
+                {
+                    continue;
+                }
+
+                indexes.emplace_back(UserAddedModelInstances{i.getModel().getModelFileName(), std::vector<unsigned int>{}});
+
+                // Find the starting index of the instances of the associated model.
+                unsigned int baseIndex = i.getInstanceMatrixBegin() + i.getInstanceMatrixCount() - i.getUserAddedMatrixCount();
+
+                // Add the indexes representing instances of the associated model.
+                for(unsigned int index = 0; index < i.getUserAddedMatrixCount(); ++index)
+                {
+                    indexes.back().instanceMatrixInstancesIndexes.push_back(baseIndex + index);
+                }
+            }
+
+            return indexes;
+        }
+
         void StoredModels::updateIndiceIndexes()
         {
             unsigned int currentIndex = 0;
@@ -91,11 +124,29 @@ namespace Render
             }
         }
 
-        void StoredModels::removeAllInstances()
+        void StoredModels::removeInstance(unsigned int index)
         {
-            storedModels.clear();
+            for(auto &i : storedModels)
+            {
+                // If the associated model does not have any instances, then the index cannot refer to that model.
+                if(i.getInstanceMatrixCount() == 0)
+                {
+                    continue;
+                }
 
-            numberIndicesStored = 0;
+                // Determine if the index is within the range of indexes that represent instances of a model
+                unsigned int lowerRange = i.getInstanceMatrixBegin();
+                unsigned int higherRange = i.getInstanceMatrixBegin() + i.getInstanceMatrixCount();
+
+                bool targetModelInstances = (lowerRange <= index) && (index < higherRange);
+
+                if(targetModelInstances)
+                {
+                    i.deIncrementInstanceMatrixCount(1, i.indexUserAdded(index));
+                }
+            }
+
+            updateIndiceIndexes();
         }
 
         void StoredModels::removeModel(const QString &modelFileName)
@@ -112,7 +163,7 @@ namespace Render
             }
 
             modelLocation->setInstanceMatrixBegin(0);
-            modelLocation->incrementInstanceMatrixCount(-modelLocation->getInstanceMatrixCount());
+            modelLocation->clearInstanceCount();
 
             updateIndiceIndexes();
         }

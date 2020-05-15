@@ -80,9 +80,18 @@ namespace ProjectSaverLoader
             void saveRules(const std::vector<::L_System::DataStructures::Rule> &rules);
 
             /**
-             * Writes the output of a script file to script.
+             * Writes the output of a script to the project file.
+             *
+             * @param favouriteResults the list of bookmarked results to write to a project file
              */
             void saveRequestedScriptOutputs(const std::vector<FavouriteResult> &favouriteResults);
+
+            /**
+             * Writes the user added instance files of a bookmarked result to a project file.
+             *
+             * @param favouriteResults the list of bookmarked results containing user added instance models to save
+             */
+            void saveUserModelInstances(const std::vector<FavouriteResult> &favouriteResults);
 
             /**
              * Writes the passed in variables to the project save file.

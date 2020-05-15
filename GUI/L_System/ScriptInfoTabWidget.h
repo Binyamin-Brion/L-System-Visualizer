@@ -34,6 +34,9 @@ namespace GUI
         {
                 Q_OBJECT
 
+                using UserDefinedInstances = ::ProjectSaverLoader::UserDefinedInstances; // Because Qt messes up if the full name of this class is
+                                                                                         // used in the signal (it doesn't recognize it- used in slot).
+
             signals:
 
                 /**
@@ -84,6 +87,13 @@ namespace GUI
                 void removeFavouriteScript(const QString &saveResultName);
 
                 /**
+                 * Saves the user added instances that have been added to the favourite result that has the passed in name.
+                 *
+                 * @param favouriteResultName name of the favourite result to save the user added instances to
+                 */
+                void saveFavouriteScript(const QString &favouriteResultName);
+
+                /**
                  * Stores the script information into the structure passed in.
                  *
                  * @param projectDetails structure to hold the script information
@@ -95,6 +105,15 @@ namespace GUI
                  * static ScriptInput data structure.
                  */
                 void setScriptInput();
+
+            public slots:
+
+                /**
+                 * Stores the user added instances that are currently being rendered.
+                 *
+                 * @param matrices the matrices of the models that have been added by the user
+                 */
+                void setModelInstances(const std::vector<UserDefinedInstances>& matrices);
 
             private:
 
@@ -128,6 +147,10 @@ namespace GUI
                 std::vector<::L_System::DataStructures::Rule> scriptRules;
                 std::vector<::L_System::DataStructures::Variable> scriptVariables;
                 std::vector<::ProjectSaverLoader::FavouriteResult> favouriteResults;
+
+                // Stores the user-added instances in a temporary storage until they are explicitly saved by the user
+                // to the associated favourite result.
+                std::vector<::ProjectSaverLoader::UserDefinedInstances> unsavedUserDefinedInstances;
         };
     }
 }

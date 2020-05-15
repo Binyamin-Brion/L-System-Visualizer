@@ -16,6 +16,11 @@ namespace ModelLoading
     class Model;
 }
 
+namespace ProjectSaverLoader
+{
+    class ProjectDetails;
+}
+
 namespace Render
 {
     /**
@@ -43,6 +48,24 @@ namespace Render
             void addModelInstances();
 
             /**
+             * Adds an instance of the given model to the render. The instance will be centred around the origin.
+             *
+             * This all is forwarded to the ModelVAO.
+             *
+             * @param modelFileName name of the instance to add
+             */
+            void addUserRequestedModelInstance(const QString &modelFileName);
+
+            /**
+             * Renders all of the model instances specified in the parameter. This is called when rerendering an interpretation result.
+             *
+             * Call is forwarded to the ModelVAO.
+             *
+             * @param modelInstances the list of instances for every model that needs instance(s) to be rendered
+             */
+            void addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances);
+
+            /**
              * Checks for an intersection with the users cursor with an instance of model.
              *
              * @param screenWidth width of the OpenGL widget
@@ -50,7 +73,7 @@ namespace Render
              * @param mouseX x-position of the cursor relative to the OpenGL widget
              * @param mouseY y-position of the cursor relative to the OpenGL widget
              */
-            void checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY);
+            void checkRayIntersection(int screenWidth, int screenHeight, int mouseX, int mouseY, bool appendIntersections);
 
             /**
              * Removes all (OpenGL) rendering data. Afterwards, nothing will be rendered.
@@ -58,11 +81,25 @@ namespace Render
             void deleteOpenGLResources();
 
             /**
+             * Deletes the selected instances. Afterwards they will no longer be rendered.
+             *
+             * This call is forwarded to ModelVAO.
+             */
+            void deleteSelectedInstances();
+
+            /**
              * Get the reference to the camera used for rending.
              *
              * @return reference to the camera
              */
             Camera::CameraObject& getCamera();
+
+            /**
+             * Get the user defined models that are currently being rendered, whether selected or not.
+             *
+             * @return vector of rendered user added instances
+             */
+            std::vector<::ProjectSaverLoader::UserDefinedInstances> getUserDefinedInstances() const;
 
             /**
              * Initializes are OpenGL data structures required for rending.
@@ -75,12 +112,20 @@ namespace Render
             void render();
 
             /**
-             * Resets the the intersection colours for all instances of all models.
+             * Applies the given transformation to all of the rendered user added instances.
+             *
+             * This call is forwarded to the ModelVAO.
+             *
+             * @param transformationData transformation to apply to selected instances
              */
-            void resetIntersectionColours();
+            void transformSelectedModels(const DataStructures::TransformationData &transformationData);
 
         private:
 
+            /**
+             * The previous render is removed- it is no longer rendered. The render data is still held in vRam however,
+             * and may still be rendered later.
+             */
             void clearPreviousRender();
 
             /**

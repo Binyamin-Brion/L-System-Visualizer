@@ -12,6 +12,7 @@
 #include "L_System/Interpretation/Interpreter.h"
 #include "GUI/Dialogs/NewNameDialog.h"
 
+
 namespace GUI
 {
     namespace L_System
@@ -24,6 +25,8 @@ namespace GUI
         {
             ui->setupUi(this);
 
+
+
             setupConnections();
         }
 
@@ -32,8 +35,6 @@ namespace GUI
             // Loading a project may mean loading saved bookmarked results- these should not trigger a warning asking the user to save,
             // as adding saved bookmarks to the savedResultComboBox will trigger the connections as the index of that widget will change.
             savedNewResult = true;
-
-      //      ui->openGLWidget->clearData();
 
             saveResultNameDialog->clearExistingName();
 
@@ -58,6 +59,15 @@ namespace GUI
 
         void ScriptTabWidget::saveProject(const QString &scriptName, ::ProjectSaverLoader::ProjectDetails &projectDetails)
         {
+            // Ensure that the current favourite script is saved, even if user forgot to do so. This done as when changing
+            // a favourite script, the user is given a warning of whether to save or not, but if the user saves the project,
+            // nothing is given, thus no reminder to save the changes made to the current favourite result. Worst case
+            // the user can delete the instances they added when they reopen the project.
+            if(!previousFavouriteResult.isEmpty() && previousFavouriteResult != newResultEntry)
+            {
+                ui->scriptInfoTabs->saveFavouriteScript(previousFavouriteResult);
+            }
+
             ui->scriptInfoTabs->saveProject(scriptName, projectDetails);
         }
 
@@ -70,7 +80,7 @@ namespace GUI
                 savedNewResult = true;
 
                 // Call this BEFORE editing the savedResultsComboBox, as doing so changes the index of that combo box, triggering the connections.
-                // If the new result is not add to the tab widget first, then a segfault could occur as the connection slot would search for a daved result
+                // If the new result is not add to the tab widget first, then a segfault could occur as the connection slot would search for a saved result
                 // in the tab widget, when it is only being added after the connection has been executed.
                 ui->scriptInfoTabs->addFavouriteScript(saveResultNameDialog->getMostRecentName(), ::L_System::Execution::Executor::getRecursionResult());
 
@@ -88,7 +98,7 @@ namespace GUI
         {
             // Before changing a viewed script, check if the previous result needs to be saved, and if it does, ask the user to do so.
             // Note: this is required because changing the viewed result discard the previous result.
-            requestResultSave();
+            requestFavouriteResultSave();
 
             currentSaveResultIndex = index;
         }
@@ -99,8 +109,28 @@ namespace GUI
             // To prevent a crash from occurring, this function exits if such an input is given.
             if(text.isEmpty() || text == newResultEntry)
             {
+                ui->renderResultWidget->enableAddInstanceButton(false);
+
                 return;
             }
+
+            // The previous favourite script needs to be saved to ensure no data is lost. Since modifications made to the
+            // new favourite result will overwrite the user added instance data, the save must be made now, before the user
+            // makes changes there.
+
+            // Initial copy needed here for the first time this slot is executed.
+            static QString previousFavouriteResult = text;
+
+            requestUserAddedInstancesSave();
+
+            previousFavouriteResult = text;
+
+            // Keep track of the previous favourite result in a member object so that it is known which favourite result to save
+            // when the project is saved.
+            this->previousFavouriteResult = text;
+
+            // The user can only add instances if they are viewing a favourite result they have saved.
+            ui->renderResultWidget->enableAddInstanceButton(true);
 
             const ::ProjectSaverLoader::FavouriteResult favouriteResult = ui->scriptInfoTabs->getFavouriteScript(text);
 
@@ -144,14 +174,35 @@ namespace GUI
 
             ::L_System::Interpretation::Interpreter::interpretExistingResult(favouriteResult.executionResult);
 
-            ui->openGLWidget->addModelInstances();
+            ui->renderResultWidget->addModelInstances();
+
+            // With the interpretation result added to the render, now add the user added instances. This has to be after
+            // due to the assumption made in the code that organizes the render data.
+            ui->renderResultWidget->addUserRequestedModelInstances(favouriteResult.userDefinedInstances);
+        }
+
+        void ScriptTabWidget::requestUserAddedInstancesSave()
+        {
+            if(unsavedUserAddedInstances)
+            {
+                // Assume that the user saved, as they are given a chance to do so- if they decline, it is assumed they thought about the consequences
+                // of not doing so.
+                unsavedUserAddedInstances = false;
+
+                int response = QMessageBox::warning(this, "Unsaved Added Instances", "Previously added user instances were not saved. Would you like to save them?", QMessageBox::Yes | QMessageBox::No);
+
+                if(response == QMessageBox::Yes)
+                {
+                    ui->scriptInfoTabs->saveFavouriteScript(previousFavouriteResult);
+                }
+            }
         }
 
         void ScriptTabWidget::runScript()
         {
             // Before running a script, check if the previous result needs to be saved, and if it does, ask the user to do so.
             // Note: this is required because running a script discard the previous result.
-            requestResultSave();
+            requestFavouriteResultSave();
 
             try
             {
@@ -181,7 +232,7 @@ namespace GUI
 
             ui->savedResultOutputWidget->showScriptOutput();
 
-            ui->openGLWidget->addModelInstances();
+            ui->renderResultWidget->addModelInstances();
 
             ui->discardResultButton->setEnabled(false);
 
@@ -198,7 +249,7 @@ namespace GUI
 
         // Beginning of private functions
 
-        void ScriptTabWidget::requestResultSave()
+        void ScriptTabWidget::requestFavouriteResultSave()
         {
             if(!savedNewResult)
             {
@@ -219,7 +270,16 @@ namespace GUI
 
         void ScriptTabWidget::setupConnections()
         {
-            connect(ui->scriptInfoTabs, SIGNAL(modelLoaded(const ::ModelLoading::Model&)), ui->openGLWidget, SLOT(uploadModelGPU(const ::ModelLoading::Model&)));
+            connect(ui->renderResultWidget, &OpenGL::RenderResultWidget::modelInstancesChanged, [this](const std::vector<::ProjectSaverLoader::UserDefinedInstances> &instances)
+            {
+                ui->scriptInfoTabs->setModelInstances(instances);
+
+                unsavedUserAddedInstances = true;
+            });
+
+            connect(ui->saveUserAddedInstancesButton, SIGNAL(clicked()), this, SLOT(requestUserAddedInstancesSave()));
+
+            connect(ui->scriptInfoTabs, SIGNAL(modelLoaded(const ::ModelLoading::Model&)), ui->renderResultWidget, SLOT(uploadModelVRam(const ::ModelLoading::Model&)));
 
             connect(ui->runScriptButton, SIGNAL(clicked()), this, SLOT(runScript()));
 

@@ -3,6 +3,7 @@
 //
 
 #include <QtTest/QtTest>
+#include <ext/matrix_transform.hpp>
 #include "TestProjectSaveLoad.h"
 #include "ProjectSaverLoader/ProjectSaver.h"
 #include "ProjectSaverLoader/ProjectLoader.h"
@@ -72,6 +73,7 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == firstRule);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[1] == secondRule);
 
+            // If there are no favourite results, then there are no user-added instances.
             QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
         }
 
@@ -98,6 +100,17 @@ namespace Tests
 
             Rule secondRule{firstVariable, {{Token{secondVariable}, Token{firstConstant}, Token{firstVariable}, Token{secondConstant}, Token{firstVariable}}}};
 
+            // Create user defined instances
+
+            ::ProjectSaverLoader::UserDefinedInstances userDefinedInstances;
+            userDefinedInstances.modelName = firstVariable.getAssociatedModelName();
+            userDefinedInstances.transformationMatrices.emplace_back(glm::mat4{1.0f});
+            userDefinedInstances.transformationMatrices.emplace_back(glm::mat4{1.0f});
+
+            ::ProjectSaverLoader::UserDefinedInstances secondUserDefinedInstances;
+            secondUserDefinedInstances.modelName = "someModel2";
+            secondUserDefinedInstances.transformationMatrices.emplace_back(glm::mat4{1.0f});
+
             // Create a favourite result.
             ::ProjectSaverLoader::FavouriteResult favouriteResult
                     {
@@ -114,7 +127,9 @@ namespace Tests
                                 Token{secondConstant},
                                 Token{secondVariable}
                             }
-                        }
+                        },
+
+                        {userDefinedInstances, secondUserDefinedInstances}
                     };
 
             // Upload the script.
@@ -180,6 +195,18 @@ namespace Tests
 
             // Fifth Token
             QVERIFY(loadedFavouriteResult.executionResult[1][4].getVariable() == secondVariable);
+
+            QVERIFY(loadedFavouriteResult.userDefinedInstances.size() == 2);
+
+            // Test to see if the user-added model instances were correctly read from the project file.
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[0].modelName == firstVariable.getAssociatedModelName());
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[0].transformationMatrices.size() == 2);
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[0].transformationMatrices[0] == glm::mat4x4{1.0f});
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[0].transformationMatrices[1] == glm::mat4{1.0f});
+
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[1].modelName == "someModel2");
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[1].transformationMatrices.size() == 1);
+            QVERIFY(loadedFavouriteResult.userDefinedInstances[1].transformationMatrices[0] == glm::mat4x4{1.0f});
         }
 
         void TestProjectSaveLoad::testKochCurve()
@@ -239,6 +266,7 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts()[0].rules.size() == 1);
             QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == rule);
 
+            // If there are no favourite results, then there are no user-added instances.
             QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
         }
     }

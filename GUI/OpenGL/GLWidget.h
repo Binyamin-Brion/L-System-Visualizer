@@ -8,12 +8,18 @@
 #include <QtWidgets/QOpenGLWidget>
 #include <QtGui/QOpenGLDebugMessage>
 #include "../../Render/CommandCentre.h"
+#include "Render/DataStructures/TransformationData.h"
 
 class QOpenGLDebugLogger;
 
 namespace ModelLoading
 {
     class Model;
+}
+
+namespace ProjectSaverLoader
+{
+    class ProjectDetails;
 }
 
 namespace GUI
@@ -30,6 +36,15 @@ namespace GUI
         {
                 Q_OBJECT
 
+            signals:
+
+                /**
+                 * Emitted whenever the user performs some input causing the user-instance cubes to change in some way.
+                 *
+                 * @param (vector of UserDefineInstances) the vector of all user defined instances being rendered.
+                 */
+                void modelInstancesChanged(const std::vector<::ProjectSaverLoader::UserDefinedInstances>&);
+
             public:
 
                 /**
@@ -41,8 +56,30 @@ namespace GUI
 
                 /**
                  * Forwards the request to the CommandCentre to render the instances of the script interpretation.
+                 *
+                 * Request forwarded to CommandCentre.
                  */
                 void addModelInstances();
+
+                /**
+                 * Adds an instance of the model identified by the passed in file to the render scene.
+                 *
+                 * The instance added will by default be located at the origin.
+                 *
+                 * Request forwarded to CommandCentre.
+                 *
+                 * @param modelFileName the model to add an instance of.
+                 */
+                void addUserRequestedModelInstance(const QString &modelFileName);
+
+                /**
+                 * Add user instanced models that were loaded from a file.
+                 *
+                 * Request forwarded to CommandCentre.
+                 *
+                 * @param modelInstances the instance models to render
+                 */
+                void addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances);
 
                 /**
                  * Handles key press events when this widget is in focus.
@@ -98,6 +135,15 @@ namespace GUI
                  */
                 void resizeGL(int width, int height) override;
 
+                /**
+                 * Store the transformation that should be applied to the given selected instances if the left or right
+                 * arrow keys are pressed.
+                 *
+                 * @param transformationData to apply if the arrow keys are pressed
+                 *
+                 */
+                void setTransformationData(const ::Render::DataStructures::TransformationData &transformationData);
+
             public slots:
 
                 /**
@@ -144,6 +190,8 @@ namespace GUI
                 // with the rendered objects can be performed immediately, without waiting for an initial mouse movement.
                 int mouseX = 0;
                 int mouseY = 0;
+
+                ::Render::DataStructures::TransformationData transformationData;
         };
     }
 }

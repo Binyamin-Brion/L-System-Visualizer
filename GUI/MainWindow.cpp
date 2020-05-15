@@ -41,7 +41,7 @@ namespace GUI
 
     void MainWindow::saveProject()
     {
-        ui->scriptTabWidget->saveProject("/home/binybrion/saveTest2.txt");
+        ui->scriptTabWidget->saveProject("/home/binybrion/saveTest3.txt");
     }
 
     // Beginning of private functions

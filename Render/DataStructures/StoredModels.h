@@ -6,6 +6,7 @@
 #define VOXEL_L_SYSTEM_STOREDMODELS_H
 
 #include "ModelRange.h"
+#include "UserAddedModelInstances.h"
 
 namespace Render
 {
@@ -32,8 +33,9 @@ namespace Render
                  *
                  * @param modelFileName the name of the file that was used to load the model
                  * @param numberInstances number of instances to add to the referred to model
+                 * @param userAddedIndex whether the added instances are user-added
                  */
-                void addModelInstances(const QString &modelFileName, unsigned int numberInstances);
+                void addModelInstances(const QString &modelFileName, unsigned int numberInstances, bool userAddedIndex);
 
                 /**
                  * Checks for an intersection between a ray with an initial position and all of the instances of all models stored.
@@ -62,9 +64,18 @@ namespace Render
                 const std::vector<ModelRange>& getModelRanges() const;
 
                 /**
-                 * Remove all instances of the stored models.
+                 * Get a vector of indexes into the transformation VBO data for each held model.
+                 *
+                 * @return vector of indexes into the transformation VBO data for each held model.
                  */
-                void removeAllInstances();
+                std::vector<UserAddedModelInstances> getUserAddedMatricesIndexes() const;
+
+                /**
+                 * Removes the instance, regardless of the model, that is associated with the passed in index.
+                 *
+                 * @param index for which to remove from being rendered
+                 */
+                void removeInstance(unsigned int index);
 
                 /**
                  * Remove all instances of the referred to model. Instances for the model can be added again without calling

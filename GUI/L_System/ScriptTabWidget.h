@@ -67,7 +67,7 @@ namespace GUI
                 void handleChangedSaveScript(const QString &text);
 
                 /**
-                 * Renders the current opened favourite result, if there is one currently openend.
+                 * Renders the current opened favourite result, if there is one currently opened.
                  */
                 void renderScript();
 
@@ -75,6 +75,11 @@ namespace GUI
                  * Removes the currently selected saved script result.
                  */
                 void removeBookmarkedScriptExecutionResult();
+
+                /**
+                 *  Prompts the user to save any unsaved user added instances, if there are any.
+                 */
+                void requestUserAddedInstancesSave();
 
                 /**
                  * Makes the request to upload the script parameters to the ScriptInput data structure, then execute and
@@ -87,7 +92,7 @@ namespace GUI
                 /**
                  * Prompts the user to save the current execution result if it is unsaved.
                  */
-                void requestResultSave();
+                void requestFavouriteResultSave();
 
                 /**
                  * Sets up the connections used by this object's widgets.
@@ -97,7 +102,10 @@ namespace GUI
                 int currentSaveResultIndex = -1;
 
                 const QString newResultEntry = "Unsaved result";
+                QString previousFavouriteResult; // Keep track of the previous
                 bool savedNewResult = true;
+
+                bool unsavedUserAddedInstances = false;
 
                 Ui::ScriptTabWidget *ui = nullptr;
                 Dialogs::NewNameDialog *saveResultNameDialog = nullptr;

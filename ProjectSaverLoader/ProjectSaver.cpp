@@ -33,6 +33,7 @@ namespace ProjectSaverLoader
             saveConstants(i.constants);
             saveRules(i.rules);
             saveRequestedScriptOutputs(i.favouriteResults);
+            saveUserModelInstances(i.favouriteResults);
 
             // Mark the end of the read in script. The explicit flush is required to ensure that this text
             // is written to the file before the script contents.
@@ -162,6 +163,45 @@ namespace ProjectSaverLoader
             }
 
             writeStream << "\nEND FAVOURITE RESULT\n\n";
+        }
+    }
+
+    void ProjectSaver::saveUserModelInstances(const std::vector<FavouriteResult> &favouriteResults)
+    {
+        QTextStream writeStream{&file};
+
+        writeStream << "\nUser Instances:\n\n";
+
+        for(const auto &favouriteResult : favouriteResults)
+        {
+            // No point writing anything if there are no user added instances for the current favourite result.
+            if(favouriteResult.userDefinedInstances.empty())
+            {
+                continue;
+            }
+
+            writeStream << "Result_Name -- " << favouriteResult.resultName << "\n\n";
+
+            for(const auto &i : favouriteResult.userDefinedInstances)
+            {
+                writeStream << "Model_Name -- " << i.modelName << "\n\n";
+
+                for(const auto &matrix : i.transformationMatrices)
+                {
+                    writeStream << "Begin_Matrix\n\n";
+
+                    for(int columnIndex = 0; columnIndex < 4; ++columnIndex)
+                    {
+                        writeStream << matrix[columnIndex][0] << " , " << matrix[columnIndex][1] << " , " << matrix[columnIndex][2] << " , " << matrix[columnIndex][3] << "\n";
+                    }
+
+                    writeStream << "\nEnd_Matrix\n\n";
+                }
+
+                writeStream << "End_Model_Instances\n\n";
+            }
+
+            writeStream << "\n\nEnd_Result_Name\n\n";
         }
     }
 

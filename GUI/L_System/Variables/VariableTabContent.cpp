@@ -152,6 +152,14 @@ namespace GUI
 
             try
             {
+                // Only load a model if it hasn't been loaded before.
+                if(std::find(loadedModels.begin(), loadedModels.end(), modelFileLocation) != loadedModels.end())
+                {
+                    return;
+                }
+
+                loadedModels.insert(modelFileLocation);
+
                 ::ModelLoading::Model loadedModel{modelFileLocation.toStdString()};
 
                 emit modelLoaded(loadedModel);

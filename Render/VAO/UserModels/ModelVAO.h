@@ -9,11 +9,18 @@
 #include <Render/VBO/VBOWapper.h>
 #include <vec3.hpp>
 #include <mat4x4.hpp>
+#include <ProjectSaverLoader/UserDefinedInstances.h>
 #include "../../DataStructures//StoredModels.h"
+#include "../../DataStructures/TransformationData.h"
 
 namespace ModelLoading
 {
     class Model;
+}
+
+namespace ProjectSaverLoader
+{
+    class ProjectDetails;
 }
 
 namespace Render
@@ -41,7 +48,21 @@ namespace Render
                  * @param modelFileName name of the file used to load the model
                  * @param transformationMatrices the matrices representing instances of the model to render
                  */
-                void addModelInstances(const QString &modelFileName, const std::vector<glm::mat4x4> &transformationMatrices);
+                void addModelInstances(const QString &modelFileName, const std::vector<glm::mat4x4> &transformationMatrices, bool userAddedIndex = false);
+
+                /**
+                 * Adds an instance of the given model to the render. The instance will be centred around the origin.
+                 *
+                 * @param modelFileName name of the instance to add
+                 */
+                void addUserRequestedModelInstance(const QString &modelFileName);
+
+                /**
+                 * Renders all of the model instances specified in the parameter. This is called when rerendering an interpretation result.
+                 *
+                 * @param modelInstances the list of instances for every model that needs instance(s) to be rendered
+                 */
+                void addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances);
 
                 /**
                  * Checks for an intersection with the ray and an instance of a model. If there is one, that instance
@@ -50,7 +71,7 @@ namespace Render
                  * @param cameraPosition position of the camera in world space
                  * @param rayDirection direction of the ray from the camera position, in world space
                  */
-                void checkRayIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection);
+                void checkRayIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection, bool appendIntersections);
 
                 /**
                  * Removes all OpenGL rendering data. Afterwards, nothing will be rendered.
@@ -58,12 +79,19 @@ namespace Render
                 void deleteOpenGLResources();
 
                 /**
+                 * Deletes the selected instances. Afterwards they will no longer be rendered.
+                 */
+                void deleteSelectedInstances();
+
+                std::vector<::ProjectSaverLoader::UserDefinedInstances> getUserDefinedInstances() const;
+
+                /**
                  * Initializes all internal buffers for use for rendering.
                  */
                 void initialize();
 
                 /**
-                 * Removes all instances of the passed in model.
+                 * Removes all instances of the passed in model, both logically and the data used for rendering.
                  *
                  * @param modelFileName the name of the file used to loader the model
                  */
@@ -75,9 +103,13 @@ namespace Render
                 void render();
 
                 /**
-                 * Any highlighted model instances are reset to the default colour.
+                 * Applies the given transformation to all of the rendered user added instances.
+                 *
+                 * This call is forwarded to the ModelVAO.
+                 *
+                 * @param transformationData transformation to apply to selected instances
                  */
-                void resetIntersectionColours();
+                void transformSelectedModels(const DataStructures::TransformationData &transformationData);
 
             private:
 

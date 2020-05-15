@@ -31,7 +31,7 @@ namespace GUI
 
         void ScriptInfoTabWidget::addFavouriteScript(const QString &saveResultName, const std::vector<std::vector<::L_System::Execution::Token>> &executionResult)
         {
-            favouriteResults.push_back(::ProjectSaverLoader::FavouriteResult{saveResultName, executionResult});
+            favouriteResults.push_back(::ProjectSaverLoader::FavouriteResult{saveResultName, executionResult, unsavedUserDefinedInstances});
         }
 
         const ::ProjectSaverLoader::FavouriteResult &ScriptInfoTabWidget::getFavouriteScript(const QString &saveResultName) const
@@ -109,6 +109,18 @@ namespace GUI
             favouriteResults.erase(saveResultLocation);
         }
 
+        void ScriptInfoTabWidget::saveFavouriteScript(const QString &favouriteResultName)
+        {
+            auto saveResultLocation = std::find_if(favouriteResults.begin(), favouriteResults.end(), [&](const ::ProjectSaverLoader::FavouriteResult &favouriteResult)
+            {
+                return favouriteResult.resultName == favouriteResultName;
+            });
+
+            // The unsaved user added instances are now part of the current favourite result. Thus when the project is saved,
+            // these instances will be saved as well.
+            saveResultLocation->userDefinedInstances = unsavedUserDefinedInstances;
+        }
+
         void ScriptInfoTabWidget::saveProject(const QString &scriptName, ::ProjectSaverLoader::ProjectDetails &projectDetails)
         {
             accumulateScriptInformation();
@@ -131,6 +143,11 @@ namespace GUI
             ::L_System::ScriptInput::setAxiom(scriptAxiom);
 
             ::L_System::ScriptInput::setRules(scriptRules);
+        }
+
+        void ScriptInfoTabWidget::setModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &matrices)
+        {
+            unsavedUserDefinedInstances = matrices;
         }
 
         // Beginning of private functions

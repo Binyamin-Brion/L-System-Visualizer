@@ -111,6 +111,11 @@ namespace ProjectSaverLoader
             void handleFavouriteResultFlags();
 
             /**
+             * Updates the readingXXX flags so that the script instance matrices added by the user are read from the project file.
+             */
+            void handleUserInstancesFlags();
+
+            /**
              * Extracts the axiom from the given file line.
              *
              * @param fileLine from which to extract a script axiom
@@ -152,6 +157,14 @@ namespace ProjectSaverLoader
             void loadRule(const QString &fileLine);
 
             /**
+             * Extracts the instance associated with a favourite result from the given line.
+             *
+             * @param fileLine from which to extract an instance matrix
+             * @throws runtime_exception if the file line is not of the expected format
+             */
+            void loadUserAddedInstances(const QString &fileLine);
+
+            /**
              * Extracts the variable from the given file line.
              *
              * @param fileLine from which to extract a script variable
@@ -159,6 +172,9 @@ namespace ProjectSaverLoader
              */
             void loadVariable(const QString &fileLine);
 
+            /**
+             * Resets the readingXXX flags to the default state.
+             */
             void resetFlags();
 
             bool readScriptName = false;
@@ -168,6 +184,7 @@ namespace ProjectSaverLoader
             std::vector<FavouriteResult> loadedFavouriteResults;
             QString loadedScriptName;
             std::vector<::L_System::DataStructures::Rule> loadedRules;
+            std::vector<UserDefinedInstances> loadedUserDefinedInstances;
             std::vector<::L_System::DataStructures::Variable> loadedVariables;
 
             // Controls how to interpret the current line based off of the previous section tag (Variables:, Constants:, etc).
@@ -181,6 +198,7 @@ namespace ProjectSaverLoader
             bool readingRules = false;
             bool readingVariables = false;
             bool readingFavouriteResults = false;
+            bool readingUserDefinedInstances = false;
     };
 }
 

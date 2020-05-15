@@ -26,19 +26,24 @@ namespace Render
                  * @param instanceMatrixBegin starting index into the instance vector for instance matrices for the associated model
                  * @param instanceMatrixCount number of instance matrices for the associated model, starting from instanceMatrixBegin
                  * @param indiceBegin starting index into the indice vector for the indices of the associated model
-                 * @param indiceCount number of indices required for rendreing the model, starting from indiceBegin
+                 * @param indiceCount number of indices required for rendering the model, starting from indiceBegin
                  */
                 ModelRange(const ::ModelLoading::Model &model,
                         unsigned int instanceMatrixBegin, unsigned int instanceMatrixCount,
                         unsigned int indiceBegin, unsigned int indiceCount);
 
                 /**
-                 * Deincrements the count of the instance matrices for the associated model. Called if instances of the
+                 * Clears the number of instances of this model; both instanceMatrixCount and UserAddedMatrixCount are set to 0.
+                 */
+                void clearInstanceCount();
+
+                /**
+                 * De-increments the count of the instance matrices for the associated model. Called if instances of the
                  * associated model are no longer to be rendered.
                  *
                  * @param amount number of instances of associated model to stop rendering
                  */
-                void deIncrementInstanceMatrixCount(unsigned int amount);
+                void deIncrementInstanceMatrixCount(unsigned int amount, bool userAddedIndex);
 
                 /**
                  * Get the starting index into the indice vector for rendering.
@@ -76,11 +81,27 @@ namespace Render
                 const ::ModelLoading::Model& getModel() const;
 
                 /**
+                 * Get the number of instances of this model that were added by the user.
+                 *
+                 * @return the number of instances of this model that were added by the user
+                 */
+                unsigned int getUserAddedMatrixCount() const;
+
+                /**
                  * Increment the number of instances of the associated model to render.
                  *
                  * @param amount number of additional instances
                  */
-                void incrementInstanceMatrixCount(unsigned int amount);
+                void incrementInstanceMatrixCount(unsigned int amount, bool indexUserAdded);
+
+                /**
+                 * Determines if the passed index refers to an instance of a the model this object represents that has
+                 * been added by the user.
+                 *
+                 * @param index to check if it refers to a model instance held that was added by the user
+                 * @return true if the index refers to instance added by the user
+                 */
+                bool indexUserAdded(unsigned int index) const;
 
                 /**
                  * Set the beginning index into the instance matrix vector. Called when a model preceding this one
@@ -95,6 +116,7 @@ namespace Render
                 ::ModelLoading::Model model;
                 unsigned int instanceMatrixBegin;
                 unsigned int instanceMatrixCount;
+                unsigned int userAddedMatrixCount = 0;
                 unsigned int indiceBegin;
                 unsigned int indiceCount;
         };

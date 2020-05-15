@@ -7,6 +7,7 @@
 
 #include <QtWidgets/QWidget>
 #include "../../../L_System/DataStructures/Variable/Variable.h"
+#include <set>
 
 namespace ModelLoading
 {
@@ -139,6 +140,7 @@ namespace GUI
 
                 Ui::VariableTabContent *ui = nullptr;
                 QString invaliAxiomString = "No variables declared.";
+                std::set<QString> loadedModels;
         };
     }
 }
