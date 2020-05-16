@@ -48,6 +48,8 @@ namespace Render
                  */
                 bool checkIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection, const glm::mat4x4 &matrix, unsigned int index) const;
 
+                QString getModelName(unsigned int index) const;
+
                 /**
                  * Get the object storing ranges into rendering data vectors of the associated model
                  *

@@ -135,6 +135,11 @@ namespace Render
         modelVao.transformSelectedModels(transformationData);
     }
 
+    void CommandCentre::undoUserAction()
+    {
+        modelVao.undoUserAction();
+    }
+
     // Beginning of private functions
 
     void CommandCentre::clearPreviousRender()

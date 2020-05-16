@@ -82,16 +82,24 @@ namespace Render
 
             // Ensure that the fact that no instances are highlighted is shown in the render.
             instanceColours.uploadData(instanceColourVector);
+
+            // Remember that an instance has been added.
+            HistoryChange historyChange{modelFileName, addedInstanceIndex, true, false, glm::mat4x4{1.0f}};
+
+            Modification modification{historyChange};
+
+            historyChanges.push_back(modification);
         }
 
         void ModelVAO::addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances)
         {
+            // All previous user history is forgotten; this simplifies implementation of the history.
+            historyChanges.clear();
+
             for(const auto &i : modelInstances)
             {
                 addModelInstances(i.modelName, i.transformationMatrices, true);
             }
-
-            printf("Intersection size: %lu \n", intersectionIndexes.size());
         }
 
         void ModelVAO::checkRayIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection, bool appendIntersections)
@@ -174,33 +182,21 @@ namespace Render
 
         void ModelVAO::deleteSelectedInstances()
         {
-            auto instanceTransformationVector = transformationsVBO.getHeldData();
+            // The copy of the transformation matrices being deleted have to be done before the instances are deleted!
+            auto transformationVector = transformationsVBO.getHeldData();
 
-            auto instanceColourVector = instanceColours.getHeldData();
+            Modification modification;
 
-            // Iterate over the selected instances, and remove them from being rendered.
-            for(unsigned int i = 0; i < intersectionIndexes.size(); ++i)
+            for(const auto &i : intersectionIndexes)
             {
-                instanceTransformationVector.erase(instanceTransformationVector.begin() + intersectionIndexes[i]);
+                HistoryChange historyChange{storedModels.getModelName(i), i, false, true, transformationVector[i]};
 
-                instanceColourVector.erase(instanceColourVector.begin() + intersectionIndexes[i]);
-
-                storedModels.removeInstance(intersectionIndexes[i]);
-
-                // Since the intersectionIndexes represent indexes into the related instances VBO, and the above code
-                // erased an element from those VBOs, the next indexes need to have their indexes adjusted so that
-                // they refer to their assigned element in the updated position in those VBOs.
-                for(unsigned nextIndex = i + 1; nextIndex < intersectionIndexes.size(); ++nextIndex)
-                {
-                    intersectionIndexes[nextIndex] -= 1;
-                }
+                modification.push_back(historyChange);
             }
 
-            intersectionIndexes.clear();
+            historyChanges.push_back(modification);
 
-            transformationsVBO.uploadData(instanceTransformationVector);
-
-            instanceColours.uploadData(instanceColourVector);
+            removeInstances(intersectionIndexes);
         }
 
         std::vector<::ProjectSaverLoader::UserDefinedInstances> ModelVAO::getUserDefinedInstances() const
@@ -330,8 +326,15 @@ namespace Render
         {
             auto instanceTransformationVector = transformationsVBO.getHeldData();
 
+            Modification modification;
+
             for(unsigned int index : intersectionIndexes)
             {
+                // The copy of the transformation matrix has to be done before the transformation is applied.
+                HistoryChange historyChange{storedModels.getModelName(index), index, false, false, instanceTransformationVector[index]};
+
+                modification.push_back(historyChange);
+
                 switch(transformationData.transformationIdentifier)
                 {
                     case DataStructures::TransformationIdentifier::RotationX:
@@ -349,6 +352,24 @@ namespace Render
                     case DataStructures::TransformationIdentifier::RotationZ:
 
                         instanceTransformationVector[index] = glm::rotate(instanceTransformationVector[index], glm::radians(transformationData.amount), glm::vec3{0.0f, 0.0f, 1.0f});
+
+                        break;
+
+                    case DataStructures::TransformationIdentifier::ScaleX:
+
+                        instanceTransformationVector[index] = glm::scale(instanceTransformationVector[index], glm::vec3{transformationData.amount, 1.0f, 1.0f});
+
+                        break;
+
+                    case DataStructures::TransformationIdentifier::ScaleY:
+
+                        instanceTransformationVector[index] = glm::scale(instanceTransformationVector[index], glm::vec3{1.0f, transformationData.amount, 1.0f});
+
+                        break;
+
+                    case DataStructures::TransformationIdentifier::ScaleZ:
+
+                        instanceTransformationVector[index] = glm::scale(instanceTransformationVector[index], glm::vec3{1.0f, 1.0f, transformationData.amount});
 
                         break;
 
@@ -373,6 +394,8 @@ namespace Render
                         break;
                 }
             }
+
+            historyChanges.push_back(modification);
 
             transformationsVBO.uploadData(instanceTransformationVector);
         }
@@ -401,6 +424,108 @@ namespace Render
             }
 
             modelsToUpload.clear();
+        }
+
+        void ModelVAO::removeInstances(std::vector<unsigned int> &indexes)
+        {
+            auto instanceTransformationVector = transformationsVBO.getHeldData();
+
+            auto instanceColourVector = instanceColours.getHeldData();
+
+            // Iterate over the selected instances, and remove them from being rendered.
+            for(unsigned int i = 0; i < indexes.size(); ++i)
+            {
+                instanceTransformationVector.erase(instanceTransformationVector.begin() + indexes[i]);
+
+                instanceColourVector.erase(instanceColourVector.begin() + indexes[i]);
+
+                storedModels.removeInstance(indexes[i]);
+
+                // Since the intersectionIndexes represent indexes into the related instances VBO, and the above code
+                // erased an element from those VBOs, the next indexes need to have their indexes adjusted so that
+                // they refer to their assigned element in the updated position in those VBOs.
+                for(unsigned nextIndex = i + 1; nextIndex < indexes.size(); ++nextIndex)
+                {
+                    indexes[nextIndex] -= 1;
+                }
+            }
+
+            indexes.clear();
+
+            transformationsVBO.uploadData(instanceTransformationVector);
+
+            instanceColours.uploadData(instanceColourVector);
+        }
+
+        void ModelVAO::undoUserAction()
+        {
+            // No user action therefore no action to take.
+            if(historyChanges.empty())
+            {
+                return;
+            }
+
+            //
+            intersectionIndexes.clear();
+
+            // To prevent potentially many similar function calls, the required operations are stored temporarily and then
+            // the requested operation is done by passing all of the required data at once.
+            QHash<QString, std::vector<glm::mat4x4>> addInstances;
+            std::vector<unsigned int> removeIndexes;
+
+            auto transformationVector = transformationsVBO.getHeldData();
+            bool changedTransformations = false; // Keep track of whether to reupload the transformations.
+
+            for(const auto &historyChange : historyChanges.back())
+            {
+                if(historyChange.addedMatrix) // Added a matrix, then the opposite is to delete it.
+                {
+                    removeIndexes.push_back(historyChange.index);
+                }
+                else if(historyChange.removedMatrix) // Removed a matrix, then the opposite is to add it back.
+                {
+                    if(!addInstances.contains(historyChange.model))
+                    {
+                        addInstances.insert(historyChange.model, std::vector<glm::mat4x4>{});
+                    }
+
+                    addInstances[historyChange.model].push_back(historyChange.previousMatrix);
+                }
+                else
+                {
+                    transformationVector[historyChange.index] = historyChange.previousMatrix; // Applied a transformation; the opposite is to use the
+                                                                                              // matrix before the transformation was modified.
+
+                    changedTransformations = true;
+                }
+            }
+
+            // The user history was removing instances; time to add them back.
+            if(!addInstances.isEmpty())
+            {
+                QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = addInstances.constBegin();
+
+                while (i != addInstances.constEnd())
+                {
+                    addModelInstances(i.key(), i.value(), true);
+
+                    ++i;
+                }
+            }
+
+            // The user history was adding instances; time to remove them.
+            if(!removeIndexes.empty())
+            {
+                removeInstances(removeIndexes);
+            }
+
+            // The user applied transformations; time to remove those transformations.
+            if(changedTransformations)
+            {
+                transformationsVBO.uploadData(transformationVector);
+            }
+
+            historyChanges.pop_back();
         }
     }
 }

@@ -17,33 +17,17 @@ namespace GUI
         {
             ui->setupUi(this);
 
-            // All radio buttons and the add instance button are associated with the specified event filter.
-            ui->addInstanceButton->installEventFilter(this);
+            applyEventFilter();
 
-            ui->rotationXRadioButton->installEventFilter(this);
-            ui->rotationYRadioButton->installEventFilter(this);
-            ui->rotationZRadioButton->installEventFilter(this);
-
-            ui->translationXRadioButton->installEventFilter(this);
-            ui->translationYRadioButton->installEventFilter(this);
-            ui->translationZRadioButton->installEventFilter(this);
+            setDefaultTransformationValues();
 
             ui->splitter_3->setStretchFactor(1, 1);
-
-            // Some random transformation values to apply.
-
-            ui->rotationXLineEdit->setText("90"); // Degrees
-            ui->rotationYLineEdit->setText("90");
-            ui->rotationZLineEdit->setText("90");
-
-            ui->translationXLineEdit->setText("1");
-            ui->translationYLineEdit->setText("1");
-            ui->translationZLineEdit->setText("1");
 
             // Call this before setting the a radio button as enabled so that by default there is a transformation to apply
             // to selected models.
             setupConnections();
 
+            // By default make the X-Transformation active (no particular reason why).
             ui->translationXRadioButton->setChecked(true);
 
             handleTranslationX();
@@ -90,11 +74,8 @@ namespace GUI
             {
                 ui->rotationXLineEdit->setStyleSheet(styleSheet()); // Restore default line edit look to to indicate success.
 
-                if(ui->rotationXRadioButton->isChecked())
-                {
-                    // Have the transformation applied to selected instances be the transformation associated with this radio button with the given magnitude.
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationX, conversionResult.number});
-                }
+                // Have the transformation applied to selected instances be the transformation associated with this radio button with the given magnitude.
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationX, conversionResult.number});
             }
             else
             {
@@ -113,10 +94,7 @@ namespace GUI
             {
                 ui->rotationYLineEdit->setStyleSheet(styleSheet());
 
-                if(ui->rotationYRadioButton->isChecked())
-                {
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationY, conversionResult.number});
-                }
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationY, conversionResult.number});
             }
             else
             {
@@ -134,14 +112,65 @@ namespace GUI
             {
                 ui->rotationZLineEdit->setStyleSheet(styleSheet());
 
-                if(ui->rotationZRadioButton->isChecked())
-                {
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationZ, conversionResult.number});
-                }
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::RotationZ, conversionResult.number});
             }
             else
             {
                 ui->rotationZLineEdit->setStyleSheet(errorStyleSheet);
+            }
+        }
+
+        void RenderResultWidget::handleScaleX()
+        {
+            ui->scaleXRadioButton->setChecked(true);
+
+            ConvertNumberResult conversionResult = convertFieldNumber(ui->scaleXLineEdit->text());
+
+            if(conversionResult.success)
+            {
+                ui->scaleXLineEdit->setStyleSheet(styleSheet());
+
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::ScaleX, conversionResult.number});
+            }
+            else
+            {
+                ui->scaleXLineEdit->setStyleSheet(errorStyleSheet);
+            }
+        }
+
+        void RenderResultWidget::handleScaleY()
+        {
+            ui->scaleYRadioButton->setChecked(true);
+
+            ConvertNumberResult conversionResult = convertFieldNumber(ui->scaleYLineEdit->text());
+
+            if(conversionResult.success)
+            {
+                ui->scaleYRadioButton->setStyleSheet(styleSheet());
+
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::ScaleY, conversionResult.number});
+            }
+            else
+            {
+                ui->scaleYRadioButton->setStyleSheet(errorStyleSheet);
+            }
+        }
+
+        void RenderResultWidget::handleScaleZ()
+        {
+            ui->scaleZRadioButton->setChecked(true);
+
+            ConvertNumberResult conversionResult = convertFieldNumber(ui->scaleZRadioButton->text());
+
+            if(conversionResult.success)
+            {
+                ui->scaleZRadioButton->setStyleSheet(styleSheet());
+
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::ScaleZ, conversionResult.number});
+            }
+            else
+            {
+                ui->scaleZRadioButton->setStyleSheet(errorStyleSheet);
             }
         }
 
@@ -155,10 +184,7 @@ namespace GUI
             {
                 ui->translationXLineEdit->setStyleSheet(styleSheet());
 
-                if(ui->translationXRadioButton->isChecked())
-                {
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationX, conversionResult.number});
-                }
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationX, conversionResult.number});
             }
             else
             {
@@ -176,10 +202,7 @@ namespace GUI
             {
                 ui->translationYLineEdit->setStyleSheet(styleSheet());
 
-                if(ui->translationYRadioButton->isChecked())
-                {
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationY, conversionResult.number});
-                }
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationY, conversionResult.number});
             }
             else
             {
@@ -197,10 +220,7 @@ namespace GUI
             {
                 ui->translationZLineEdit->setStyleSheet(styleSheet());
 
-                if(ui->translationZRadioButton->isEnabled())
-                {
-                    ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationZ, conversionResult.number});
-                }
+                ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::TranslationZ, conversionResult.number});
             }
             else
             {
@@ -209,6 +229,24 @@ namespace GUI
         }
 
         // Beginning of private functions
+
+        void RenderResultWidget::applyEventFilter()
+        {
+            // All radio buttons and the add instance button are associated with the specified event filter.
+            ui->addInstanceButton->installEventFilter(this);
+
+            ui->rotationXRadioButton->installEventFilter(this);
+            ui->rotationYRadioButton->installEventFilter(this);
+            ui->rotationZRadioButton->installEventFilter(this);
+
+            ui->scaleXRadioButton->installEventFilter(this);
+            ui->scaleYRadioButton->installEventFilter(this);
+            ui->scaleZRadioButton->installEventFilter(this);
+
+            ui->translationXRadioButton->installEventFilter(this);
+            ui->translationYRadioButton->installEventFilter(this);
+            ui->translationZRadioButton->installEventFilter(this);
+        }
 
         RenderResultWidget::ConvertNumberResult RenderResultWidget::convertFieldNumber(const QString &text)
         {
@@ -219,17 +257,43 @@ namespace GUI
             return {success, number};
         }
 
+        void RenderResultWidget::setDefaultTransformationValues()
+        {
+            // Some random transformation values to apply.
+
+            ui->rotationXLineEdit->setText("90"); // Degrees
+            ui->rotationYLineEdit->setText("90");
+            ui->rotationZLineEdit->setText("90");
+
+            ui->scaleXLineEdit->setText("1"); // Ratio
+            ui->scaleYLineEdit->setText("1");
+            ui->scaleZLineEdit->setText("1");
+
+            ui->translationXLineEdit->setText("1");
+            ui->translationYLineEdit->setText("1");
+            ui->translationZLineEdit->setText("1");
+        }
+
         void RenderResultWidget::setupConnections()
         {
             connect(ui->openGLWidget, &GLWidget::modelInstancesChanged, [this](const std::vector<::ProjectSaverLoader::UserDefinedInstances>&matrices) { emit modelInstancesChanged(matrices); });
 
             connect(ui->addInstanceButton, &QPushButton::clicked, [this]() { ui->openGLWidget->addUserRequestedModelInstance(ui->modelComboBox->currentText()); });
 
+            connect(ui->undoButton, SIGNAL(clicked()), ui->openGLWidget, SLOT(undoUserAction()));
+
+
             connect(ui->rotationXLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleRotationX()));
 
             connect(ui->rotationYLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleRotationY()));
 
             connect(ui->rotationZLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleRotationZ()));
+
+            connect(ui->scaleXLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleScaleX()));
+
+            connect(ui->scaleYLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleScaleY()));
+
+            connect(ui->scaleZLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleScaleZ()));
 
             connect(ui->translationXLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleTranslationX()));
 
@@ -243,6 +307,12 @@ namespace GUI
             connect(ui->rotationYRadioButton, SIGNAL(clicked()), this, SLOT(handleRotationY()));
 
             connect(ui->rotationZRadioButton, SIGNAL(clicked()), this, SLOT(handleRotationZ()));
+
+            connect(ui->scaleXRadioButton, SIGNAL(clicked()), this, SLOT(handleScaleX()));
+
+            connect(ui->scaleYRadioButton, SIGNAL(clicked()), this, SLOT(handleScaleY()));
+
+            connect(ui->scaleZRadioButton, SIGNAL(clicked()), this, SLOT(handleScaleZ()));
 
             connect(ui->translationXRadioButton, SIGNAL(clicked()), this, SLOT(handleTranslationX()));
 
@@ -271,6 +341,21 @@ namespace GUI
                 }
 
                 if(object == ui->rotationZRadioButton)
+                {
+                    ui->openGLWidget->setFocus();
+                }
+
+                if(object == ui->scaleXRadioButton)
+                {
+                    ui->openGLWidget->setFocus();
+                }
+
+                if(object == ui->scaleYRadioButton)
+                {
+                    ui->openGLWidget->setFocus();
+                }
+
+                if(object == ui->scaleZRadioButton)
                 {
                     ui->openGLWidget->setFocus();
                 }

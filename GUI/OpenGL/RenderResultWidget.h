@@ -68,6 +68,8 @@ namespace GUI
                  *
                  * The instance added will by default be located at the origin.
                  *
+                 * Any previous user action history is removed.
+                 *
                  * Request forwarded to GLWidget.
                  *
                  * @param modelFileName the model to add an instance of.
@@ -113,6 +115,24 @@ namespace GUI
                 void handleRotationZ();
 
                 /**
+                 * Handles any change in the scale X field, ensuring a valid input is given and if so, updates the
+                 * transformation that will be applied to any selected instances.
+                 */
+                void handleScaleX();
+
+                /**
+                 * Handles any change in the scale Y field, ensuring a valid input is given and if so, updates the
+                 * transformation that will be applied to any selected instances.
+                 */
+                void handleScaleY();
+
+                /**
+                 * Handles any change in the scale Z field, ensuring a valid input is given and if so, updates the
+                 * transformation that will be applied to any selected instances.
+                 */
+                void handleScaleZ();
+
+                /**
                  * Handles any change in the translation X field, ensuring a valid input is given and if so, updates the
                  * transformation that will be applied to any selected instances.
                  */
@@ -140,6 +160,11 @@ namespace GUI
                 };
 
                 /**
+                 * Adds the appropriate widgets to the event filter.
+                 */
+                void applyEventFilter();
+
+                /**
                  * Attempts to convert the text held in the given line edit to a valid number.
                  *
                  * @param field containing the text to convert.
@@ -157,6 +182,11 @@ namespace GUI
                  * @return false. All objects associated with this filter see the event targeted for them
                  */
                 bool eventFilter(QObject *object, QEvent *event) override;
+
+                /**
+                 * Sets default transformation magnitudes to the appropriate line edits.
+                 */
+                void setDefaultTransformationValues();
 
                 /**
                  * Sets up the connections used by this object's widgets.

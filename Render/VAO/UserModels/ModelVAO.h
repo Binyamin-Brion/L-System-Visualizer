@@ -60,6 +60,8 @@ namespace Render
                 /**
                  * Renders all of the model instances specified in the parameter. This is called when rerendering an interpretation result.
                  *
+                 * Any previous user action history is removed.
+                 *
                  * @param modelInstances the list of instances for every model that needs instance(s) to be rendered
                  */
                 void addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances);
@@ -111,7 +113,22 @@ namespace Render
                  */
                 void transformSelectedModels(const DataStructures::TransformationData &transformationData);
 
+                /**
+                 * Undoes the most recent user action done in the render scene, if there is one.
+                 */
+                void undoUserAction();
+
             private:
+
+                /**
+                 * Removes all instances associated with the indexes held in the passed in parameter.
+                 *
+                 * The passed in indexes vector will be cleared at the end of this function, to signify that all instances
+                 * have been deleted.
+                 *
+                 * @param indexes specifying what instances to remove
+                 */
+                void removeInstances(std::vector<unsigned int> &indexes);
 
                 /**
                  * Uploads the deferred models into vRam.
@@ -129,6 +146,19 @@ namespace Render
                 std::vector<unsigned int> intersectionIndexes;
 
                 std::vector<::ModelLoading::Model> modelsToUpload;
+
+                struct HistoryChange
+                {
+                    QString model;
+                    unsigned int index;
+                    bool addedMatrix;
+                    bool removedMatrix;
+                    glm::mat4x4 previousMatrix;
+                };
+
+                using Modification = std::vector<HistoryChange>;
+
+                std::vector<Modification> historyChanges;
         };
     }
 }

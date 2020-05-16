@@ -67,6 +67,19 @@ namespace Render
             return false;
         }
 
+        QString StoredModels::getModelName(unsigned int index) const
+        {
+            for(const auto &i : storedModels)
+            {
+                if(i.getInstanceMatrixBegin() <= index && index <= (i.getInstanceMatrixBegin() + i.getInstanceMatrixCount()))
+                {
+                    return i.getModel().getModelFileName();
+                }
+            }
+
+            assert(false && "\n\nNo model associated with the given index\n\n");
+        }
+
         const ModelRange &StoredModels::getModelRange(const QString &modelName) const
         {
             auto modelRangeLocation = std::find_if(storedModels.begin(), storedModels.end(), [&modelName](const ModelRange &heldRange)

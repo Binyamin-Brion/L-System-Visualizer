@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QOpenGLDebugLogger>
+#include <QtWidgets/QShortcut>
 
 namespace GUI
 {
@@ -18,6 +19,8 @@ namespace GUI
         {
             setFocusPolicy(Qt::StrongFocus);
             setMouseTracking(true);
+
+            new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this, SLOT(undoUserAction()));
 
             // To ensure that the scene is constantly being rendered, a timer is used to make sure that the paintGL()
             // function is called every x amount of time.
@@ -76,6 +79,10 @@ namespace GUI
 
                case Qt::Key_Shift:
                    keyShift_Pressed = true;
+                   break;
+
+               case Qt::Key_Z:
+                   commandCentre.undoUserAction();
                    break;
 
                    // Whenever a user enters input that causes an instance of a model to (even potentially) change, update
@@ -220,6 +227,11 @@ namespace GUI
         }
 
         // Beginning of public slots
+
+        void GLWidget::undoUserAction()
+        {
+            commandCentre.undoUserAction();
+        }
 
         void GLWidget::uploadModelGPU(const ::ModelLoading::Model &model)
         {

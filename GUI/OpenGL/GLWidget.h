@@ -75,6 +75,8 @@ namespace GUI
                 /**
                  * Add user instanced models that were loaded from a file.
                  *
+                 * Any previous user action history is removed.
+                 *
                  * Request forwarded to CommandCentre.
                  *
                  * @param modelInstances the instance models to render
@@ -145,6 +147,13 @@ namespace GUI
                 void setTransformationData(const ::Render::DataStructures::TransformationData &transformationData);
 
             public slots:
+
+                /**
+                 * Undoes the most recent user action done in the render scene, if there is one.
+                 *
+                 * Request forwarded to CommandCentre.
+                 */
+                void undoUserAction();
 
                 /**
                  * Uploads a model into GPU memory, allowing instances of the model to be rendered. Request is forwarded

@@ -50,6 +50,8 @@ namespace Render
             /**
              * Adds an instance of the given model to the render. The instance will be centred around the origin.
              *
+             * Any previous user action history is removed.
+             *
              * This all is forwarded to the ModelVAO.
              *
              * @param modelFileName name of the instance to add
@@ -119,6 +121,13 @@ namespace Render
              * @param transformationData transformation to apply to selected instances
              */
             void transformSelectedModels(const DataStructures::TransformationData &transformationData);
+
+            /**
+             * Undoes the most recent user action done in the render scene, if there is one.
+             *
+             * Request forwarded to ModelVAO.
+             */
+            void undoUserAction();
 
         private:
 

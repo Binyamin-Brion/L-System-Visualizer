@@ -19,6 +19,10 @@ namespace Render
             RotationY,
             RotationZ,
 
+            ScaleX,
+            ScaleY,
+            ScaleZ,
+
             TranslationX,
             TranslationY,
             TranslationZ

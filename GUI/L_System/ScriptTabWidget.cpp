@@ -25,7 +25,9 @@ namespace GUI
         {
             ui->setupUi(this);
 
-
+            ui->splitter->setStretchFactor(0, 1);
+            ui->splitter->setStretchFactor(1, 10);
+            ui->splitter_2->setStretchFactor(1, 1);
 
             setupConnections();
         }
