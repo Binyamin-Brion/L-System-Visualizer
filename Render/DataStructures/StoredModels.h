@@ -48,6 +48,12 @@ namespace Render
                  */
                 bool checkIntersection(const glm::vec3 &cameraPosition, const glm::vec3 &rayDirection, const glm::mat4x4 &matrix, unsigned int index) const;
 
+                /**
+                 * Get the model name associated with the instance represented by the passed in index.
+                 *
+                 * @param index for which to retrieve the associated model name
+                 * @return instance's model file name (instance represented by the index)
+                 */
                 QString getModelName(unsigned int index) const;
 
                 /**

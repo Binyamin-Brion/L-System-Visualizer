@@ -24,8 +24,49 @@ namespace Tests
 
         }
 
+        void TestBasicSaveLoad::testSaveConstants()
+        {
+            const QString saveLocation = "testSaveConstants.txt";
+
+            const QString scriptName = "SaveConstants";
+
+            // Create the variables used in the favourite result.
+            Variable firstVariable{"something", "someModel"};
+
+            Constant constant{"Constant", StackOperation::Push, Translation{glm::vec3{0.0f, 0.0f, 0.0f}}};
+            Constant secondConstant{"Constant2", StackOperation::Pop, Translation{glm::vec3{2.0f, 0.0f, 0.0f}}};
+
+            ::ProjectSaverLoader::ProjectDetails projectDetails;
+            projectDetails.addScriptInformation(scriptName, firstVariable, {constant, secondConstant}, {}, {firstVariable}, {});
+
+            ::ProjectSaverLoader::ProjectSaver projectSaver;
+            projectSaver.saveProject(saveLocation, projectDetails);
+
+            ::ProjectSaverLoader::ProjectLoader projectLoader;
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject(saveLocation);
+
+            // Test that the project loaded only has one script with only a script name, axiom and a variable, and two constants.
+            QVERIFY(afterProjectDetails.getScripts().size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == firstVariable);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].constants.size() == 2);
+            QVERIFY(afterProjectDetails.getScripts()[0].constants[0] == constant);
+            QVERIFY(afterProjectDetails.getScripts()[0].constants[1] == secondConstant);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
+            QVERIFY(afterProjectDetails.getScripts()[0].rules.empty());
+
+            // Delete the file created so that there is no evidence of this test running.
+            QFile::remove(saveLocation);
+        }
+
         void TestBasicSaveLoad::testSaveFavouriteResult()
         {
+            const QString saveLocation = "testSaveFavouriteResult.txt";
+
             const QString scriptName = "SaveFavouriteResult";
 
             // Create the variables used in the favourite result.
@@ -46,7 +87,9 @@ namespace Tests
                                     Token{firstVariable},
                                     Token{secondVariable}
                             },
-                        }
+                        },
+
+                        {} // No User-Added-Instances
                     };
 
             ::ProjectSaverLoader::FavouriteResult secondFavouriteResult
@@ -69,7 +112,9 @@ namespace Tests
                                             Token{thirdVariable},
                                             Token{secondVariable},
                                     }
-                            }
+                            },
+
+                            {} // No User-Added-Instances
                     };
 
             // Save and reload the script
@@ -77,10 +122,10 @@ namespace Tests
             projectDetails.addScriptInformation(scriptName, firstVariable, {}, {}, {firstVariable, secondVariable, thirdVariable}, {firstFavouriteResult, secondFavouriteResult});
 
             ::ProjectSaverLoader::ProjectSaver projectSaver;
-            projectSaver.saveProject("testSaveBasicFavouriteResults.txt", projectDetails);
+            projectSaver.saveProject(saveLocation, projectDetails);
 
             ::ProjectSaverLoader::ProjectLoader projectLoader;
-            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject("testSaveBasicFavouriteResults.txt");
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject(saveLocation);
 
             // Verify that the saved favourite results are loaded correctly
 
@@ -159,10 +204,88 @@ namespace Tests
             QVERIFY(secondResult.executionResult[2][3].isVariable());
             QVERIFY(secondResult.executionResult[2][3].getVariable().getVariableName() == "aVariable");
 
+            // Delete the file created so that there is no evidence of this test running.
+            QFile::remove(saveLocation);
+        }
+
+        void TestBasicSaveLoad::testSaveRules()
+        {
+            const QString saveLocation = "testSaveRules.txt";
+
+            const QString scriptName = "SaveRules";
+
+            // Create the variables used in the favourite result.
+            Variable firstVariable{"something", "someModel"};
+
+            // The rules here aren't executed so their probability values don't have to be 100% for this test.
+
+            Rule rule{firstVariable, {Token{firstVariable}}, 45};
+
+            Rule secondRule{firstVariable, {Token{firstVariable}, {Token{firstVariable}}}, 45};
+
+            ::ProjectSaverLoader::ProjectDetails projectDetails;
+            projectDetails.addScriptInformation(scriptName, firstVariable, {}, {rule, secondRule}, {firstVariable}, {});
+
+            ::ProjectSaverLoader::ProjectSaver projectSaver;
+            projectSaver.saveProject(saveLocation, projectDetails);
+
+            ::ProjectSaverLoader::ProjectLoader projectLoader;
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject(saveLocation);
+
+            // Test that the project loaded only has one script with only a script name, axiom, variable and two rules.
+            QVERIFY(afterProjectDetails.getScripts().size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == firstVariable);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].rules.size() == 2);
+            QVERIFY(afterProjectDetails.getScripts()[0].rules[0] == rule);
+            QVERIFY(afterProjectDetails.getScripts()[0].rules[1] == secondRule);
+
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
+            QVERIFY(afterProjectDetails.getScripts()[0].constants.empty());
+
+            // Delete the file created so that there is no evidence of this test running.
+            QFile::remove(saveLocation);
+        }
+
+        void TestBasicSaveLoad::testSaveNameVariables()
+        {
+            const QString saveLocation = "testSaveNameVariables.txt";
+
+            const QString scriptName = "SaveNameVariables";
+
+            // Create the variables used in the favourite result.
+            Variable firstVariable{"something", "someModel"};
+
+            ::ProjectSaverLoader::ProjectDetails projectDetails;
+            projectDetails.addScriptInformation(scriptName, firstVariable, {}, {}, {firstVariable}, {});
+
+            ::ProjectSaverLoader::ProjectSaver projectSaver;
+            projectSaver.saveProject(saveLocation, projectDetails);
+
+            ::ProjectSaverLoader::ProjectLoader projectLoader;
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject(saveLocation);
+
+            // Test that the project loaded only has one script with only a script name, axiom and a variable.
+            QVERIFY(afterProjectDetails.getScripts().size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].scriptName == scriptName);
+            QVERIFY(afterProjectDetails.getScripts()[0].axiom == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables.size() == 1);
+            QVERIFY(afterProjectDetails.getScripts()[0].variables[0] == firstVariable);
+            QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
+            QVERIFY(afterProjectDetails.getScripts()[0].constants.empty());
+            QVERIFY(afterProjectDetails.getScripts()[0].rules.empty());
+
+            // Delete the file created so that there is no evidence of this test running.
+            QFile::remove(saveLocation);
         }
 
         void TestBasicSaveLoad::testSaveSeveralScripts()
         {
+            const QString saveLocation = "testSaveBasicFavouriteResults.txt";
+
             const QString firstScriptName = "SaveFavouriteResult";
 
             const QString secondScriptName = "SaveFavouriteResult2";
@@ -179,10 +302,10 @@ namespace Tests
             projectDetails.addScriptInformation(thirdScriptName, firstVariable, {}, {}, {firstVariable}, {});
 
             ::ProjectSaverLoader::ProjectSaver projectSaver;
-            projectSaver.saveProject("testSaveBasicFavouriteResults.txt", projectDetails);
+            projectSaver.saveProject(saveLocation, projectDetails);
 
             ::ProjectSaverLoader::ProjectLoader projectLoader;
-            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject("testSaveBasicFavouriteResults.txt");
+            ::ProjectSaverLoader::ProjectDetails afterProjectDetails = projectLoader.loadProject(saveLocation);
 
             // There should be three scripts- each with a unique name.
             QVERIFY(afterProjectDetails.getScripts().size() == 3);
@@ -222,6 +345,9 @@ namespace Tests
             QVERIFY(afterProjectDetails.getScripts()[0].favouriteResults.empty());
             QVERIFY(afterProjectDetails.getScripts()[1].favouriteResults.empty());
             QVERIFY(afterProjectDetails.getScripts()[2].favouriteResults.empty());
+
+            // Delete the file created so that there is no evidence of this test running.
+            QFile::remove(saveLocation);
         }
     }
 }

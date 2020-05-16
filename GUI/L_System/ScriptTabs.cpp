@@ -90,9 +90,12 @@ namespace GUI
                 // in the tabs vector to remove a Tab element. Thus a copy before it changes is required.
                 int currentTabIndex = currentIndex();
 
-                delete tabs[currentTabIndex].scriptTabWidget;
-
+                // Call removeTab() before deleting it; otherwise two tabs are deleted instead of one.
+                // Could just remove the removeTab() call entirely, but at the time of writing, seems to logically make
+                // more sense to remove the tab and then delete it.
                 removeTab(currentTabIndex);
+
+                delete tabs[currentTabIndex].scriptTabWidget;
 
                 tabs.erase(tabs.begin() + currentTabIndex);
 

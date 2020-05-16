@@ -33,12 +33,37 @@ namespace Tests
             private slots:
 
                 /**
+                 * Tests saving and loading a script name, axiom, variable and constants.
+                 *
+                 *  Note: every project must have at minimum a variable with a valid associated name.
+                 */
+                void testSaveConstants();
+
+                /**
                  * Tests saving and loading only the favourite (bookmarked) results of a script.
+                 *
+                 *  Note: every project must have at minimum a variable with a valid associated name.
                  */
                 void testSaveFavouriteResult();
 
                 /**
+                 * Tests saving and loading a script name, axiom, variable and rules.
+                 *
+                 *  Note: every project must have at minimum a variable with a valid associated name.
+                 */
+                void testSaveRules();
+
+                /**
+                 *  Tests saving and loading the script name, axiom and variable.
+                 *
+                 *  Note: every project must have at minimum a variable with a valid associated name.
+                 */
+                void testSaveNameVariables();
+
+                /**
                  * Tests saving and loading several scripts.
+                 *
+                 *  Note: every project must have at minimum a variable with a valid associated name.
                  */
                 void testSaveSeveralScripts();
         };

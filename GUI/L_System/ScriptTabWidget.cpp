@@ -146,6 +146,15 @@ namespace GUI
 
         void ScriptTabWidget::removeBookmarkedScriptExecutionResult()
         {
+            // The user does not have any saved favourite (bookmarked) results.
+            const QString currentFavouriteSaveResult = ui->savedResultsComboBox->currentText();
+
+            // Ensure that calling render is done only a valid bookmarked result.
+            if(currentFavouriteSaveResult.isEmpty() || currentFavouriteSaveResult == newResultEntry)
+            {
+                return;
+            }
+
             ui->scriptInfoTabs->removeFavouriteScript(ui->savedResultsComboBox->currentText());
 
             saveResultNameDialog->removeExistingName(ui->savedResultsComboBox->currentText());
@@ -171,6 +180,14 @@ namespace GUI
             // Get the execution tokens of a bookmarked result, interpret it and then render that interpretation.
 
             const QString currentFavouriteSaveResult = ui->savedResultsComboBox->currentText();
+
+            // Ensure that calling render is done only a valid bookmarked result.
+            if(currentFavouriteSaveResult.isEmpty() || currentFavouriteSaveResult == newResultEntry)
+            {
+                ui->renderResultWidget->enableAddInstanceButton(false);
+
+                return;
+            }
 
             const ::ProjectSaverLoader::FavouriteResult favouriteResult = ui->scriptInfoTabs->getFavouriteScript(currentFavouriteSaveResult);
 

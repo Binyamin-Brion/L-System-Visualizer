@@ -47,7 +47,7 @@ namespace L_System
                 }
             }
 
-            return predecessor == other.predecessor;
+            return predecessor == other.predecessor && probability == other.probability;
         }
     }
 }

@@ -133,6 +133,12 @@ namespace GUI
             // For all of the selected entries, remove them visually, then remove them from the program.
             for(auto i : selectedRules)
             {
+                // A user may delete a rule that has no starting rule, and such an entry has no value in the hashmap.
+                if(!i->getRuleInformation().startingRuleName.isEmpty())
+                {
+                    allowedProbabilityValue[i->getRuleInformation().startingRuleName] += i->getRuleInformation().probability;
+                }
+
                 layout->removeWidget(i);
 
                 // Call delete BEFORE erasing he variable from the variables vector.

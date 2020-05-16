@@ -114,6 +114,7 @@ namespace Tests
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4{1.0f};
+            matrix = glm::translate(matrix, glm::vec3{-5.0f, 0.0f, 0.0f});
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             // Third depth - 11[1[0]0]1[0]0
@@ -130,17 +131,18 @@ namespace Tests
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4{1.0};
-            transformFractalTreeConstant(matrix);
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
+            matrix = glm::translate(matrix, glm::vec3{-5.0f, 0.0f, 0.0f});
             expectedTransformations.back().push_back(ModelInstancePlacement{"1", "1", matrix});
 
+            matrix = glm::mat4x4 {1.0f};
             transformFractalTreeConstant(matrix);
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             matrix = glm::mat4x4 {1.0f};
-            // Since all of the ']' were matched by a '[', no transformations have to be done.
+            matrix = glm::translate(matrix, glm::vec3{-5.0f, 0.0f, 0.0f});
             expectedTransformations.back().push_back(ModelInstancePlacement{"0", "0", matrix});
 
             return expectedTransformations;
@@ -170,6 +172,7 @@ namespace Tests
             transformKochCurveConstant(matrix);
             expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 
+            matrix = glm::mat4x4{1.0f};
             transformKochCurveSecondConstant(matrix);
             expectedTransformations.back().push_back(ModelInstancePlacement{"F", "F", matrix});
 

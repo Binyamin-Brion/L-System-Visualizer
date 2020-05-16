@@ -97,11 +97,11 @@ namespace L_System
                     }
                     else
                     {
+                        tokenStack.pop_back();
+
                         tokenStack.push_back(token);
 
                         calculateTransformation();
-
-                        tokenStack.pop_back();
 
                         // Pop the preceding token in the stack, to match the requested stack operation of this constant.
                         tokenStack.pop_back();
