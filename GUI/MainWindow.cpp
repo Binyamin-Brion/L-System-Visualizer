@@ -34,6 +34,10 @@ namespace GUI
 
     void MainWindow::openProject()
     {
+        // The filter in the file dialog does not work for some reason- no relevant files are shown for some reason.
+        // Thus if a file that is not the project file is entered, then the ProjectLoader will cause an error message
+        // to be shown.
+
         QString modelFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
 
         ui->scriptTabWidget->openProject(modelFileLocation);
@@ -41,7 +45,15 @@ namespace GUI
 
     void MainWindow::saveProject()
     {
-        ui->scriptTabWidget->saveProject("/home/binybrion/saveTest3.txt");
+        QString saveLocation = QFileDialog::getSaveFileName(this, "Save Project", QDir::homePath());
+
+        // If the user did not specify the project file extension in the save dialog, then add it.
+        if(!saveLocation.contains(projectFileExtension))
+        {
+            saveLocation += projectFileExtension;
+        }
+
+        ui->scriptTabWidget->saveProject(saveLocation);
     }
 
     // Beginning of private functions

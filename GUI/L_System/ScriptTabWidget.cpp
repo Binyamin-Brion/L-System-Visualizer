@@ -311,6 +311,8 @@ namespace GUI
             connect(ui->savedResultsComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleChangedSaveScript(const QString&)));
 
             connect(ui->renderSavedResultButton, SIGNAL(clicked()), this, SLOT(renderScript()));
+
+            connect(ui->showErrorsCheckbox, SIGNAL(stateChanged(int)), ui->savedResultOutputWidget, SLOT(showErrors(int)));
         }
     }
 }

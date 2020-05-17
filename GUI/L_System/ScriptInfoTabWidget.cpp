@@ -202,16 +202,20 @@ namespace GUI
             connect(variableTabContent, &VariableTabContent::modelLoaded, [this](const ::ModelLoading::Model &model) { emit modelLoaded(model); });
 
             // Update the rules variable so that it is known the names of constants that can be used; update the variable (tab) so that it is known what variable names
-            // cannot be used due to constants already having that name.
-            connect(constantTabContent, SIGNAL(constantsChangedValidity(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableConstantEntries(const std::vector<QString>&)));
+            // cannot be used due to constants already having that name (meaning that rules using those constants have to be deleted).
+            connect(constantTabContent, SIGNAL(constantsChangedValidity(const std::vector<QString>&)), ruleTabContent, SLOT(updateAvailableConstantEntries(const std::vector<QString>&)));
 
-            connect(constantTabContent, SIGNAL(constantsChangedValidity(std::vector<QString>)), variableTabContent, SLOT(setConstantNames(const std::vector<QString>&)));
+            connect(constantTabContent, SIGNAL(constantsChangedValidity(const std::vector<QString>&)), variableTabContent, SLOT(setConstantNames(const std::vector<QString>&)));
+
+            connect(constantTabContent, SIGNAL(constantsDeleted(const std::vector<QString>&)), ruleTabContent, SLOT(checkForDeletedConstantUse(const std::vector<QString>&)));
 
             // Update the rules variable so that it is known the names of variables that can be used; update the constant (tab) so that it is known what constant names
-            // cannot be used due to variables already having that name.
-            connect(variableTabContent, SIGNAL(variablesChangedValidity(std::vector<QString>)), ruleTabContent, SLOT(updateAvailableVariableEntries(const std::vector<QString>&)));
+            // cannot be used due to variables already having that name, or variables that were deleted (meaning that rules using those variables have to be deleted).
+            connect(variableTabContent, SIGNAL(variablesChangedValidity(const std::vector<QString>&)), ruleTabContent, SLOT(updateAvailableVariableEntries(const std::vector<QString>&)));
 
-            connect(variableTabContent, SIGNAL(variablesChangedValidity(std::vector<QString>)), constantTabContent, SLOT(setVariableNames(const std::vector<QString>&)));
+            connect(variableTabContent, SIGNAL(variablesChangedValidity(const std::vector<QString>&)), constantTabContent, SLOT(setVariableNames(const std::vector<QString>&)));
+
+            connect(variableTabContent, SIGNAL(variablesDeleted(const std::vector<QString>&)), ruleTabContent, SLOT(checkForDeletedVariableUse(const std::vector<QString>&)));
         }
     }
 }

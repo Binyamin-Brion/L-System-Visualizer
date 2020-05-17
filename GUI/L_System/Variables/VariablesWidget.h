@@ -30,7 +30,15 @@ namespace GUI
                  * Emitted when an entry name changes or an associated model changes, resulting in the variable becoming
                  * either valid or invalid.
                  */
-                void variablesChangedValidity(std::vector<QString>);
+                void variablesChangedValidity(const std::vector<QString>&);
+
+                /**
+                * Emitted when entries are deleted, and the rules that contain those deleted variables need to be
+                * deleted themselves.
+                *
+                * @param list of names of deletes variables
+                */
+                void variablesDeleted(const std::vector<QString>&);
 
             public:
 

@@ -5,6 +5,7 @@
 #include <ext.hpp>
 #include "Interpreter.h"
 #include "../Execution/Executor.h"
+#include <math.h>
 
 namespace L_System
 {
@@ -73,6 +74,11 @@ namespace L_System
                 {
                     // A constant can only be a translation or a rotation. It is an error if this branch is taken.
                     assert(false);
+                }
+
+                if(isnan(transformationMatrix[0][0]))
+                {
+                    int a = 5;
                 }
             }
         }

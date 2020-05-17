@@ -4,6 +4,7 @@
 
 #include "ConstantsWidget.h"
 #include <QVBoxLayout>
+#include <QtWidgets/QMessageBox>
 
 #include "ConstantEntryDeclaration.h"
 
@@ -102,27 +103,48 @@ namespace GUI
 
         void ConstantsWidget::handleDeleteButtonPushed()
         {
+            if(!selectedConstants.empty())
+            {
+                int response = QMessageBox::warning(this, "Confirm Deletion", "Deleting variables will delete any rules that use the variable-"
+                                                                              " either as a predecesor or in the successor tokens. \n\nContinue?", QMessageBox::Yes | QMessageBox::No);
+
+                if(response != QMessageBox::Yes)
+                {
+                    return;
+                }
+            }
+
+            std::vector<QString> deletedConstantNames;
+
             // For all of the selected entries, remove them visually, then remove them from the program.
             for(auto i : selectedConstants)
             {
                 layout->removeWidget(i);
-
-                // Call delete BEFORE erasing he variable from the variables vector.
-                delete i;
-
-                auto variableLocation = std::find(constants.begin(), constants.end(), i);
-
-                constants.erase(variableLocation);
 
                 auto variableNameLocation = std::find_if(constantNames.begin(), constantNames.end(), [i](const EntryNames &entry)
                 {
                     return i == entry.entryDeclaration;
                 });
 
+                // The rules can only contain constants are valid.
+                if(variableNameLocation->validName && variableNameLocation->entryDeclaration->informationValid())
+                {
+                    deletedConstantNames.push_back(variableNameLocation->name);
+                }
+
                 constantNames.erase(variableNameLocation);
+
+                // Call delete BEFORE erasing the variable from the variables vector.
+                delete i;
+
+                auto variableLocation = std::find(constants.begin(), constants.end(), i);
+
+                constants.erase(variableLocation);
             }
 
             selectedConstants.clear();
+
+            emit constantsDeleted(deletedConstantNames);
 
             // Automatically update the list of constants available for use in a rule.
             emit constantsChangedValidity(getConstantNames());

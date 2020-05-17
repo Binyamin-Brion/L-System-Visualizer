@@ -315,8 +315,6 @@ namespace Render
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
-                //printf("%d, %d \n", i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
-
                 glDrawElementsInstancedBaseInstance(GL_TRIANGLES, i.getIndiceCount(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * i.getIndiceBegin()),
                                                     i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
             }
@@ -400,31 +398,80 @@ namespace Render
             transformationsVBO.uploadData(instanceTransformationVector);
         }
 
-        // Beginning of private functions
-
-        void ModelVAO::uploadModel()
+        void ModelVAO::undoUserAction()
         {
-            for(const auto &model : modelsToUpload)
+            // No user action therefore no action to take.
+            if(historyChanges.empty())
             {
-                for(const auto &mesh : model.getMeshes())
-                {
-                    std::vector<unsigned int> adjustedIndices = mesh.getIndices();
+                return;
+            }
 
-                    // The indices have to have an offset added to deal with the fact that there are other vertices in the
-                    // vertices VBO, in order to reference vertices of its associated model.
-                    for(unsigned int &indice : adjustedIndices)
+            // All undo actions forget what instances the user has selected. This logically makes sense as the instance
+            // the user selected may not longer exist after the undo action- and also prevents a crash that would occur
+            // sometimes, which is a bonus.
+            intersectionIndexes.clear();
+
+            // To prevent potentially many similar function calls, the required operations are stored temporarily and then
+            // the requested operation is done by passing all of the required data at once.
+            QHash<QString, std::vector<glm::mat4x4>> addInstances;
+            std::vector<unsigned int> removeIndexes;
+
+            auto transformationVector = transformationsVBO.getHeldData();
+            bool changedTransformations = false; // Keep track of whether to reupload the transformations.
+
+            for(const auto &historyChange : historyChanges.back())
+            {
+                if(historyChange.addedMatrix) // Added a matrix, then the opposite is to delete it.
+                {
+                    removeIndexes.push_back(historyChange.index);
+                }
+                else if(historyChange.removedMatrix) // Removed a matrix, then the opposite is to add it back.
+                {
+                    if(!addInstances.contains(historyChange.model))
                     {
-                        indice += verticesVBO.getHeldData().size();
+                        addInstances.insert(historyChange.model, std::vector<glm::mat4x4>{});
                     }
 
-                    verticesVBO.uploadDataAppend(mesh.getVertices());
+                    addInstances[historyChange.model].push_back(historyChange.previousMatrix);
+                }
+                else
+                {
+                    transformationVector[historyChange.index] = historyChange.previousMatrix; // Applied a transformation; the opposite is to use the
+                    // matrix before the transformation was modified.
 
-                    indices.uploadDataAppend(adjustedIndices);
+                    changedTransformations = true;
                 }
             }
 
-            modelsToUpload.clear();
+            // The user history was removing instances; time to add them back.
+            if(!addInstances.isEmpty())
+            {
+                QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = addInstances.constBegin();
+
+                while (i != addInstances.constEnd())
+                {
+                    addModelInstances(i.key(), i.value(), true);
+
+                    ++i;
+                }
+            }
+
+            // The user history was adding instances; time to remove them.
+            if(!removeIndexes.empty())
+            {
+                removeInstances(removeIndexes);
+            }
+
+            // The user applied transformations; time to remove those transformations.
+            if(changedTransformations)
+            {
+                transformationsVBO.uploadData(transformationVector);
+            }
+
+            historyChanges.pop_back();
         }
+
+        // Beginning of private functions
 
         void ModelVAO::removeInstances(std::vector<unsigned int> &indexes)
         {
@@ -457,75 +504,30 @@ namespace Render
             instanceColours.uploadData(instanceColourVector);
         }
 
-        void ModelVAO::undoUserAction()
+        void ModelVAO::uploadModel()
         {
-            // No user action therefore no action to take.
-            if(historyChanges.empty())
+            const unsigned int numberVerticesHeld = verticesVBO.getHeldData().size();
+
+            for(const auto &model : modelsToUpload)
             {
-                return;
-            }
-
-            //
-            intersectionIndexes.clear();
-
-            // To prevent potentially many similar function calls, the required operations are stored temporarily and then
-            // the requested operation is done by passing all of the required data at once.
-            QHash<QString, std::vector<glm::mat4x4>> addInstances;
-            std::vector<unsigned int> removeIndexes;
-
-            auto transformationVector = transformationsVBO.getHeldData();
-            bool changedTransformations = false; // Keep track of whether to reupload the transformations.
-
-            for(const auto &historyChange : historyChanges.back())
-            {
-                if(historyChange.addedMatrix) // Added a matrix, then the opposite is to delete it.
+                for(const auto &mesh : model.getMeshes())
                 {
-                    removeIndexes.push_back(historyChange.index);
-                }
-                else if(historyChange.removedMatrix) // Removed a matrix, then the opposite is to add it back.
-                {
-                    if(!addInstances.contains(historyChange.model))
+                    std::vector<unsigned int> adjustedIndices = mesh.getIndices();
+
+                    // The indices have to have an offset added to deal with the fact that there are other vertices in the
+                    // vertices VBO, in order to reference vertices of its associated model.
+                    for(unsigned int &indice : adjustedIndices)
                     {
-                        addInstances.insert(historyChange.model, std::vector<glm::mat4x4>{});
+                        indice += numberVerticesHeld;
                     }
 
-                    addInstances[historyChange.model].push_back(historyChange.previousMatrix);
-                }
-                else
-                {
-                    transformationVector[historyChange.index] = historyChange.previousMatrix; // Applied a transformation; the opposite is to use the
-                                                                                              // matrix before the transformation was modified.
+                    verticesVBO.uploadDataAppend(mesh.getVertices());
 
-                    changedTransformations = true;
+                    indices.uploadDataAppend(adjustedIndices);
                 }
             }
 
-            // The user history was removing instances; time to add them back.
-            if(!addInstances.isEmpty())
-            {
-                QHash<QString, std::vector<glm::mat4x4>>::const_iterator i = addInstances.constBegin();
-
-                while (i != addInstances.constEnd())
-                {
-                    addModelInstances(i.key(), i.value(), true);
-
-                    ++i;
-                }
-            }
-
-            // The user history was adding instances; time to remove them.
-            if(!removeIndexes.empty())
-            {
-                removeInstances(removeIndexes);
-            }
-
-            // The user applied transformations; time to remove those transformations.
-            if(changedTransformations)
-            {
-                transformationsVBO.uploadData(transformationVector);
-            }
-
-            historyChanges.pop_back();
+            modelsToUpload.clear();
         }
     }
 }

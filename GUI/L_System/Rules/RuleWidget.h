@@ -46,6 +46,24 @@ namespace GUI
                 explicit RuleWidget(QWidget *parent = nullptr);
 
                 /**
+                 * Checks all of the entries if the successor tokens contain at least one of the deleted constant names.
+                 *
+                 * Any rules that have the deleted constant names are deleted.
+                 *
+                 * @param deletedConstantNames names of constants that were deleted
+                 */
+                void checkForDeletedConstantUse(const std::vector<QString> &deletedConstantNames);
+
+                /**
+                 * Checks all of the entries if the successor tokens contain at least one of the deleted variable names.
+                 *
+                 * Any rules that have the deleted variables names are deleted.
+                 *
+                 * @param deletedVariableNames names of variables that were deleted
+                 */
+                void checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames);
+
+                /**
                  * Get the information required to create Rule data structure for script execution for all of the rule entries.
                  *
                  * @return list of information required to create Rule data structures
@@ -114,6 +132,15 @@ namespace GUI
                 void handleRuleEntrySelected(RuleEntry *ruleEntry, int newState);
 
             private:
+
+                /**
+                 * Deletes the invalid rule entries specified in the parameter.
+                 *
+                 * This is equivalent to if the rules were selected and the "Delete Rues" button was pressed.
+                 *
+                 * @param invalidRules list of rules to delete
+                 */
+                void deleteInvalidRuleEntries(const std::vector<RuleEntry*> &invalidRules);
 
                 /**
                  * Finds the index of the given name within the variableNames vector.

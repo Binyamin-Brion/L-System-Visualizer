@@ -70,6 +70,39 @@ namespace GUI
             }
         }
 
+        bool RuleEntry::checkForDeletedConstants(const std::vector<QString> &deletedConstantNames) const
+        {
+            for(const auto &i : addedProductionsText)
+            {
+                if(std::find(deletedConstantNames.begin(), deletedConstantNames.end(), i) != deletedConstantNames.end())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool RuleEntry::checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames) const
+        {
+            // Since the predecessor token has to be a variable, a check to see if the predecessor token is one of the deleted
+            // variables has to be done here.
+            if(std::find(deletedVariableNames.begin(), deletedVariableNames.end(), ui->startComboBox->currentText()) != deletedVariableNames.end())
+            {
+                return true;
+            }
+
+            for(const auto &i : addedProductionsText)
+            {
+                if(std::find(deletedVariableNames.begin(), deletedVariableNames.end(), i) != deletedVariableNames.end())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         RuleInformation RuleEntry::getRuleInformation() const
         {
           return RuleInformation{ ui->startComboBox->currentText(), addedProductionsText, static_cast<unsigned int>(ui->probabliltyValue->value())};

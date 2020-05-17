@@ -46,7 +46,9 @@ namespace GUI
 
             connect(ui->deleteConstantButton, SIGNAL(clicked()), ui->scrollAreaWidgetContents, SLOT(handleDeleteButtonPushed()));
 
-            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::constantsChangedValidity, [this](std::vector<QString> variableNames) { emit constantsChangedValidity(variableNames); });
+            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::constantsChangedValidity, [this](const std::vector<QString> &constantNames) { emit constantsChangedValidity(constantNames); });
+
+            connect(ui->scrollAreaWidgetContents, &ConstantsWidget::constantsDeleted, [this](const std::vector<QString> &deletedConstantNames) { emit constantsDeleted(deletedConstantNames); });
         }
     }
 }

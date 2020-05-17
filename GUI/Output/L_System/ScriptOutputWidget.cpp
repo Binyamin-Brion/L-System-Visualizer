@@ -39,6 +39,14 @@ namespace GUI
 
             // Beginning of public slots
 
+            void ScriptOutputWidget::showErrors(int showErrors)
+            {
+                for(auto &i : entries)
+                {
+                    i->showError(showErrors == Qt::Checked);
+                }
+            }
+
             void ScriptOutputWidget::showSavedScriptOutput(const std::vector<std::vector<::L_System::Execution::Token>> &tokens)
             {
                 displayScriptOutput(tokens, {}, {});

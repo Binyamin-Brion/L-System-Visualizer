@@ -35,25 +35,18 @@ namespace GUI
             ui->setupUi(this);
 
             ui->variableNameLineEdit->setText(variable.getVariableName());
+
+            setupConnections();
         }
 
         void VariableEntry::addModelEntry(const QString &modelName)
         {
-            // If this is the first model name being added, then the model name combo box will contain the item
-            // "No model selected". This should be removed as after this function call, there is a model that can be selected.
-            if(!noModelItemDeleted)
-            {
-                ui->modelEntriesComboBox->removeItem(0);
-
-                noModelItemDeleted = true;
-            }
+            // Ensure that after adding an entry to the combo box, the old entry remains.
+            int currentIndex = ui->modelEntriesComboBox->currentIndex();
 
             ui->modelEntriesComboBox->addItem(modelName);
 
-            ui->modelEntriesComboBox->setCurrentIndex(0);
-
-            // A valid model is now in the combo box, meaning there is no error.
-            ui->modelEntriesComboBox->setStyleSheet(styleSheet());
+            ui->modelEntriesComboBox->setCurrentIndex(currentIndex);
         }
 
         QString VariableEntry::getAssociatedModelName() const
@@ -92,11 +85,28 @@ namespace GUI
             ui->modelEntriesComboBox->setCurrentIndex(index);
         }
 
+        // Beginning of private slots
+
+        void VariableEntry::handleDifferentAssociatedModelSelected(const QString &modelName)
+        {
+            if(modelName == noModelText)
+            {
+                ui->modelEntriesComboBox->setStyleSheet("background-color: rgba(192, 0, 0, 0.2);");
+            }
+            else
+            {
+                // A valid model is now in the combo box, meaning there is no error.
+                ui->modelEntriesComboBox->setStyleSheet(styleSheet());
+            }
+        }
+
         // Beginning of private functions
 
         void VariableEntry::setupConnections()
         {
             connect(ui->modelEntriesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) { emit modelSelected(); });
+
+            connect(ui->modelEntriesComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(handleDifferentAssociatedModelSelected(const QString&)));
 
             connect(ui->variableSelectedCheckBox, &QCheckBox::stateChanged, [this](int state) { emit variableSelected(this, state); });
 

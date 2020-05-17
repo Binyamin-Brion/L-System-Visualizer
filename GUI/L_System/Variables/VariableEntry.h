@@ -108,6 +108,16 @@ namespace GUI
                  */
                 void setAssociatedModelIndex(int index);
 
+            private slots:
+
+                /**
+                 * Checks if the user selected a valid associated model, and if they did, updates the respective combo box
+                 * to show no error. Otherwise the combo box displays an error.
+                 *
+                 * @param modelName that the user selected in modelEntriesComboBox
+                 */
+                void handleDifferentAssociatedModelSelected(const QString &modelName);
+
             private:
 
                 /**
@@ -118,10 +128,6 @@ namespace GUI
                 Ui::VariableEntry *ui = nullptr;
 
                 const QString noModelText = "No model selected.";
-
-                // Keep track of whether the noModelText has been deleted; this has to be done once as the noModelText
-                // is automatically added during construction of this object, and is removed when a model name is added.
-                bool noModelItemDeleted = false;
         };
     }
 }

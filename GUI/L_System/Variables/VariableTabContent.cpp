@@ -40,6 +40,11 @@ namespace GUI
             return ui->declaredVariables->getVariablesTokens();
         }
 
+        bool VariableTabContent::hasValidAxiom() const
+        {
+            return !ui->axiomComboBox->currentText().isEmpty() && ui->axiomComboBox->currentText() != invaliAxiomString;
+        }
+
         void VariableTabContent::loadVariables(const ::L_System::DataStructures::Variable &axiom, const std::vector<::L_System::DataStructures::Variable> &variables)
         {
             ui->axiomComboBox->clear();
@@ -114,19 +119,6 @@ namespace GUI
 
         // Beginning of private functions
 
-        void VariableTabContent::setupConnections()
-        {
-            connect(ui->loadModelButton, SIGNAL(clicked()), this, SLOT(loadNewModel()));
-
-            connect(ui->addVariableButton, SIGNAL(clicked()), ui->declaredVariables, SLOT(addVariableEntry()));
-
-            connect(ui->deleteVariableButtons, SIGNAL(clicked()), ui->declaredVariables, SLOT(handleDeleteButtonPushed()));
-
-            connect(ui->declaredVariables, SIGNAL(variablesChangedValidity(std::vector<QString>)), this, SLOT(refreshAxiomList(std::vector<QString>)));
-
-            connect(ui->declaredVariables, &VariablesWidget::variablesChangedValidity, [this](std::vector<QString> variableNames) { emit variablesChangedValidity(variableNames); });
-        }
-
         void VariableTabContent::loadModel(const QString &modelFileLocation)
         {
             if(modelFileLocation.isEmpty())
@@ -173,9 +165,19 @@ namespace GUI
             }
         }
 
-        bool VariableTabContent::hasValidAxiom() const
+        void VariableTabContent::setupConnections()
         {
-            return !ui->axiomComboBox->currentText().isEmpty();
+            connect(ui->loadModelButton, SIGNAL(clicked()), this, SLOT(loadNewModel()));
+
+            connect(ui->addVariableButton, SIGNAL(clicked()), ui->declaredVariables, SLOT(addVariableEntry()));
+
+            connect(ui->deleteVariableButtons, SIGNAL(clicked()), ui->declaredVariables, SLOT(handleDeleteButtonPushed()));
+
+            connect(ui->declaredVariables, SIGNAL(variablesChangedValidity(std::vector<QString>)), this, SLOT(refreshAxiomList(std::vector<QString>)));
+
+            connect(ui->declaredVariables, &VariablesWidget::variablesChangedValidity, [this](const std::vector<QString> &variableNames) { emit variablesChangedValidity(variableNames); });
+
+            connect(ui->declaredVariables, &VariablesWidget::variablesDeleted, [this](const std::vector<QString> &variableNames) { emit variablesDeleted(variableNames); });
         }
     }
 }

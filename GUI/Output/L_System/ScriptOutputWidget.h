@@ -52,6 +52,13 @@ namespace GUI
                 public slots:
 
                     /**
+                    * Shows or hides the error message associated with the output of all entries displays depending on the input argument.
+                    *
+                    * @param visible true if error messages should be shown; false otherwise
+                    */
+                    void showErrors(int showErrors);
+
+                    /**
                      * Shows the output of the given execution result.
                      *
                      * @param tokens result of executing a script

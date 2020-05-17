@@ -18,6 +18,36 @@ namespace GUI
             setLayout(layout);
         }
 
+        void RuleWidget::checkForDeletedConstantUse(const std::vector<QString> &deletedConstantNames)
+        {
+            std::vector<RuleEntry*> toDeleteRules;
+
+            for(auto &i : rules)
+            {
+                if(i->checkForDeletedConstants(deletedConstantNames))
+                {
+                    toDeleteRules.push_back(i);
+                }
+            }
+
+            deleteInvalidRuleEntries(toDeleteRules);
+        }
+
+        void RuleWidget::checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames)
+        {
+            std::vector<RuleEntry*> toDeleteRules;
+
+            for(auto &i : rules)
+            {
+                if(i->checkForDeletedVariableUse(deletedVariableNames))
+                {
+                    toDeleteRules.push_back(i);
+                }
+            }
+
+            deleteInvalidRuleEntries(toDeleteRules);
+        }
+
         std::vector<RuleInformation> RuleWidget::getRuleInformations() const
         {
             std::vector<RuleInformation> ruleInformations;
@@ -210,6 +240,38 @@ namespace GUI
         }
 
         // Beginning of private functions
+
+        void RuleWidget::deleteInvalidRuleEntries(const std::vector<RuleEntry*> &invalidRules)
+        {
+            for(const auto &i : invalidRules)
+            {
+                // A user may delete a rule that has no starting rule, and such an entry has no value in the hashmap.
+                if(!i->getRuleInformation().startingRuleName.isEmpty())
+                {
+                    allowedProbabilityValue[i->getRuleInformation().startingRuleName] += i->getRuleInformation().probability;
+                }
+
+                layout->removeWidget(i);
+
+                // Call delete BEFORE erasing he variable from the variables vector.
+                delete i;
+
+                // Delete the variables pointing to the deleted object.
+
+                auto ruleEntryLocation = std::find(rules.begin(), rules.end(), i);
+
+                rules.erase(ruleEntryLocation);
+
+                // The rule being deleted may not have been selected, thus a check has to be made if the iterator refers
+                // to a valid location in the selectedRules vector.
+                auto selectedRuleEntryLocation = std::find(selectedRules.begin(), selectedRules.end(), i);
+
+                if(selectedRuleEntryLocation != selectedRules.end())
+                {
+                    selectedRules.erase(selectedRuleEntryLocation);
+                }
+            }
+        }
 
         int RuleWidget::findPredecessorIndex(const QString &variableName) const
         {

@@ -64,6 +64,8 @@ namespace GUI
             void setupConnections();
 
             Ui::MainWindow *ui = nullptr;
+
+            const QString projectFileExtension = ".L_Vis";
     };
 }
 

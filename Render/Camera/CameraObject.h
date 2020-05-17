@@ -153,7 +153,7 @@ namespace Render
                 float lastRotationX;
                 float lastRotationY;
 
-                const float DEFAULT_DRAW_DISTANCE = 100.0f;
+                const float DEFAULT_DRAW_DISTANCE = 300.0f;
 
                 float drawDistance;
 

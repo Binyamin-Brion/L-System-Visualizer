@@ -75,6 +75,13 @@ namespace ProjectSaverLoader
             chooseLoadFunction(currentLine);
         }
 
+        // Every project file has at least one script (which may be the default script). If no script was found in the
+        // project file, then an error occurred.
+        if(projectDetails.getScripts().empty())
+        {
+            throw std::runtime_error{"There was an error reading the project file- no scripts were found!\n"};
+        }
+
         return projectDetails;
     }
 
@@ -378,6 +385,8 @@ namespace ProjectSaverLoader
                 ::L_System::DataStructures::Rotation rotation{angle, glm::vec3{axisX, axisY, axisZ}};
 
                 loadedConstants.emplace_back(lineTokens[0], stackOperation, rotation);
+
+                printf("Loaded: %f, %f, %f \n", loadedConstants.back().getRotation().getRotation()[0], loadedConstants.back().getRotation().getRotation()[1], loadedConstants.back().getRotation().getRotation()[2]);
             }
             else if(lineTokens[4].contains("Translation"))
             {

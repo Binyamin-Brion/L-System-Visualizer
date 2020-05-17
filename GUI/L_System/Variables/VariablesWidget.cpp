@@ -6,7 +6,7 @@
 #include <QtWidgets/QPushButton>
 #include "VariablesWidget.h"
 #include "VariableEntry.h"
-#include <cassert>
+#include <QtWidgets/QMessageBox>
 
 namespace GUI
 {
@@ -97,6 +97,8 @@ namespace GUI
             {
                 VariableEntry *variableEntry = new VariableEntry{i,this};
 
+                connect(variableEntry, &VariableEntry::modelSelected, [this]() {  emit variablesChangedValidity(getEntryNames()); });
+
                 connect(variableEntry, SIGNAL(variableSelected(VariableEntry*, int)), this, SLOT(handleVariableEntrySelected(VariableEntry*, int)));
 
                 connect(variableEntry, SIGNAL(nameChanged(VariableEntry*, const QString&)),this, SLOT(handleNewVariableName(VariableEntry*, const QString&)));
@@ -157,10 +159,36 @@ namespace GUI
 
         void VariablesWidget::handleDeleteButtonPushed()
         {
+            if(!selectedVariables.empty())
+            {
+                int response = QMessageBox::warning(this, "Confirm Deletion", "Deleting variables will delete any rules that use the variable-"
+                                                                              " either as a predecesor or in the successor tokens. \n\nContinue?", QMessageBox::Yes | QMessageBox::No);
+
+                if(response != QMessageBox::Yes)
+                {
+                    return;
+                }
+            }
+
+            std::vector<QString> deletedVariableNames;
+
             // For all of the selected entries, remove them visually, then remove them from the program.
             for(auto i : selectedVariables)
             {
                 layout->removeWidget(i);
+
+                auto variableNameLocation = std::find_if(variableNames.begin(), variableNames.end(), [i](const EntryNames &entry)
+                {
+                    return i == entry.entry;
+                });
+
+                // The rules can only contain variables are valid.
+                if(variableNameLocation->nameValid)
+                {
+                    deletedVariableNames.push_back(variableNameLocation->name);
+                }
+
+                variableNames.erase(variableNameLocation);
 
                 // Call delete BEFORE erasing the variable from the variables vector (at which point the pointer to object is lost)
                 delete i;
@@ -168,16 +196,11 @@ namespace GUI
                 auto variableLocation = std::find(variables.begin(), variables.end(), i);
 
                 variables.erase(variableLocation);
-
-                auto variableNameLocation = std::find_if(variableNames.begin(), variableNames.end(), [i](const EntryNames &entry)
-                {
-                    return i == entry.entry;
-                });
-
-                variableNames.erase(variableNameLocation);
             }
 
             selectedVariables.clear();
+
+            emit variablesDeleted(deletedVariableNames);
 
             // Automatically update the list of variables available for use in a rule.
             emit variablesChangedValidity(getEntryNames());

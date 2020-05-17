@@ -66,7 +66,9 @@ namespace L_System
                         }
                         else if(token.isConstant())
                         {
-                            currentRecursiveResult.push_back(token);
+                            // Don't change add to the token stack; otherwise constants can compound (ie if a rule is "cube up",
+                            // and up is a constant, then it is possible to get a result such as "cube up up up...", which is incorrect
+                            // and can give weird results in the generated result.
 
                             foundMatch = true;
 

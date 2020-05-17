@@ -41,6 +41,11 @@ namespace GUI
 
                 ui->errorButton->setText(errorMessage);
             }
+
+            void ScriptOutputEntry::showError(bool visible)
+            {
+                ui->errorButton->setVisible(visible);
+            }
         }
     }
 }

@@ -54,6 +54,13 @@ namespace GUI
                      */
                     void setErrorMessage(const QString &errorMessage);
 
+                    /**
+                     * Shows or hides the error message associated with the output this entry displays depending on the input argument.
+                     *
+                     * @param visible true if the error message should be shown; false otherwise
+                     */
+                    void showError(bool visible);
+
                 private:
                     Ui::ScriptOutputEntry *ui = nullptr;
             };

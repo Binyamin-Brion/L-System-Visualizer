@@ -31,6 +31,16 @@ namespace GUI
 
         // Beginning of public slots
 
+        void RuleTabContent::checkForDeletedConstantUse(const std::vector<QString> &deletedConstantNames)
+        {
+            ui->scrollAreaWidgetContents->checkForDeletedConstantUse(deletedConstantNames);
+        }
+
+        void RuleTabContent::checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames)
+        {
+            ui->scrollAreaWidgetContents->checkForDeletedVariableUse(deletedVariableNames);
+        }
+
         void RuleTabContent::updateAvailableConstantEntries(const std::vector<QString> &constantNames)
         {
             ui->scrollAreaWidgetContents->updateAvailableConstants(constantNames);

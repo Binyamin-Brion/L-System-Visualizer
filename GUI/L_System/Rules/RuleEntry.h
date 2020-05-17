@@ -71,6 +71,22 @@ namespace GUI
                 explicit RuleEntry(const ::L_System::DataStructures::Rule &rule, QWidget *parent = nullptr);
 
                 /**
+                 * Checks if the successor tokens contain at least one of the deleted constant names.
+                 *
+                 * @param deletedConstantNames names of constants that were deleted
+                 * @return true if at least one successor tokens has of the deleted names
+                 */
+                bool checkForDeletedConstants(const std::vector<QString> &deletedConstantNames) const;
+
+                /**
+                 * Checks if the predecessor token or successor tokens variables contains at least one of the deleted variable names.
+                 *
+                 * @param deletedConstantNames names of variables that were deleted
+                 * @return true if at least one successor tokens or the predecessor token has of the deleted names
+                 */
+                bool checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames) const;
+
+                /**
                  * Get the information about this rule to construct an equivalent Rule data structure for the script execution.
                  *
                  * @return information to construct a Rule data structure

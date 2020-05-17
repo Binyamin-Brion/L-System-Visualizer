@@ -60,7 +60,18 @@ namespace GUI
 
             for(auto &i : tabs)
             {
-                i.scriptTabWidget->saveProject(i.name, newProjectDetails);
+                try
+                {
+                    i.scriptTabWidget->saveProject(i.name, newProjectDetails);
+                }
+                catch(std::runtime_error &e)
+                {
+                    // If there was an error get the script information to save, display it to the user. However, continue trying
+                    // to save the other scripts, as they are independent from the current one.
+                    const QString errorMessage = "For the script: " + i.name + ", could not save the script because:\n\n" + e.what();
+
+                    QMessageBox::critical(this, "Error Saving Script", errorMessage, QMessageBox::Ok);
+                }
             }
 
             projectDetails = newProjectDetails;

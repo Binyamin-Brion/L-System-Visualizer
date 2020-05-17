@@ -5,12 +5,19 @@
 
 int main(int argc, char *argv[])
 {
-    auto suite = Tests::TestSuite::suite();
+    auto testSuite = Tests::TestSuite::suite();
 
-    for(const auto &i : suite)
+    // Only run the tests if they were specified in the program arguments.
+    // Note: index 0 is the program name; it is not checked if it corresponds to a test.
+    for(int i = 1; i < argc; ++i)
     {
-    //    if(i.first == "Test_Stored_Models")
-            QTest::qExec(i.second);
+        for(auto &test: testSuite)
+        {
+            if(test.first == argv[i])
+            {
+                QTest::qExec(test.second);
+            }
+        }
     }
 
     QApplication app{argc, argv};

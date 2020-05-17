@@ -17,11 +17,11 @@ namespace GUI
             ui->setupUi(this);
 
             // These are the three operations allows on the stack for the transformations.
-            ui->rotationStackComboBox->addItem(pushActionString);
             ui->rotationStackComboBox->addItem(popActionString);
+            ui->rotationStackComboBox->addItem(pushActionString);
 
-            ui->translationStackComboBox->addItem(pushActionString);
             ui->translationStackComboBox->addItem(popActionString);
+            ui->translationStackComboBox->addItem(pushActionString);
 
             // By default, a constant is assumed to be a translation, as they are easier to reason about.
             disableRotation();
@@ -118,9 +118,9 @@ namespace GUI
 
                 ui->angleLineEdit->setText(QString::number(constant.getRotation().getAngle()));
 
-                ui->rotationLineEditX->setText(QString::number(constant.getTranslation().getTranslation().x));
-                ui->rotationLineEditY->setText(QString::number(constant.getTranslation().getTranslation().y));
-                ui->rotationLineEditZ->setText(QString::number(constant.getTranslation().getTranslation().z));
+                ui->rotationLineEditX->setText(QString::number(constant.getRotation().getRotation().x));
+                ui->rotationLineEditY->setText(QString::number(constant.getRotation().getRotation().y));
+                ui->rotationLineEditZ->setText(QString::number(constant.getRotation().getRotation().z));
             }
             else if(constant.getTranslation().isEnabled())
             {

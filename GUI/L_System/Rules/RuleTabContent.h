@@ -55,6 +55,24 @@ namespace GUI
             public slots:
 
                 /**
+                 * Checks all of the entries if the successor tokens contain at least one of the deleted constant names.
+                 *
+                 * Any rules that have the deleted constant names are deleted.
+                 *
+                 * @param deletedConstantNames names of constants that were deleted
+                 */
+                void checkForDeletedConstantUse(const std::vector<QString> &deletedConstantNames);
+
+                /**
+                 * Checks all of the entries if the successor tokens contain at least one of the deleted variable names.
+                 *
+                 * Any rules that have the deleted variables names are deleted.
+                 *
+                 * @param deletedVariableNames names of variables that were deleted
+                 */
+                void checkForDeletedVariableUse(const std::vector<QString> &deletedVariableNames);
+
+                /**
                  * Makes the passed in names available to be used in a RuleEntry. See RuleEntry.h for more details.
                  *
                  * @param constantNames list of valid constants

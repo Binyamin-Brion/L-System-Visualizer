@@ -33,7 +33,15 @@ namespace GUI
                  * Emitted when an entry has its name or information changed, resulting in the constant becoming
                  * either valid or invalid.
                  */
-                void constantsChangedValidity(std::vector<QString>);
+                void constantsChangedValidity(const std::vector<QString>&);
+
+                /**
+                * Emitted when entries are deleted, and the rules that contain those deleted constants need to be
+                * deleted themselves.
+                *
+                * @param list of names of deletes constants
+                */
+                void constantsDeleted(const std::vector<QString>&);
 
             public:
 
