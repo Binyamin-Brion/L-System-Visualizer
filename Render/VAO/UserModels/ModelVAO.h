@@ -12,6 +12,7 @@
 #include <ProjectSaverLoader/UserDefinedInstances.h>
 #include "../../DataStructures//StoredModels.h"
 #include "../../DataStructures/TransformationData.h"
+#include "../../Textures/TextureManager.h"
 
 namespace ModelLoading
 {
@@ -25,6 +26,11 @@ namespace ProjectSaverLoader
 
 namespace Render
 {
+    namespace Shader
+    {
+        class ShaderManager;
+    }
+
     namespace VAO
     {
         /**
@@ -102,7 +108,7 @@ namespace Render
                 /**
                  * Renders the instances of models.
                  */
-                void render();
+                void render(Shader::ShaderManager &shaderManager);
 
                 /**
                  * Applies the given transformation to all of the rendered user added instances.
@@ -159,6 +165,8 @@ namespace Render
                 using Modification = std::vector<HistoryChange>;
 
                 std::vector<Modification> historyChanges;
+
+                Textures::TextureManager textureManager;
         };
     }
 }

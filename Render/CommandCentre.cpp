@@ -127,7 +127,7 @@ namespace Render
         shaderManager.getShaderProgram("UserModels").setUniformValue("viewMatrix", convertQMatrix(cameraObject.getViewMatrix()));
         shaderManager.getShaderProgram("UserModels").setUniformValue("projectionMatrix", convertQMatrix(cameraObject.getProjectionMatrix()));
 
-        modelVao.render();
+        modelVao.render(shaderManager);
     }
 
     void CommandCentre::transformSelectedModels(const DataStructures::TransformationData &transformationData)

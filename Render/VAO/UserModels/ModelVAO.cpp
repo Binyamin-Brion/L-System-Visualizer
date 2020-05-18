@@ -6,6 +6,7 @@
 #include "ModelVAO.h"
 #include "ModelLoading/Model.h"
 #include "ProjectSaverLoader/ProjectDetails.h"
+#include "../../Shaders/ShaderManager.h"
 
 namespace Render
 {
@@ -265,6 +266,8 @@ namespace Render
             glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr);
             glVertexAttribDivisor(5, 1);
             glEnableVertexAttribArray(5);
+
+            textureManager.initialize();
         }
 
         void ModelVAO::removeModelInstances(const QString &modelFileName)
@@ -306,7 +309,7 @@ namespace Render
             storedModels.removeModel(modelFileName);
         }
 
-        void ModelVAO::render()
+        void ModelVAO::render(Shader::ShaderManager &shaderManager)
         {
             glBindVertexArray(vao);
 
@@ -315,6 +318,8 @@ namespace Render
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
+                shaderManager.getShaderProgram("UserModels").setUniformValue("textureID", -1);
+
                 glDrawElementsInstancedBaseInstance(GL_TRIANGLES, i.getIndiceCount(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * i.getIndiceBegin()),
                                                     i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
             }
@@ -524,6 +529,8 @@ namespace Render
                     verticesVBO.uploadDataAppend(mesh.getVertices());
 
                     indices.uploadDataAppend(adjustedIndices);
+
+                    textureManager.uploadTexture(QString::fromStdString(mesh.getTextureLocation()));
                 }
             }
 

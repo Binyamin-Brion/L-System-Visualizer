@@ -1,10 +1,29 @@
 #version 330 core
 
+in vec2 textureCoords;
 in vec3 instanceColour;
 
 out vec4 FragColor;
 
+uniform int textureID;
+uniform uint offset;
+
+uniform sampler2DArray textures_512x512;
+uniform sampler2DArray textures_1024x1024;
+uniform sampler2DArray texture_2048x2048;
+
 void main()
 {
-    FragColor = vec4(instanceColour, 1.0f);
+    vec4 outputColour;
+
+    if(textureID == -1)
+    {
+       outputColour = vec4(instanceColour, 1.0f);
+    }
+    else
+    {
+        outputColour = texture(textures_512x512, vec3(textureCoords, offset));
+    }
+
+    FragColor = outputColour;
 }
