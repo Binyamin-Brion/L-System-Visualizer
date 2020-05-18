@@ -37,6 +37,13 @@ namespace GUI
             explicit MainWindow(QWidget *parent = nullptr);
 
             /**
+             * Warns the user about losing unsaved data, and gives them an option to save the project before closing the program.
+             *
+             * @param event unused
+             */
+            void closeEvent(QCloseEvent *event) override;
+
+            /**
              * Handles key press events when this widget is in focus.
              *
              * @param event containing information about they key press
@@ -46,6 +53,11 @@ namespace GUI
         private slots:
 
             /**
+             * Creates a new empty project.
+             */
+            void newProject();
+
+            /**
              * Requests the user to select a file from the file system, and then loads the project using that file.
              */
             void openProject();
@@ -53,6 +65,11 @@ namespace GUI
             /**
              * Requests the user to select a location to save the project to, and the project is saved to a file at the
              * given location.
+             */
+            void saveAsProject();
+
+            /**
+             * Saves the project in the last specified location; if none was specified, this function calls saveAsProject().
              */
             void saveProject();
 
@@ -64,6 +81,8 @@ namespace GUI
             void setupConnections();
 
             Ui::MainWindow *ui = nullptr;
+
+            QString saveLocation;
 
             const QString projectFileExtension = ".L_Vis";
     };

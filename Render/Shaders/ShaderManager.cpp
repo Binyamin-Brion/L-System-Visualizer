@@ -43,6 +43,12 @@ namespace Render
         {
             for(auto i = shaderPrograms.begin(); i != shaderPrograms.end(); ++i)
             {
+                // Make sure any resources associates with the shader program are are released well.
+                i.value()->release();
+
+                i.value()->removeAllShaders();
+
+                // This will also delete the shader program OpenGL-resources (or at least, pretty sure it does according to QOpenGLShaderProgram Qt Doc).
                 delete i.value();
             }
         }

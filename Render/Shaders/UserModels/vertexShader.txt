@@ -3,8 +3,10 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in mat4 transformationMatrix;
 layout (location = 5) in vec3 inInstanceColour;
+layout (location = 6) in vec2 inInstanceTextureCoords;
 
 out vec3 instanceColour;
+out vec2 instanceTextureCoords;
 
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
@@ -12,6 +14,8 @@ uniform mat4 projectionMatrix;
 void main()
 {
     instanceColour = inInstanceColour;
+
+    instanceTextureCoords = inInstanceTextureCoords;
 
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(aPos, 1.0);
 }

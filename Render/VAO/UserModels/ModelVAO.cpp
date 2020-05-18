@@ -267,6 +267,11 @@ namespace Render
             glVertexAttribDivisor(5, 1);
             glEnableVertexAttribArray(5);
 
+            textureCoordinates.initialize();
+            textureCoordinates.bind();
+            glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr);
+            glEnableVertexAttribArray(6);
+
             textureManager.initialize();
         }
 
@@ -315,13 +320,32 @@ namespace Render
 
             uploadModel();
 
+            // These were specified in the TextureManager; for example, the sampler for 512x512 textures was initialized
+            // with the texture unit 0.
+            shaderManager.getShaderProgram("UserModels").setUniformValue("textures_512x512", 0);
+            shaderManager.getShaderProgram("UserModels").setUniformValue("textures_1024x1024", 1);
+            shaderManager.getShaderProgram("UserModels").setUniformValue("texture_2048x2048", 2);
+
             // Instance render the required number of instances for each model.
             for(const auto &i : storedModels.getModelRanges())
             {
-                shaderManager.getShaderProgram("UserModels").setUniformValue("textureID", -1);
+                // Specifies how many indices of the model have been processed before; this is required as the StoredModels
+                // holds how many indices are required for the entire model, but due to textures, a model has to be broken
+                // down into meshes, each with its own number of indices.
+                unsigned int indicesProcessedSoFar = 0;
 
-                glDrawElementsInstancedBaseInstance(GL_TRIANGLES, i.getIndiceCount(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * i.getIndiceBegin()),
-                                                    i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
+                for(const auto &mesh : i.getModel().getMeshes())
+                {
+                    Textures::TextureID textureId = textureManager.getTextureBank().getTextureID(QString::fromStdString(mesh.getTextureLocation()));
+
+                    shaderManager.getShaderProgram("UserModels").setUniformValue("textureID", textureId.textureID);
+                    shaderManager.getShaderProgram("UserModels").setUniformValue("offset", textureId.offset);
+
+                    glDrawElementsInstancedBaseInstance(GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * (i.getIndiceBegin() + indicesProcessedSoFar)),
+                                                        i.getInstanceMatrixCount(), i.getInstanceMatrixBegin());
+
+                    indicesProcessedSoFar += mesh.getIndices().size();
+                }
             }
         }
 
@@ -511,12 +535,12 @@ namespace Render
 
         void ModelVAO::uploadModel()
         {
-            const unsigned int numberVerticesHeld = verticesVBO.getHeldData().size();
-
             for(const auto &model : modelsToUpload)
             {
                 for(const auto &mesh : model.getMeshes())
                 {
+                    const unsigned int numberVerticesHeld = verticesVBO.getHeldData().size();
+
                     std::vector<unsigned int> adjustedIndices = mesh.getIndices();
 
                     // The indices have to have an offset added to deal with the fact that there are other vertices in the
@@ -531,6 +555,19 @@ namespace Render
                     indices.uploadDataAppend(adjustedIndices);
 
                     textureManager.uploadTexture(QString::fromStdString(mesh.getTextureLocation()));
+
+                    std::vector<glm::vec2> adjustedTextureCoords = mesh.getTextureCoords();
+
+                    // Adjust the texture coordinates for the fact that the associated mesh texture may have changed size
+                    // to meet one of the available texture array sizes.
+                    for(auto &textureCoord : adjustedTextureCoords)
+                    {
+                        textureCoord.x *= textureManager.getCompressFactor().xFactor;
+
+                        textureCoord.y *= textureManager.getCompressFactor().yFactor;
+                    }
+
+                    textureCoordinates.uploadDataAppend(adjustedTextureCoords);
                 }
             }
 

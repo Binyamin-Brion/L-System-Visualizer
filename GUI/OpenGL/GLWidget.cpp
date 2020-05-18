@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QOpenGLDebugLogger>
 #include <QtWidgets/QShortcut>
+#include <QtWidgets/QMessageBox>
 
 namespace GUI
 {
@@ -209,7 +210,17 @@ namespace GUI
             // were updated as soon as the keyPressEvent function is called.
             checkMovementKeyPressed();
 
-            commandCentre.render();
+            // Due to internal structure of the render portion of the program, the actual upload of a model happens in the
+            // render loop (only once- the first render loop after the model was requested to be loaded). This can result
+            // in an error if the model was not loaded successfully.
+            try
+            {
+                commandCentre.render();
+            }
+            catch(std::runtime_error &e)
+            {
+                QMessageBox::warning(this, "Error With Rendering", "The following error was generated: " + QString{e.what()}, QMessageBox::Yes);
+            }
         }
 
         void GLWidget::resizeGL(int width, int height)

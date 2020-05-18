@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QtCore/QDir>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 namespace GUI
 {
@@ -17,18 +18,55 @@ namespace GUI
     {
         ui->setupUi(this);
 
+        ui->menubar->hide();
+
         setMinimumSize(1280, 720);
 
         setupConnections();
+    }
+
+    void MainWindow::closeEvent(QCloseEvent *event)
+    {
+        int response = QMessageBox::information(this, "Reminder to Save Project", "Any unsaved changes will be lost by closing application.\n\n"
+                                                                                  "Would you like to save the project before quitting?", QMessageBox::Yes | QMessageBox::No);
+
+        if(response == QMessageBox::Yes)
+        {
+            saveProject();
+        }
+
+        QWidget::closeEvent(event);
     }
 
     void MainWindow::keyPressEvent(QKeyEvent *event)
     {
         switch(event->key())
         {
-            case Qt::Key_Escape:
-                QApplication::quit();
+            case Qt::Key_Alt:
+
+                ui->menubar->setVisible(!ui->menubar->isVisible());
+
                 break;
+        }
+    }
+
+    void MainWindow::newProject()
+    {
+        if(saveLocation.isEmpty())
+        {
+            int response = QMessageBox::information(this, "Discard Any Unsaved Changes", "Any unsaved changes will be lost when creating a new project.\n\nContinue?",
+                    QMessageBox::Yes | QMessageBox::No);
+
+            if(response == QMessageBox::Yes)
+            {
+                delete ui;
+
+                ui = new Ui::MainWindow;
+
+                ui->setupUi(this);
+
+                saveLocation.clear();
+            }
         }
     }
 
@@ -38,19 +76,43 @@ namespace GUI
         // Thus if a file that is not the project file is entered, then the ProjectLoader will cause an error message
         // to be shown.
 
-        QString modelFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
+        QString projectFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
 
-        ui->scriptTabWidget->openProject(modelFileLocation);
+        ui->scriptTabWidget->openProject(projectFileLocation);
+
+        saveLocation = projectFileLocation;
     }
 
-    void MainWindow::saveProject()
+    void MainWindow::saveAsProject()
     {
-        QString saveLocation = QFileDialog::getSaveFileName(this, "Save Project", QDir::homePath());
+        saveLocation = QFileDialog::getSaveFileName(this, "Save Project", QDir::homePath());
 
         // If the user did not specify the project file extension in the save dialog, then add it.
         if(!saveLocation.contains(projectFileExtension))
         {
             saveLocation += projectFileExtension;
+        }
+
+        if(QFile::exists(saveLocation))
+        {
+            int response = QMessageBox::warning(this, "Writing to Existing File", "The file " + saveLocation + " already exists.\n\nOverwrite it?", QMessageBox::Yes | QMessageBox::No);
+
+            if(response != QMessageBox::Yes)
+            {
+                return;
+            }
+        }
+
+        ui->scriptTabWidget->saveProject(saveLocation);
+    }
+
+    void MainWindow::saveProject()
+    {
+        if(saveLocation.isEmpty())
+        {
+            saveAsProject();
+
+            return;
         }
 
         ui->scriptTabWidget->saveProject(saveLocation);
@@ -66,8 +128,12 @@ namespace GUI
 
         connect(ui->discardScriptButton, SIGNAL(clicked()), ui->scriptTabWidget, SLOT(removeCurrentTab()));
 
+        connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newProject()));
+
         connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openProject()));
 
         connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveProject()));
+
+        connect(ui->actionSave_As, SIGNAL(triggered()), this, SLOT(saveAsProject()));
     }
 }

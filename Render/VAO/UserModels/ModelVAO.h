@@ -146,6 +146,7 @@ namespace Render
                 VBO::VBOWrapper<GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, unsigned int> indices;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::mat4x4> transformationsVBO;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec3> instanceColours;
+                VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec2> textureCoordinates;
 
                 DataStructures::StoredModels storedModels;
 
