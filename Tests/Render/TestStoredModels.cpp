@@ -397,6 +397,11 @@ namespace Tests
                 throw std::runtime_error{"Unable to find the \"Assets\" folder!!"};
             }
 
+            if(!currentDirectory.cd("Test"))
+            {
+                throw std::runtime_error{"Unable to find the \"Test\" folder in the Asset folder!!"};
+            }
+
             return currentDirectory.path();
         }
     }

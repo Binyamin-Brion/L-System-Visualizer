@@ -7,6 +7,7 @@
 
 #include <QtWidgets/QOpenGLWidget>
 #include <QtGui/QOpenGLDebugMessage>
+#include <QtCore/QFile>
 #include "../../Render/CommandCentre.h"
 #include "Render/DataStructures/TransformationData.h"
 
@@ -175,7 +176,7 @@ namespace GUI
                  *
                  * @param message to be printed to the console
                  */
-                void debugMessageGenerated(QOpenGLDebugMessage message) const;
+                void debugMessageGenerated(QOpenGLDebugMessage message);
 
             private:
 
@@ -195,12 +196,12 @@ namespace GUI
                 bool keyD_Pressed = false;
                 bool keyShift_Pressed = false;
 
-                // Keep track of the mouse coordinates so that when the shift key is pressed, a check for intersection
-                // with the rendered objects can be performed immediately, without waiting for an initial mouse movement.
-                int mouseX = 0;
-                int mouseY = 0;
-
                 ::Render::DataStructures::TransformationData transformationData;
+
+                // OpenGL errors are not due to the fault of the user, so it is extra important to be able to view
+                // the specific error message even after the program is closed for troubleshooting.
+                const QString openGLErrorMessageFileLocation = "OpenGL_Error.txt";
+                QFile openglErrorMessageFile;
         };
     }
 }

@@ -9,6 +9,8 @@
 #include <QOpenGLDebugLogger>
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QMessageBox>
+#include <QTextStream>
+#include <QDateTime>
 
 namespace GUI
 {
@@ -16,8 +18,21 @@ namespace GUI
     {
         GLWidget::GLWidget(QWidget *parent)
                     :
-                        QOpenGLWidget{parent}
+                        QOpenGLWidget{parent},
+                        openglErrorMessageFile{openGLErrorMessageFileLocation}
         {
+            // Try to open the OpenGL error message to write to; it's not fatal if it can't be opened, but troubleshooting the issue will be hard
+            // if the error message that is displayed is not remembered.
+            if(!openglErrorMessageFile.open(QIODevice::Append))
+            {
+                QMessageBox::warning(this, "Failed to Initialize OpenGL Error File", QString{"Could not open the file to which OpenGL errors are written to.\n\n"} +
+                "While the program will work and OpenGL errors will be displayed, they will not be logged. \n\n File location: " + openGLErrorMessageFileLocation, QMessageBox::Ok);
+            }
+
+            QTextStream writeStream{&openglErrorMessageFile};
+
+            writeStream << "\n\n" << QDateTime::currentDateTime().toString() << "\n\n";
+
             setFocusPolicy(Qt::StrongFocus);
             setMouseTracking(true);
 
@@ -185,10 +200,6 @@ namespace GUI
             {
                 commandCentre.getCamera().rotate(event->x(), event->y());
             }
-
-            // Keep track of most recent mouse position for when the shift key is pressed.
-            mouseX = event->x();
-            mouseY = event->y();
         }
 
         void GLWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -260,9 +271,30 @@ namespace GUI
             doneCurrent();
         }
 
-        void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message) const
+        void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message)
         {
-            qDebug() << message;
+
+            #ifdef QT_DEBUG
+
+                    qDebug() << message;
+
+            #else
+
+                // Notify the user of any serious OpenGL errors. At this point the program may not work as expected.
+                if(message.severity() == QOpenGLDebugMessage::HighSeverity || message.severity() == QOpenGLDebugMessage::MediumSeverity)
+                {
+                    QMessageBox::critical(this, "OpenGL Related Error", "The following OpenGL error was received: " + message.message() +
+                            "\n\n The program may not work as expected. Take note of this error message for trouble shooting.", QMessageBox::Ok);
+                }
+
+            #endif
+
+            if(openglErrorMessageFile.isOpen())
+            {
+                QTextStream writeStream{&openglErrorMessageFile};
+
+                writeStream << "OpenGL Error: " << message.message() << "\n";
+            }
         }
 
         // Beginning of private functions

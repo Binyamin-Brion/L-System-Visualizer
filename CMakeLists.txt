@@ -10,23 +10,23 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# If compiling from scratch, the location to the Qt installation will have to be updated to match where it is installed
-# on the machine being used for compilation
+# If compiling from scratch, the location to the Qt installation and glm folder will have to be updated to match
+# where it is installed on the machine being used for compilation
 
 if(WIN32)
     set(CMAKE_PREFIX_PATH C:\\Qt\\Qt5.9.8\\5.9.8\\mingw53_32)
+    set(GLM_FOLDER C:/glm-0.9.9.8/glm)
 endif(WIN32)
 
 if(UNIX)
     set(CMAKE_PREFIX_PATH /home/binybrion/Qt5.9.9/5.9.9/gcc_64)
+    set(GLM_FOLDER /home/binybrion/ProjectSourceDependencies/glm-0.9.9.8/glm)
 endif(UNIX)
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Test REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDES})
-
-set(GLM_FOLDER /home/binybrion/ProjectSourceDependencies/glm-0.9.9.8/glm)
 include_directories(${GLM_FOLDER})
 
 find_package(ASSIMP REQUIRED)
@@ -63,6 +63,11 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         GUI/Dialogs/NewNameDialog.h ProjectSaverLoader/ProjectLoader.cpp ProjectSaverLoader/ProjectLoader.h
         HelperFunctions/RuleLoading.cpp HelperFunctions/RuleLoading.h Tests/ProjectSaverLoader/TestProjectSaveLoad.cpp
         Tests/ProjectSaverLoader/TestProjectSaveLoad.h ProjectSaverLoader/ScriptInformation.h Tests/ProjectSaverLoader/TestBasicSaveLoad.cpp
-        Tests/ProjectSaverLoader/TestBasicSaveLoad.h GUI/L_System/ScriptTabs.cpp GUI/L_System/ScriptTabs.h GUI/L_System/ScriptTabWidget.cpp GUI/L_System/ScriptTabWidget.h L_System/Interpretation/UnderflowError.h L_System/Interpretation/UnbalancedError.h Render/DataStructures/TransformationIdentifier.h Render/DataStructures/TransformationData.h GUI/OpenGL/RenderResultWidget.cpp GUI/OpenGL/RenderResultWidget.h Render/DataStructures/UserAddedModelInstances.h ProjectSaverLoader/UserDefinedInstances.h Tests/Render/TestStoredModels.cpp Tests/Render/TestStoredModels.h Render/Textures/TextureID.h Render/Textures/TextureManager.cpp Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h)
+        Tests/ProjectSaverLoader/TestBasicSaveLoad.h GUI/L_System/ScriptTabs.cpp GUI/L_System/ScriptTabs.h GUI/L_System/ScriptTabWidget.cpp
+        GUI/L_System/ScriptTabWidget.h L_System/Interpretation/UnderflowError.h L_System/Interpretation/UnbalancedError.h
+        Render/DataStructures/TransformationIdentifier.h Render/DataStructures/TransformationData.h GUI/OpenGL/RenderResultWidget.cpp
+        GUI/OpenGL/RenderResultWidget.h Render/DataStructures/UserAddedModelInstances.h ProjectSaverLoader/UserDefinedInstances.h
+        Tests/Render/TestStoredModels.cpp Tests/Render/TestStoredModels.h Render/Textures/TextureID.h Render/Textures/TextureManager.cpp
+        Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

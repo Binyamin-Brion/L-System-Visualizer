@@ -76,7 +76,7 @@ namespace Render
                  * @param textureLocation the location of the texture stored in the passed in image on the file system
                  * @return an image of the requested size with the passed in image embedded in it
                  */
-                QImage fillUnusedArea(const QImage &image, int desiredLength, const QString &textureLocation);
+                QImage fillUnusedArea(const QImage &image, int desiredLength);
 
                 /**
                  * Initializes a texture array based off of the information passed in.
