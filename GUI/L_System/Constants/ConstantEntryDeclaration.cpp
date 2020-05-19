@@ -34,9 +34,7 @@ namespace GUI
             ui->setupUi(this);
 
             // By default the constant information is visible, and so the selection check box should be checked.
-            // This does not work when the constant is loaded from a saved project though for some reason (this meaning
-            // setting the check box to be checked upon the system creation).
-            ui->selectCheckBox->setChecked(true);
+            ui->visibleCheckBox->setChecked(true);
 
             ui->transformationRadioButton->setChecked(true);
 
@@ -55,6 +53,9 @@ namespace GUI
                                         ui{new Ui::ConstantEntryDeclaration}
         {
             ui->setupUi(this);
+
+            // By default the constant information is visible, and so the selection check box should be checked.
+            ui->visibleCheckBox->setChecked(true);
 
             ui->nameLineEdit->setText(constant.getConstantName());
 
@@ -154,7 +155,7 @@ namespace GUI
             // the names of the other entries.
             connect(ui->nameLineEdit, &QLineEdit::textChanged, [this](const QString &newName) { emit nameChanged(this, newName); });
 
-            connect(ui->selectCheckBox, &QCheckBox::stateChanged, [this](int state) { emit constantEntrySelected(this, state); });
+            connect(ui->deleteCheckBox, &QCheckBox::stateChanged, [this](int state) { emit constantEntrySelected(this, state); });
 
             connect(ui->rotationRadioButton, &QRadioButton::toggled, [this](bool checked) { checked ? ui->entryInformation->enableRotation() : ui->entryInformation->disableRotation(); });
 

@@ -40,7 +40,7 @@
      <item>
       <widget class="QRadioButton" name="transformationRadioButton">
        <property name="text">
-        <string>Transformation Constant</string>
+        <string>Translation Constant</string>
        </property>
       </widget>
      </item>
@@ -78,7 +78,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QCheckBox" name="selectCheckBox">
+      <widget class="QCheckBox" name="deleteCheckBox">
        <property name="text">
         <string>Mark for deletion</string>
        </property>

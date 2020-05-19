@@ -18,6 +18,8 @@ namespace GUI
     {
         ui->setupUi(this);
 
+        setWindowTitle("L - System Visualizer");
+
         setMinimumSize(1280, 720);
 
         setupConnections();
