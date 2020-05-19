@@ -1,11 +1,12 @@
-#version 330 core
+#version 440 core
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in mat4 transformationMatrix;
-layout (location = 5) in vec3 inInstanceColour;
+layout (location = 5) in uvec2 inInstanceSelected;
 layout (location = 6) in vec2 inInstanceTextureCoords;
 
-out vec3 instanceColour;
+// Not quite certain why 'flat' keyword is required here; otherwise a compilation error occurs.
+flat out uint instanceSelected;
 out vec2 instanceTextureCoords;
 
 uniform mat4 viewMatrix;
@@ -13,7 +14,7 @@ uniform mat4 projectionMatrix;
 
 void main()
 {
-    instanceColour = inInstanceColour;
+    instanceSelected = inInstanceSelected.x;
 
     instanceTextureCoords = inInstanceTextureCoords;
 

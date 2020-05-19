@@ -146,13 +146,13 @@ namespace GUI
 
             if(conversionResult.success)
             {
-                ui->scaleYRadioButton->setStyleSheet(styleSheet());
+                ui->scaleYLineEdit->setStyleSheet(styleSheet());
 
                 ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::ScaleY, conversionResult.number});
             }
             else
             {
-                ui->scaleYRadioButton->setStyleSheet(errorStyleSheet);
+                ui->scaleYLineEdit->setStyleSheet(errorStyleSheet);
             }
         }
 
@@ -160,17 +160,17 @@ namespace GUI
         {
             ui->scaleZRadioButton->setChecked(true);
 
-            ConvertNumberResult conversionResult = convertFieldNumber(ui->scaleZRadioButton->text());
+            ConvertNumberResult conversionResult = convertFieldNumber(ui->scaleZLineEdit->text());
 
             if(conversionResult.success)
             {
-                ui->scaleZRadioButton->setStyleSheet(styleSheet());
+                ui->scaleZLineEdit->setStyleSheet(styleSheet());
 
                 ui->openGLWidget->setTransformationData({::Render::DataStructures::TransformationIdentifier::ScaleZ, conversionResult.number});
             }
             else
             {
-                ui->scaleZRadioButton->setStyleSheet(errorStyleSheet);
+                ui->scaleZLineEdit->setStyleSheet(errorStyleSheet);
             }
         }
 

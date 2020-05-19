@@ -1,26 +1,31 @@
-#version 330 core
+#version 440 core
 
 in vec2 instanceTextureCoords;
-in vec3 instanceColour;
+
+// Not quite certain why 'flat' keyword is required here; otherwise a compilation error occurs.
+flat in uint instanceSelected;
 
 out vec4 FragColor;
 
 uniform int textureID;
 uniform int offset;
 
-uniform sampler2D textureSampler;
 uniform sampler2DArray textures_512x512;
 uniform sampler2DArray textures_1024x1024;
 uniform sampler2DArray texture_2048x2048;
 
 void main()
 {
+    // These are default colours- they were simply chosen due to their visual appear.
+    const vec4 defaultInstanceColour = vec4(0.5, 0.5, 0.5, 1.0);        // Grey colour.
+    const vec4 mixSelectedInstanceColour = vec4(1.0, 0.39, 0.28, 1.0);  // Orange colour.
+
+    FragColor = defaultInstanceColour;
+
+    // If it turns out the instance is supposed to use a texture, then reset the FragColor to use
+    // the appropriate texture.
     switch(textureID)
     {
-        case -1:
-            FragColor = vec4(instanceColour, 1.0f);
-            break;
-
         case 0:
             FragColor = texture(textures_512x512, vec3(instanceTextureCoords, offset));
             break;
@@ -32,5 +37,11 @@ void main()
         case 2:
              FragColor = texture(texture_2048x2048, vec3(instanceTextureCoords, offset));
              break;
+    }
+
+    // If the instance is selected, then show that fact visually.
+    if(instanceSelected == 1)
+    {
+        FragColor = mix(FragColor, mixSelectedInstanceColour, 0.3);
     }
 }

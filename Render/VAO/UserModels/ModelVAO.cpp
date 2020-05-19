@@ -33,19 +33,17 @@ namespace Render
 
             transformationsVBO.uploadData(instanceTransformationVector);
 
-            // Add instance colours to the instances of the model.
-            std::vector<glm::vec3> instanceColourVector;
+            // Keep track of whether the instances being added are selected or not.
+            std::vector<unsigned char> instancesSelected;
 
-            // Since any instances added that need to be highlighted will be done by the function calling this function,
-            // all of the instances will be un-highlighted (and not selected). Thus the instance colour can simply be appended
-            // to the instance colour VBO. Remember that the instances in the previous render have been deleted before this
-            // function is called.
+            // The default colour is set in the fragment shader. Adding false here will by default make the added instances
+            // have that default colour.
             for(unsigned int i = 0; i < transformationMatrices.size(); ++i)
             {
-                instanceColourVector.emplace_back(0.5, 0.5, 0.5);
+                instancesSelected.emplace_back(false);
             }
 
-            instanceColours.uploadDataAppend(instanceColourVector);
+            instanceColours.uploadDataAppend(instancesSelected);
 
             storedModels.addModelInstances(modelFileName, transformationMatrices.size(), userAddedIndex);
 
@@ -55,15 +53,15 @@ namespace Render
         void ModelVAO::addUserRequestedModelInstance(const QString &modelFileName)
         {
             // Un-highlight any existing highlighted model instances, regardless of the model being rendered.
-            auto instanceColourVector = instanceColours.getHeldData();
+            auto instancesSelected = instanceColours.getHeldData();
 
             for(unsigned int index : intersectionIndexes)
             {
-                instanceColourVector[index] = glm::vec3{0.5f, 0.5, 0.5};
+                instancesSelected[index] = false;
             }
 
             // Ensure that the fact that no instances are highlighted is shown in the render.
-            instanceColours.uploadData(instanceColourVector);
+            instanceColours.uploadData(instancesSelected);
 
             // Logically mark the fact that no instances are selected at this point.
             intersectionIndexes.clear();
@@ -74,15 +72,15 @@ namespace Render
             // model of which an instance is added, it is known what part of the instance VBO data to update. The '- 1' is because indexes start at 0.
             unsigned int addedInstanceIndex = storedModels.getModelRange(modelFileName).getInstanceMatrixBegin() + storedModels.getModelRange(modelFileName).getInstanceMatrixCount() - 1;
 
-            instanceColourVector = instanceColours.getHeldData();
+            instancesSelected = instanceColours.getHeldData();
 
             // Logically mark the added instance as being selected.
             intersectionIndexes.push_back(addedInstanceIndex);
 
-            instanceColourVector[addedInstanceIndex] = glm::vec3{0.6f, 0.5, 0.5};
+            instancesSelected[addedInstanceIndex] = true;
 
             // Ensure that the fact that no instances are highlighted is shown in the render.
-            instanceColours.uploadData(instanceColourVector);
+            instanceColours.uploadData(instancesSelected);
 
             // Remember that an instance has been added.
             HistoryChange historyChange{modelFileName, addedInstanceIndex, true, false, glm::mat4x4{1.0f}};
@@ -135,7 +133,7 @@ namespace Render
                     {
                         auto instanceColourVector = instanceColours.getHeldData();
 
-                        instanceColourVector[i] = glm::vec3{0.6f, 0.5, 0.5};
+                        instanceColourVector[i] = true;
 
                         instanceColours.uploadData(instanceColourVector);
 
@@ -156,7 +154,7 @@ namespace Render
                     {
                         auto instanceColourVector = instanceColours.getHeldData();
 
-                        instanceColourVector[i] = glm::vec3{0.5f, 0.5, 0.5};
+                        instanceColourVector[i] = false;
 
                         instanceColours.uploadData(instanceColourVector);
 
@@ -263,7 +261,7 @@ namespace Render
             instanceColours.initialize();
             instanceColours.bind();
 
-            glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr);
+            glVertexAttribIPointer(5, 1, GL_UNSIGNED_BYTE, sizeof(unsigned char), nullptr);
             glVertexAttribDivisor(5, 1);
             glEnableVertexAttribArray(5);
 

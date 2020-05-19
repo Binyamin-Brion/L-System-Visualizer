@@ -18,8 +18,6 @@ namespace GUI
     {
         ui->setupUi(this);
 
-        ui->menubar->hide();
-
         setMinimumSize(1280, 720);
 
         setupConnections();

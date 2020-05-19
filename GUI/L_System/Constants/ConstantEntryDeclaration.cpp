@@ -33,6 +33,11 @@ namespace GUI
         {
             ui->setupUi(this);
 
+            // By default the constant information is visible, and so the selection check box should be checked.
+            // This does not work when the constant is loaded from a saved project though for some reason (this meaning
+            // setting the check box to be checked upon the system creation).
+            ui->selectCheckBox->setChecked(true);
+
             ui->transformationRadioButton->setChecked(true);
 
             // By default, the associated entry information is visible, and the background color of the line edit

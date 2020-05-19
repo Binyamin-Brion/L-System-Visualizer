@@ -144,8 +144,13 @@ namespace Render
                 unsigned int vao;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec3> verticesVBO;
                 VBO::VBOWrapper<GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, unsigned int> indices;
+
+                // These hold the instance transformation matrices.
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::mat4x4> transformationsVBO;
-                VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec3> instanceColours;
+
+                // Do NOT use std::vector<bool> here! It gives compilation issues, and has weird behaviour in general.
+                // (Even though the unsigned char holds only true or false)
+                VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, unsigned char> instanceColours;
                 VBO::VBOWrapper<GL_ARRAY_BUFFER, GL_STATIC_DRAW, glm::vec2> textureCoordinates;
 
                 DataStructures::StoredModels storedModels;
