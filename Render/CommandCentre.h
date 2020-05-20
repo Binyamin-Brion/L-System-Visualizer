@@ -90,6 +90,13 @@ namespace Render
             void deleteSelectedInstances();
 
             /**
+             * Forwards the request to export the currently rendered model instances to the ModelVAO.
+             *
+             * @param exportLocation location of the file to export to
+             */
+            void exportCurrentRender(const QString &exportLocation);
+
+            /**
              * Get the reference to the camera used for rending.
              *
              * @return reference to the camera

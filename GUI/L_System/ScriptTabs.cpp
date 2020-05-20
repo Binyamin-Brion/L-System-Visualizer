@@ -3,6 +3,7 @@
 //
 
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 #include "ScriptTabs.h"
 #include "ScriptTabWidget.h"
 #include "../Dialogs/NewNameDialog.h"
@@ -144,6 +145,8 @@ namespace GUI
         void ScriptTabs::addNewTab(const QString &tabName, int position)
         {
             ScriptTabWidget *scriptTabWidget = new ScriptTabWidget{this};
+
+            connect(scriptTabWidget, &ScriptTabWidget::requestProjectSave, [this]() { emit requestProjectSave(); });
 
             if(position < 0)
             {

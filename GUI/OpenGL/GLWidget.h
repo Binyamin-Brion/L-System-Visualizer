@@ -40,6 +40,11 @@ namespace GUI
             signals:
 
                 /**
+                 *  Emitted when there was an error loading a model during a render loop.
+                 */
+                void errorLoadingModel();
+
+                /**
                  * Emitted whenever the user performs some input causing the user-instance cubes to change in some way.
                  *
                  * @param (vector of UserDefineInstances) the vector of all user defined instances being rendered.
@@ -83,6 +88,13 @@ namespace GUI
                  * @param modelInstances the instance models to render
                  */
                 void addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances);
+
+                /**
+                 * Forwards the request to export the currently rendered model instances to the CommandCentre.
+                 *
+                 * @param exportLocation location of the file to export to
+                 */
+                void exportCurrentRender(const QString &exportLocation);
 
                 /**
                  * Handles key press events when this widget is in focus.
@@ -202,6 +214,8 @@ namespace GUI
                 // the specific error message even after the program is closed for troubleshooting.
                 const QString openGLErrorMessageFileLocation = "OpenGL_Error.txt";
                 QFile openglErrorMessageFile;
+
+                QTimer *timer = nullptr;
         };
     }
 }

@@ -19,7 +19,8 @@ namespace GUI
         GLWidget::GLWidget(QWidget *parent)
                     :
                         QOpenGLWidget{parent},
-                        openglErrorMessageFile{openGLErrorMessageFileLocation}
+                        openglErrorMessageFile{openGLErrorMessageFileLocation},
+                        timer{new QTimer{this}}
         {
             // Try to open the OpenGL error message to write to; it's not fatal if it can't be opened, but troubleshooting the issue will be hard
             // if the error message that is displayed is not remembered.
@@ -40,8 +41,6 @@ namespace GUI
 
             // To ensure that the scene is constantly being rendered, a timer is used to make sure that the paintGL()
             // function is called every x amount of time.
-            QTimer *timer = new QTimer;
-
             timer->setInterval(20);
 
             connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -71,6 +70,11 @@ namespace GUI
         void GLWidget::addUserRequestedModelInstances(const std::vector<::ProjectSaverLoader::UserDefinedInstances> &modelInstances)
         {
             commandCentre.addUserRequestedModelInstances(modelInstances);
+        }
+
+        void GLWidget::exportCurrentRender(const QString &exportLocation)
+        {
+            commandCentre.exportCurrentRender(exportLocation);
         }
 
         void GLWidget::keyPressEvent(QKeyEvent *event)
@@ -230,7 +234,14 @@ namespace GUI
             }
             catch(std::runtime_error &e)
             {
-                QMessageBox::warning(this, "Error With Rendering", "The following error was generated: " + QString{e.what()}, QMessageBox::Yes);
+                // Stop the rendering process, otherwise the program may not respond well to user input as the message box is open.
+                timer->stop();
+
+                QMessageBox::critical(this, "Error With Rendering", "The following fatal error was generated: \n\n" + QString{e.what()} + "\n\nThis project will be saved and closed.", QMessageBox::Yes);
+
+                // Start the chain reaction to create a new project; the state of the Render portion of this program is hard to know,
+                // depending on what and how many models were being loaded. Thus it's easier to just terminate the current project.
+                emit errorLoadingModel();
             }
         }
 

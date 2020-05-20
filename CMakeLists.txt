@@ -68,6 +68,6 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         Render/DataStructures/TransformationIdentifier.h Render/DataStructures/TransformationData.h GUI/OpenGL/RenderResultWidget.cpp
         GUI/OpenGL/RenderResultWidget.h Render/DataStructures/UserAddedModelInstances.h ProjectSaverLoader/UserDefinedInstances.h
         Tests/Render/TestStoredModels.cpp Tests/Render/TestStoredModels.h Render/Textures/TextureID.h Render/Textures/TextureManager.cpp
-        Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h)
+        Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h ProjectSaverLoader/ProjectExporter.cpp ProjectSaverLoader/ProjectExporter.h)
 
 target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)

@@ -3,6 +3,8 @@
 //
 
 #include <Render/DataStructures/TransformationIdentifier.h>
+#include <QtCore/QDir>
+#include <QtWidgets/QFileDialog>
 #include "RenderResultWidget.h"
 #include "ui_renderResultWidget.h"
 
@@ -58,6 +60,13 @@ namespace GUI
         }
 
         // Beginning of private slots
+
+        void RenderResultWidget::handleRenderExport()
+        {
+            QString exportLocation = QFileDialog::getSaveFileName(this, "Export Current Render", QDir::homePath());
+
+            ui->openGLWidget->exportCurrentRender(exportLocation);
+        }
 
         // Note: all of the handleXXX functions have the same idea  as the rotationX, thus only that function is commented.
 
@@ -282,6 +291,8 @@ namespace GUI
 
             connect(ui->undoButton, SIGNAL(clicked()), ui->openGLWidget, SLOT(undoUserAction()));
 
+            connect(ui->exportRenderButton, SIGNAL(clicked()), this, SLOT(handleRenderExport()));
+
 
             connect(ui->rotationXLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(handleRotationX()));
 
@@ -319,6 +330,8 @@ namespace GUI
             connect(ui->translationYRadioButton, SIGNAL(clicked()), this, SLOT(handleTranslationY()));
 
             connect(ui->translationZRadioButton, SIGNAL(clicked()), this, SLOT(handleTranslationZ()));
+
+            connect(ui->openGLWidget, &GLWidget::errorLoadingModel, [this]() { emit errorLoadingModel(); });
         }
 
         bool RenderResultWidget::eventFilter(QObject *object, QEvent *event)

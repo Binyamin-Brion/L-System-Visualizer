@@ -34,6 +34,14 @@ namespace GUI
 
                 Q_OBJECT
 
+            signals:
+
+                /**
+                 * Emitted when the Render portion of the program experienced an error loading a model and the current
+                 * project needs to be saved before creating a new project.
+                 */
+                void requestProjectSave();
+
             public:
 
                 /**

@@ -7,6 +7,7 @@
 #include "ModelLoading/Model.h"
 #include "ProjectSaverLoader/ProjectDetails.h"
 #include "../../Shaders/ShaderManager.h"
+#include "ProjectSaverLoader/ProjectExporter.h"
 
 namespace Render
 {
@@ -196,6 +197,13 @@ namespace Render
             historyChanges.push_back(modification);
 
             removeInstances(intersectionIndexes);
+        }
+
+        void ModelVAO::exportCurrentRender(const QString &exportLocation)
+        {
+            ::ProjectSaverLoader::ProjectExporter projectExporter;
+
+            projectExporter.exportModelInstances(exportLocation, storedModels, transformationsVBO.getHeldData());
         }
 
         std::vector<::ProjectSaverLoader::UserDefinedInstances> ModelVAO::getUserDefinedInstances() const

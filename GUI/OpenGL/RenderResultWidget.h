@@ -42,6 +42,11 @@ namespace GUI
             signals:
 
                 /**
+                 *  Emitted when there was an error loading a model during a render loop.
+                 */
+                void errorLoadingModel();
+
+                /**
                 * Emitted whenever the user performs some input causing the user-instance cubes to change in some way.
                  * Forwarded from GLWidget.
                 *
@@ -95,6 +100,12 @@ namespace GUI
                 void uploadModelVRam(const ::ModelLoading::Model& model);
 
             private slots:
+
+                /**
+                 * Asks the user to specify a location to export to, and then forwards the request for exporting the
+                 * project to the GLWidget.
+                 */
+                void handleRenderExport();
 
                 /**
                  * Handles any change in the rotation X field, ensuring a valid input is given and if so, updates the
