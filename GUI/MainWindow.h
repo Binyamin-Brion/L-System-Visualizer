@@ -53,9 +53,14 @@ namespace GUI
         private slots:
 
             /**
+             * Saves the project and creates a new project, without asking for the user to do so.
+             */
+            void handleUnexpectedSaveRequest();
+
+            /**
              * Creates a new empty project.
              */
-            void newProject();
+            void newProject(bool ignoreWarningMessage);
 
             /**
              * Requests the user to select a file from the file system, and then loads the project using that file.

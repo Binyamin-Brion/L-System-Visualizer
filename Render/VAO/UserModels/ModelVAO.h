@@ -91,6 +91,18 @@ namespace Render
                  */
                 void deleteSelectedInstances();
 
+                /**
+                * Exports the currently rendered model instances to the given location.
+                *
+                * @param exportLocation location of the file to export to
+                */
+                void exportCurrentRender(const QString &exportLocation);
+
+                /**
+                 * Get the user defined instances of loaded models currently being rendered.
+                 *
+                 * @return list of currently rendered user-defined models
+                 */
                 std::vector<::ProjectSaverLoader::UserDefinedInstances> getUserDefinedInstances() const;
 
                 /**

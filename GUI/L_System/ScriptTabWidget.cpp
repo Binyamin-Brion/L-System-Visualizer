@@ -313,6 +313,8 @@ namespace GUI
             connect(ui->renderSavedResultButton, SIGNAL(clicked()), this, SLOT(renderScript()));
 
             connect(ui->showErrorsCheckbox, SIGNAL(stateChanged(int)), ui->savedResultOutputWidget, SLOT(showErrors(int)));
+
+            connect(ui->renderResultWidget, &GUI::OpenGL::RenderResultWidget::errorLoadingModel, [this]() { emit requestProjectSave(); });
         }
     }
 }

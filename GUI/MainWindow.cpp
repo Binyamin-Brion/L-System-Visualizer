@@ -50,24 +50,42 @@ namespace GUI
         }
     }
 
-    void MainWindow::newProject()
+    // Beginning of private slots
+
+    void MainWindow::handleUnexpectedSaveRequest()
     {
-        if(saveLocation.isEmpty())
+        saveProject();
+
+        // The project was saved by this point, so warning the user of losing any unsaved changes in the newProject
+        // could cause confusion, as the failure message displayed before this slot is called stated the project would be saved.
+        newProject(true);
+    }
+
+    void MainWindow::newProject(bool ignoreWarningMessage)
+    {
+        if(!ignoreWarningMessage)
         {
+            // User must save their changes before creating a new project, or lose any unsaved changes. Thus give them a reminder
+            // to save the project if they wish, before proceeding with creating a new project.
             int response = QMessageBox::information(this, "Discard Any Unsaved Changes", "Any unsaved changes will be lost when creating a new project.\n\nContinue?",
-                    QMessageBox::Yes | QMessageBox::No);
+                                                    QMessageBox::Yes | QMessageBox::No);
 
             if(response == QMessageBox::Yes)
             {
-                delete ui;
-
-                ui = new Ui::MainWindow;
-
-                ui->setupUi(this);
-
-                saveLocation.clear();
+                return;
             }
         }
+
+        delete ui;
+
+        ui = new Ui::MainWindow;
+
+        ui->setupUi(this);
+
+        saveLocation.clear();
+
+        // As the previous UI was deleted and the new ui does not have any connections set up
+        setupConnections();
     }
 
     void MainWindow::openProject()
@@ -128,12 +146,14 @@ namespace GUI
 
         connect(ui->discardScriptButton, SIGNAL(clicked()), ui->scriptTabWidget, SLOT(removeCurrentTab()));
 
-        connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newProject()));
+        connect(ui->actionNew, &QAction::triggered, [this]() { newProject(false); });
 
         connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openProject()));
 
         connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveProject()));
 
         connect(ui->actionSave_As, SIGNAL(triggered()), this, SLOT(saveAsProject()));
+
+        connect(ui->scriptTabWidget, SIGNAL(requestProjectSave()), this, SLOT(handleUnexpectedSaveRequest()));
     }
 }

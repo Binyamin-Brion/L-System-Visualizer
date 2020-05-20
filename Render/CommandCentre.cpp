@@ -80,6 +80,11 @@ namespace Render
         modelVao.deleteSelectedInstances();
     }
 
+    void CommandCentre::exportCurrentRender(const QString &exportLocation)
+    {
+        modelVao.exportCurrentRender(exportLocation);
+    }
+
     Camera::CameraObject &CommandCentre::getCamera()
     {
         return cameraObject;

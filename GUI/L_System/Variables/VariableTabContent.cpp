@@ -96,7 +96,15 @@ namespace GUI
             // does note work.
             QString modelFileLocation = QFileDialog::getOpenFileName(this, "Open Mode", QDir::homePath());
 
-            loadModel(modelFileLocation);
+            try
+            {
+                loadModel(modelFileLocation);
+            }
+            catch(std::runtime_error &e)
+            {
+                QMessageBox::critical(this, "Load Model", "Unable to load the requested model.\n\n" +
+                                                          QString{e.what()}, QMessageBox::Ok);
+            }
         }
 
         void VariableTabContent::refreshAxiomList(std::vector<QString> optionList)
@@ -142,27 +150,19 @@ namespace GUI
             // If the model was successfully loaded, then emit respective signal so that the model can be uploaded into
             // GPU memory.
 
-            try
+            // Only load a model if it hasn't been loaded before.
+            if(std::find(loadedModels.begin(), loadedModels.end(), modelFileLocation) != loadedModels.end())
             {
-                // Only load a model if it hasn't been loaded before.
-                if(std::find(loadedModels.begin(), loadedModels.end(), modelFileLocation) != loadedModels.end())
-                {
-                    return;
-                }
-
-                loadedModels.insert(modelFileLocation);
-
-                ::ModelLoading::Model loadedModel{modelFileLocation.toStdString()};
-
-                emit modelLoaded(loadedModel);
-
-                ui->declaredVariables->addModelEntry(modelFileLocation);
+                return;
             }
-            catch(std::runtime_error &e)
-            {
-                QMessageBox::critical(this, "Load Model", "Unable to load the requested model.\n\n" +
-                                                          QString{e.what()}, QMessageBox::Ok);
-            }
+
+            loadedModels.insert(modelFileLocation);
+
+            ::ModelLoading::Model loadedModel{modelFileLocation.toStdString()};
+
+            emit modelLoaded(loadedModel);
+
+            ui->declaredVariables->addModelEntry(modelFileLocation);
         }
 
         void VariableTabContent::setupConnections()
