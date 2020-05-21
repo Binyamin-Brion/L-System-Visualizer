@@ -50,7 +50,7 @@ namespace GUI
             // A debug surface is required in order to generate debug OpenGL messages.
             QSurfaceFormat surfaceFormat;
             surfaceFormat.setMajorVersion(4);
-            surfaceFormat.setMinorVersion(4);
+            surfaceFormat.setMinorVersion(2);
             surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
             surfaceFormat.setOption(QSurfaceFormat::DebugContext);
 
@@ -169,7 +169,19 @@ namespace GUI
 
             connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(cleanUp()));
 
-            commandCentre.initialize();
+            try
+            {
+                // If there is a error initializing OpenGL, that is a fatal flaw, so the user is told of the error
+                // and the program terminates.
+                commandCentre.initialize();
+            }
+            catch(std::runtime_error &e)
+            {
+                QMessageBox::warning(this, "Error Initializing OpenGL", "The following error was encountered: \n\n" + QString{e.what()}
+                        + "\n\nThe program will terminate.", QMessageBox::Ok);
+
+                QApplication::quit();
+            }
 
             debugLogger = new QOpenGLDebugLogger{this};
 
@@ -184,6 +196,14 @@ namespace GUI
             debugLogger->enableMessages();
 
             glEnable(GL_DEPTH_TEST);
+
+            openGLVendor = std::string{reinterpret_cast<const char*>(glGetString(GL_VENDOR))};
+
+            if(openGLVendor == "Intel")
+            {
+                QMessageBox::warning(this, "Intel GPU Warning", "On Intel GPUs, the program has been observed to not function correctly,"
+                                                                "or even crash altogether.\n\nUnexpected behaviour may occur.", QMessageBox::Ok);
+            }
         }
 
         void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -284,10 +304,14 @@ namespace GUI
 
         void GLWidget::debugMessageGenerated(QOpenGLDebugMessage message)
         {
-
             #ifdef QT_DEBUG
 
+                // On the Intel GPU tested (HD 4600, Windows 10), a bunch of low-severity warnings are
+                // given, which are distracting. Thus LowSeverity warnings from Intel are ignored.
+                if(message.severity() == QOpenGLDebugMessage::LowSeverity && openGLVendor != "Intel") // Do not allow LowSeverity warnings
+                {                                                                                     // to be printed on Intel GPUs.
                     qDebug() << message;
+                }
 
             #else
 

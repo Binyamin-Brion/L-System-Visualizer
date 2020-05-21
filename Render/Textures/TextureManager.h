@@ -5,7 +5,7 @@
 #ifndef VOXEL_L_SYSTEM_TEXTUREMANAGER_H
 #define VOXEL_L_SYSTEM_TEXTUREMANAGER_H
 
-#include <QtGui/QOpenGLFunctions_4_4_Core>
+#include <QtGui/QOpenGLFunctions_4_2_Core>
 #include "TextureBank.h"
 #include "CompressFactor.h"
 
@@ -13,7 +13,7 @@ namespace Render
 {
     namespace Textures
     {
-        class TextureManager : public QOpenGLFunctions_4_4_Core
+        class TextureManager : public QOpenGLFunctions_4_2_Core
         {
             public:
 

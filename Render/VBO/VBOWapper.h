@@ -5,7 +5,7 @@
 #ifndef VOXEL_L_SYSTEM_VBOWAPPER_H
 #define VOXEL_L_SYSTEM_VBOWAPPER_H
 
-#include <QOpenGLFunctions_4_4_Core>
+#include <QOpenGLFunctions_4_2_Core>
 
 namespace Render
 {
@@ -22,7 +22,7 @@ namespace Render
          */
 
         template<GLenum bufferTarget, GLenum bufferUsage, typename T>
-        class VBOWrapper : public QOpenGLFunctions_4_4_Core
+        class VBOWrapper : public QOpenGLFunctions_4_2_Core
         {
             public:
 

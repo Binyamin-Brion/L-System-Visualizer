@@ -5,7 +5,7 @@
 #ifndef VOXEL_L_SYSTEM_MODELVAO_H
 #define VOXEL_L_SYSTEM_MODELVAO_H
 
-#include <QtGui/QOpenGLFunctions_4_4_Core>
+#include <QtGui/QOpenGLFunctions_4_2_Core>
 #include <Render/VBO/VBOWapper.h>
 #include <vec3.hpp>
 #include <mat4x4.hpp>
@@ -37,7 +37,7 @@ namespace Render
          * Handles storing required data for user models as well as rendering (instances of) those models.
          */
 
-        class ModelVAO : public QOpenGLFunctions_4_4_Core
+        class ModelVAO : public QOpenGLFunctions_4_2_Core
         {
             public:
 

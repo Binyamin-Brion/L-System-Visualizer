@@ -216,6 +216,8 @@ namespace GUI
                 QFile openglErrorMessageFile;
 
                 QTimer *timer = nullptr;
+
+                std::string openGLVendor;
         };
     }
 }

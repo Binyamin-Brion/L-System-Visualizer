@@ -16,7 +16,7 @@ namespace Render
          *  Handles storing the required data for the axis in the scene as well as rendering those axis.
          */
 
-        class AxisVAO : public QOpenGLFunctions_4_4_Core
+        class AxisVAO : public QOpenGLFunctions_4_2_Core
         {
             public:
 

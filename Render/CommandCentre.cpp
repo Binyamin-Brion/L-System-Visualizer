@@ -3,10 +3,9 @@
 //
 
 #include <ModelLoading/Model.h>
-#include <ext/matrix_transform.hpp>
 #include "CommandCentre.h"
 #include "../L_System/Interpretation/Interpreter.h"
-#include <QHash>
+#include <QDir>
 
 namespace Render
 {
@@ -102,12 +101,12 @@ namespace Render
         backgroundColour = glm::vec3{backgroundColourComponents, backgroundColourComponents, backgroundColourComponents};
 
         shaderManager.addShaderProgram("GridSystem",
-                                    "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/GridSystem/vertexShader.txt",
-                                    "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/GridSystem/fragmentShader.txt");
+                                    getShaderFolderLocation() + "/GridSystem/vertexShader.txt",
+                                       getShaderFolderLocation() + "/GridSystem/fragmentShader.txt");
 
         shaderManager.addShaderProgram("UserModels",
-                                       "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/UserModels/vertexShader.txt",
-                                       "/home/binybrion/CLionProjects/Voxel_L_System/Render/Shaders/UserModels/fragmentShader.txt");
+                                       getShaderFolderLocation() + "/UserModels/vertexShader.txt",
+                                       getShaderFolderLocation() + "/UserModels/fragmentShader.txt");
 
         axisVao.initialize();
         gridVao.initialize();
@@ -188,5 +187,32 @@ namespace Render
         vector3D.setZ(vector.z);
 
         return vector3D;
+    }
+
+    QString CommandCentre::getShaderFolderLocation() const
+    {
+        auto currentPath = QDir::current();
+
+        // If the program is run Debug mode, it is assumed it is being from the IDE. Thus the program should look for the
+        // shader folder in the project structure. If being run in a Release mode, then the shader folder should be located
+        // in the same directory as the executable.
+
+        #ifdef QT_DEBUG
+
+            if(!(currentPath.cdUp() && currentPath.cd("Render") && currentPath.cd("Shaders")))
+            {
+                throw std::runtime_error{"Unable to find the Shader Folder file! \nError location: " + std::string{__PRETTY_FUNCTION__ }};
+            }
+
+        #else
+
+            if(!currentPath.cd("Shaders"))
+            {
+                throw std::runtime_error{"Unable to find the Shader Folder file! \nError location: " + std::string{__PRETTY_FUNCTION__ }};
+            }
+
+        #endif
+
+        return currentPath.path();
     }
 }

@@ -16,7 +16,7 @@ namespace Render
          *  Handles storing the required data for the grid lines in the scene as well as rendering those lines.
          */
 
-        class GridVAO : public QOpenGLFunctions_4_4_Core
+        class GridVAO : public QOpenGLFunctions_4_2_Core
         {
             public:
 

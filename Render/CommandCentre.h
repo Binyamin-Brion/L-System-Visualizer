@@ -160,6 +160,13 @@ namespace Render
              */
             QVector3D convertQVector(const glm::vec3 &vector) const;
 
+            /**
+             * Gets the location of the shader folder containing shader files used for the render process.
+             *
+             * @return location to the shader folder
+             */
+            QString getShaderFolderLocation() const;
+
             Camera::CameraObject cameraObject;
             GridSystem::AxisVAO axisVao;
             GridSystem::GridVAO gridVao;

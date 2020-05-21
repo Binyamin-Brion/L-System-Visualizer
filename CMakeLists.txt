@@ -15,6 +15,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(WIN32)
     set(CMAKE_PREFIX_PATH C:\\Qt\\Qt5.9.9\\5.9.9\\mingw53_32)
+
+    # Assumes that Assimp has been compiled from scratch, and the result of running
+    # make and then make install results in the Assimp build being placed in Program Files.
+    set(ASSIMP_DIR "C:/Program Files (x86)/Assimp")
+
     set(GLM_FOLDER C:/glm-0.9.9.8/glm)
 endif(WIN32)
 
@@ -29,9 +34,16 @@ find_package(Qt5Test REQUIRED)
 include_directories(${Qt5Widgets_INCLUDES})
 include_directories(${GLM_FOLDER})
 
-find_package(ASSIMP REQUIRED)
+# On Windows, using the find_package for Assimp doesn't work for some reason. As a result,
+# the include directory is included manually.
+if(WIN32)
+    include_directories(${ASSIMP_DIR}/include)
+endif(WIN32)
 
-include_directories(${ASSIMP_INCLUDE_DIR})
+if(UNIX)
+    find_package(ASSIMP REQUIRED)
+    include_directories(${ASSIMP_INCLUDES_DIR})
+endif(UNIX)
 
 add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/VAO/GridSystem/AxisVAO.cpp
         Render/VAO/GridSystem/AxisVAO.h Render/CommandCentre.cpp Render/CommandCentre.h Render/Shaders/ShaderManager.cpp
@@ -68,6 +80,19 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
         Render/DataStructures/TransformationIdentifier.h Render/DataStructures/TransformationData.h GUI/OpenGL/RenderResultWidget.cpp
         GUI/OpenGL/RenderResultWidget.h Render/DataStructures/UserAddedModelInstances.h ProjectSaverLoader/UserDefinedInstances.h
         Tests/Render/TestStoredModels.cpp Tests/Render/TestStoredModels.h Render/Textures/TextureID.h Render/Textures/TextureManager.cpp
-        Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h ProjectSaverLoader/ProjectExporter.cpp ProjectSaverLoader/ProjectExporter.h)
+        Render/Textures/TextureManager.h Render/Textures/TextureBank.cpp Render/Textures/TextureBank.h Render/Textures/CompressFactor.h
+        ProjectSaverLoader/ProjectExporter.cpp ProjectSaverLoader/ProjectExporter.h)
 
-target_link_libraries(Voxel_L_System assimp ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} -lGL)
+# Window and Linux have different requirements for linking Assimp and OpenGL, so OS specific
+# link commands written. Common link commands are given outside of OS specific if-statements.
+if(WIN32)
+    # Remember that on Windows Assimp is kind of weird with the way it is included into
+    # a project.
+    target_link_libraries(Voxel_L_System ${ASSIMP_DIR}/lib/libassimp.dll.a -lopenGL32)
+endif(WIN32)
+
+if(UNIX)
+    target_link_libraries(Voxel_L_System assimp -lGL)
+endif(UNIX)
+
+target_link_libraries(Voxel_L_System ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES})
