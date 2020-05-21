@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Voxel_L_System)
+project(L-System-Visualizer)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
@@ -45,7 +45,7 @@ if(UNIX)
     include_directories(${ASSIMP_INCLUDES_DIR})
 endif(UNIX)
 
-add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/VAO/GridSystem/AxisVAO.cpp
+add_executable(L-System-Visualizer main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Render/VBO/VBOWapper.h Render/VAO/GridSystem/AxisVAO.cpp
         Render/VAO/GridSystem/AxisVAO.h Render/CommandCentre.cpp Render/CommandCentre.h Render/Shaders/ShaderManager.cpp
         Render/Shaders/ShaderManager.h GUI/OpenGL/GLWidget.cpp GUI/OpenGL/GLWidget.h Render/VAO/GridSystem/GridVAO.cpp
         Render/VAO/GridSystem/GridVAO.h Render/Camera/CameraMovement.h Render/Camera/CameraObject.cpp Render/Camera/CameraObject.h
@@ -88,11 +88,11 @@ add_executable(Voxel_L_System main.cpp GUI/MainWindow.cpp GUI/MainWindow.h Rende
 if(WIN32)
     # Remember that on Windows Assimp is kind of weird with the way it is included into
     # a project.
-    target_link_libraries(Voxel_L_System ${ASSIMP_DIR}/lib/libassimp.dll.a -lopenGL32)
+    target_link_libraries(L-System-Visualizer ${ASSIMP_DIR}/lib/libassimp.dll.a -lopenGL32)
 endif(WIN32)
 
 if(UNIX)
-    target_link_libraries(Voxel_L_System assimp -lGL)
+    target_link_libraries(L-System-Visualizer assimp -lGL)
 endif(UNIX)
 
-target_link_libraries(Voxel_L_System ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES})
+target_link_libraries(L-System-Visualizer ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES})
