@@ -14,7 +14,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # where it is installed on the machine being used for compilation
 
 if(WIN32)
-    set(CMAKE_PREFIX_PATH C:\\Qt\\Qt5.9.8\\5.9.8\\mingw53_32)
+    set(CMAKE_PREFIX_PATH C:\\Qt\\Qt5.9.9\\5.9.9\\mingw53_32)
     set(GLM_FOLDER C:/glm-0.9.9.8/glm)
 endif(WIN32)
 
