@@ -159,6 +159,13 @@ namespace GUI
                  */
                 void setTransformationData(const ::Render::DataStructures::TransformationData &transformationData);
 
+                /**
+                 * Handles wheels event while this widget is in focus.
+                 *
+                 * @param event containing the information about the wheel event
+                 */
+                void wheelEvent(QWheelEvent *event) override;
+
             public slots:
 
                 /**

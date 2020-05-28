@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>814</width>
-        <height>243</height>
+        <width>810</width>
+        <height>234</height>
        </rect>
       </property>
      </widget>
@@ -73,7 +73,7 @@
      <item>
       <widget class="QPushButton" name="deleteVariableButtons">
        <property name="text">
-        <string>Delete SelectedVariables</string>
+        <string>Delete Selected Variables</string>
        </property>
       </widget>
      </item>

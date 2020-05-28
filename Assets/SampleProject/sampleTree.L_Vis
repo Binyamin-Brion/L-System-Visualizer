@@ -5,8 +5,8 @@ Script_name -- Default
 
 Variables: 
 
-Variable_name -- northBranch -- Associated_model_name: -- /Voxel_L_System/Assets/SampleProject/branch.obj
-Variable_name -- cube -- Associated_model_name: -- /Voxel_L_System/Assets/SampleProject/bark.obj
+Variable_name -- northBranch -- Associated_model_name: -- /L-System-Visualizer/Assets/SampleProject/branch.obj
+Variable_name -- cube -- Associated_model_name: -- /L-System-Visualizer/Assets/SampleProject/bark.obj
 
 Axiom -- cube
 

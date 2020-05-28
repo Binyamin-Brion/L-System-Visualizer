@@ -23,6 +23,15 @@ namespace GUI
         setMinimumSize(1280, 720);
 
         setupConnections();
+
+    #ifdef WIN32
+
+        // The default font when run on windows is small and hard to read. Therefore a different font is set for
+        // the entire application.
+        qApp->setFont(QFont{"Arial", 10});
+
+    #endif
+
     }
 
     void MainWindow::closeEvent(QCloseEvent *event)

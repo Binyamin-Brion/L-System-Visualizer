@@ -65,6 +65,11 @@ namespace GUI
         {
             QString exportLocation = QFileDialog::getSaveFileName(this, "Export Current Render", QDir::homePath());
 
+            if(!exportLocation.endsWith(".txt"))
+            {
+                exportLocation += ".txt";
+            }
+
             ui->openGLWidget->exportCurrentRender(exportLocation);
         }
 

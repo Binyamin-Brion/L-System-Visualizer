@@ -279,6 +279,24 @@ namespace GUI
             this->transformationData = transformationData;
         }
 
+        void GLWidget::wheelEvent(QWheelEvent *event)
+        {
+            // It is assumed that scrolling up is the same as the right-arrow key (positive transformation), while
+            // a downwards scroll is a negative transformation.
+            if(event->angleDelta().y() > 0)
+            {
+                commandCentre.transformSelectedModels(transformationData);
+
+                emit modelInstancesChanged(commandCentre.getUserDefinedInstances());
+            }
+            else if(event->angleDelta().y() < 0)
+            {
+                commandCentre.transformSelectedModels({transformationData.transformationIdentifier, -transformationData.amount});
+
+                emit modelInstancesChanged(commandCentre.getUserDefinedInstances());
+            }
+        }
+
         // Beginning of public slots
 
         void GLWidget::undoUserAction()

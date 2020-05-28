@@ -10,7 +10,7 @@ An L-System is a way of specifying geometrical structures through the use of a f
 * Rules: Define ways to replace variables with other variables and constants.
          Together, these components can be used to generate geometrical structures in a recursive manner. 
          
-This project provides a grpahical means to specify an L-Script by providing a GUI to create the above 
+This project provides a graphical means to specify an L-Script by providing a GUI to create the above 
 components, and render the resulting generated geometrical structure.
 
 ## Features

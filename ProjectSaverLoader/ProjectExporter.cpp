@@ -55,6 +55,6 @@ namespace ProjectSaverLoader
     {
         QTextStream writeStream{&exportFile};
 
-        writeStream << "Model Name: " << modelName << "\n\n";
+        writeStream << "Model_Name: " << modelName << "\n\n";
     }
 }
