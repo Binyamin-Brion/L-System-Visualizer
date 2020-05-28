@@ -33,6 +33,8 @@ namespace ProjectSaverLoader
                 // is an index into the vector of instance matrices holding all of the instance matrices for the render.
                 writeInstanceMatrix(instanceMatrices[index + i.getInstanceMatrixBegin()]);
             }
+
+            writeEndModel();
         }
     }
 
@@ -49,6 +51,13 @@ namespace ProjectSaverLoader
         }
 
         writeStream << "\nEnd_Matrix\n\n";
+    }
+
+    void ProjectExporter::writeEndModel()
+    {
+        QTextStream writeStream{&exportFile};
+
+        writeStream << "\n\nEND_MODEL\n\n";
     }
 
     void ProjectExporter::writeModelName(const QString &modelName)

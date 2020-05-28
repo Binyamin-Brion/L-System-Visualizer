@@ -49,6 +49,11 @@ namespace ProjectSaverLoader
             void writeInstanceMatrix(const glm::mat4x4 &matrix);
 
             /**
+             * Writes the statement declaring the end of a section stating model information.
+             */
+            void writeEndModel();
+
+            /**
              * Writes a model name to the the created export file
              *
              * @param modelName to write to the export file
