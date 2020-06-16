@@ -178,6 +178,8 @@ namespace Render
             indices.deleteVBO();
             transformationsVBO.deleteVBO();
             instanceColours.deleteVBO();
+
+            textureManager.deleteOpenGLResources();
         }
 
         void ModelVAO::deleteSelectedInstances()

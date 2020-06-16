@@ -179,17 +179,17 @@ namespace Render
                 return;
             }
 
-            // Create an adequately sized texture to uploaded, if the given texture is not of the correct size.
-            // Do this now so that an updated CompressionFactor is created for the caller of this function, that will be
-            // correct even if the texture has already been uploaded into vRam. This is required because the face of a model
-            // using a texture may be different from each other.
-            QImage imageToUpload = fillUnusedArea(image, textureRelations.dimension);
-
             // Texture already loaded; don't load it again. Waste of vRam.
             if(textureBank.containsTexture(textureLocation))
             {
                 return;
             }
+
+            // Create an adequately sized texture to uploaded, if the given texture is not of the correct size.
+            // Do this now so that an updated CompressionFactor is created for the caller of this function, that will be
+            // correct even if the texture has already been uploaded into vRam. This is required because the face of a model
+            // using a texture may be different from each other.
+            QImage imageToUpload = fillUnusedArea(image, textureRelations.dimension);
 
             glActiveTexture(GL_TEXTURE0 + textureRelations.textureID);
             glBindTexture(GL_TEXTURE_2D_ARRAY, textureRelations.textureVBO);
