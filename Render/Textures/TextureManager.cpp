@@ -168,7 +168,7 @@ namespace Render
         void TextureManager::uploadTexture(TextureRelation &textureRelations, const QString &textureLocation, const QImage &image)
         {
             // Texture too big for this texture array.
-            if(image.width() > textureRelations.dimension || image.width() > textureRelations.dimension)
+            if(image.width() > textureRelations.dimension || image.height() > textureRelations.dimension)
             {
                 return;
             }
